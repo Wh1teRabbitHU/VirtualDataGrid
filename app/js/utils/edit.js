@@ -7,24 +7,24 @@ var EventArguments = require('../models/event-arguments'),
 var configInstance = require('../instances/configuration');
 
 function saveCells() {
-	if (!configInstance.editable) {
+	if (!configInstance.edit.enabled) {
 		return;
 	}
 
 	var args = new EventArguments({
-		cellObject: configInstance.editedCells,
+		cellObject: configInstance.inner.editedCells,
 		cancelEvent: false
 	});
 
-	configInstance.onBeforeSave(args);
+	configInstance.eventHandlers.onBeforeSave(args);
 
 	if (!args.cancelEvent) {
-		configInstance.editedCells.forEach(function(cell) {
+		configInstance.inner.editedCells.forEach(function(cell) {
 			tableUtil.setCellValue(cell.rowNumber, cell.columnNumber, cell.value);
 		});
 		domUtil.resetEditedCell();
 
-		configInstance.onAfterSave(args);
+		configInstance.eventHandlers.onAfterSave(args);
 	}
 }
 

@@ -18,16 +18,16 @@ function indexOfElement(element) {
 
 function updateCell(cell, cellObj) {
 	cell.innerHTML = cellObj.value;
-	cell.className = configInstance.dataCellClass + ' ' + (cellObj.class || '');
+	cell.className = configInstance.inner.selectors.dataCell + ' ' + (cellObj.class || '');
 }
 
 function updateTable() {
 	var countRow = 0,
 		colspan = 1;
 
-	document.querySelectorAll('.' + configInstance.virtualTableClass + ' tr.' + configInstance.headerRowClass).forEach(function(row) {
-		row.querySelectorAll('td.' + configInstance.headerCellClass).forEach(function(cell, cellNumber) {
-			var cellObj = configInstance.headers[countRow][configInstance.leftCellOffset + cellNumber];
+	document.querySelectorAll('.' + configInstance.selectors.virtualTable + ' tr.' + configInstance.inner.selectors.headerRow).forEach(function(row) {
+		row.querySelectorAll('td.' + configInstance.inner.selectors.headerCell).forEach(function(cell, cellNumber) {
+			var cellObj = configInstance.headers[countRow][configInstance.inner.leftCellOffset + cellNumber];
 
 			if (colspan > 1) {
 				cell.style.display = 'none';
@@ -40,7 +40,7 @@ function updateTable() {
 			if (typeof cellObj.colspan == 'undefined') {
 				cell.removeAttribute('colspan');
 			} else {
-				var calculatedColspan = configInstance.visibleColumnNumber <= cellNumber + cellObj.colspan ? configInstance.visibleColumnNumber - cellNumber : cellObj.colspan;
+				var calculatedColspan = configInstance.inner.visibleColumnNumber <= cellNumber + cellObj.colspan ? configInstance.inner.visibleColumnNumber - cellNumber : cellObj.colspan;
 
 				cell.setAttribute('colspan', calculatedColspan);
 				colspan = calculatedColspan;
@@ -50,40 +50,40 @@ function updateTable() {
 		colspan = 1;
 	});
 
-	document.querySelectorAll('.' + configInstance.virtualTableClass + ' tr.' + configInstance.dataRowClass).forEach(function(row, rowNumber) {
-		row.querySelectorAll('td.' + configInstance.dataCellClass).forEach(function(cell, cellNumber) {
-			updateCell(cell, tableUtil.getCell(configInstance.topCellOffset + rowNumber, configInstance.leftCellOffset + cellNumber));
+	document.querySelectorAll('.' + configInstance.selectors.virtualTable + ' tr.' + configInstance.inner.selectors.dataRow).forEach(function(row, rowNumber) {
+		row.querySelectorAll('td.' + configInstance.inner.selectors.dataCell).forEach(function(cell, cellNumber) {
+			updateCell(cell, tableUtil.getCell(configInstance.inner.topCellOffset + rowNumber, configInstance.inner.leftCellOffset + cellNumber));
 		});
 	});
 
-	document.querySelectorAll('.' + configInstance.fixedTableClass + ' tr.' + configInstance.dataRowClass).forEach(function(row, rowNumber) {
-		row.querySelectorAll('td.' + configInstance.dataCellClass).forEach(function(cell, cellNumber) {
-			updateCell(cell, tableUtil.getFixedCell(configInstance.topCellOffset + rowNumber, cellNumber));
+	document.querySelectorAll('.' + configInstance.selectors.fixedTable + ' tr.' + configInstance.inner.selectors.dataRow).forEach(function(row, rowNumber) {
+		row.querySelectorAll('td.' + configInstance.inner.selectors.dataCell).forEach(function(cell, cellNumber) {
+			updateCell(cell, tableUtil.getFixedCell(configInstance.inner.topCellOffset + rowNumber, cellNumber));
 		});
 	});
 }
 
 function resetEditingCell(onInputBlurEventHandler) {
-	document.querySelectorAll('.' + configInstance.virtualTableClass + ' td.' + configInstance.editingCellClass).forEach(function(editingCell) {
+	document.querySelectorAll('.' + configInstance.selectors.virtualTable + ' td.' + configInstance.selectors.editingCell).forEach(function(editingCell) {
 		var input = editingCell.querySelector('input');
 
 		input.removeEventListener('blur', onInputBlurEventHandler);
 		editingCell.innerHTML = input.value;
-		editingCell.classList.remove(configInstance.editingCellClass);
+		editingCell.classList.remove(configInstance.selectors.editingCell);
 	});
 }
 
 function resetEditedCell() {
-	document.querySelectorAll('.' + configInstance.virtualTableClass + ' td.' + configInstance.editingCellClass).forEach(function(editedCell) {
-		editedCell.classList.remove(configInstance.editedCellClass);
+	document.querySelectorAll('.' + configInstance.selectors.virtualTable + ' td.' + configInstance.selectors.editingCell).forEach(function(editedCell) {
+		editedCell.classList.remove(configInstance.selectors.editedCell);
 	});
 
-	configInstance.editedCells = [];
+	configInstance.inner.editedCells = [];
 	updateTable();
 }
 
 function destroyTable() {
-	document.querySelector(configInstance.containerSelector).innerHTML = '';
+	document.querySelector(configInstance.selectors.mainContainer).innerHTML = '';
 }
 
 module.exports = {

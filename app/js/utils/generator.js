@@ -1,16 +1,16 @@
 'use strict';
 
 function initContainers(instance) {
-	var container = document.querySelector(instance.containerSelector),
+	var container = document.querySelector(instance.selectors.mainContainer),
 		virtualContainer = document.createElement('div'),
 		virtualTable = document.createElement('table'),
 		fixedContainer = document.createElement('div'),
 		fixedTable = document.createElement('table');
 
-	virtualContainer.classList.add(instance.virtualContainerClass);
-	virtualTable.classList.add(instance.virtualTableClass);
-	fixedContainer.classList.add(instance.fixedContainerClass);
-	fixedTable.classList.add(instance.fixedTableClass);
+	virtualContainer.classList.add(instance.selectors.virtualContainer);
+	virtualTable.classList.add(instance.selectors.virtualTable);
+	fixedContainer.classList.add(instance.selectors.fixedContainer);
+	fixedTable.classList.add(instance.selectors.fixedTable);
 
 	container.appendChild(fixedContainer);
 	fixedContainer.appendChild(fixedTable);
@@ -18,10 +18,10 @@ function initContainers(instance) {
 	container.appendChild(virtualContainer);
 	virtualContainer.appendChild(virtualTable);
 
-	virtualContainer.style.maxHeight = instance.containerHeight + 'px';
+	virtualContainer.style.maxHeight = instance.dimensions.containerHeight + 'px';
 	virtualContainer.style.overflow = 'scroll';
 
-	fixedContainer.style.padding = instance.minCellHeight + 'px 0';
+	fixedContainer.style.padding = instance.inner.minCellHeight + 'px 0';
 	fixedContainer.style.float = 'left';
 }
 
@@ -31,24 +31,24 @@ function initTable(instance) {
 		virtualTbody = document.createElement('tbody'),
 		trHeadBuffer = document.createElement('tr');
 
-	trHeadBuffer.classList.add(instance.bufferRowTopClass);
+	trHeadBuffer.classList.add(instance.inner.selectors.bufferRowTopClass);
 
 	var i, j, trHead, trBody, bufferColumnLeft, bufferColumnRight, bufferRowBottom, tdElement;
 
 	// Generate virtual header
 	bufferColumnLeft = document.createElement('td');
-	bufferColumnLeft.classList.add(instance.bufferColumnLeftClass);
+	bufferColumnLeft.classList.add(instance.inner.selectors.bufferColumnLeft);
 
 	trHeadBuffer.appendChild(bufferColumnLeft);
 
-	for (i = 0; i < instance.visibleColumnNumber; i++) {
+	for (i = 0; i < instance.inner.visibleColumnNumber; i++) {
 		tdElement = document.createElement('td');
-		tdElement.style.minWidth = instance.cellWidth + 'px';
+		tdElement.style.minWidth = instance.dimensions.cellWidth + 'px';
 		trHeadBuffer.appendChild(tdElement);
 	}
 
 	bufferColumnRight = document.createElement('td');
-	bufferColumnRight.classList.add(instance.bufferColumnRightClass);
+	bufferColumnRight.classList.add(instance.inner.selectors.bufferColumnRight);
 
 	trHeadBuffer.appendChild(bufferColumnRight);
 
@@ -56,25 +56,25 @@ function initTable(instance) {
 
 	instance.headers.forEach(function(headerRow) {
 		trHead = document.createElement('tr');
-		trHead.classList.add(instance.headerRowClass);
-		trHead.style.height = instance.cellHeight + 'px';
+		trHead.classList.add(instance.inner.selectors.headerRow);
+		trHead.style.height = instance.dimensions.cellHeight + 'px';
 
 		tdElement = document.createElement('td');
-		tdElement.classList.add(instance.bufferColumnLeftClass);
+		tdElement.classList.add(instance.inner.selectors.bufferColumnLeft);
 
 		trHead.appendChild(tdElement);
 
-		for (j = 0; j < instance.visibleColumnNumber; j++) {
+		for (j = 0; j < instance.inner.visibleColumnNumber; j++) {
 			tdElement = document.createElement('td');
-			tdElement.classList.add(instance.headerCellClass);
-			tdElement.style.minWidth = instance.cellWidth + 'px';
+			tdElement.classList.add(instance.inner.selectors.headerCell);
+			tdElement.style.minWidth = instance.dimensions.cellWidth + 'px';
 			tdElement.innerHTML = headerRow[j].text || headerRow[j].key || '';
 
 			trHead.appendChild(tdElement);
 		}
 
 		tdElement = document.createElement('td');
-		tdElement.classList.add(instance.bufferColumnRightClass);
+		tdElement.classList.add(instance.inner.selectors.bufferColumnRight);
 
 		trHead.appendChild(tdElement);
 
@@ -82,26 +82,26 @@ function initTable(instance) {
 	});
 
 	// Generate virtual body
-	for (i = 0; i < instance.visibleRowNumber; i++) {
+	for (i = 0; i < instance.inner.visibleRowNumber; i++) {
 		trBody = document.createElement('tr');
-		trBody.classList.add(instance.dataRowClass);
-		trBody.style.height = instance.cellHeight + 'px';
+		trBody.classList.add(instance.inner.selectors.dataRow);
+		trBody.style.height = instance.dimensions.cellHeight + 'px';
 
 		tdElement = document.createElement('td');
-		tdElement.classList.add(instance.bufferColumnLeftClass);
+		tdElement.classList.add(instance.inner.selectors.bufferColumnLeft);
 
 		trBody.appendChild(tdElement);
 
-		for (j = 0; j < instance.visibleColumnNumber; j++) {
+		for (j = 0; j < instance.inner.visibleColumnNumber; j++) {
 			tdElement = document.createElement('td');
-			tdElement.classList.add(instance.dataCellClass);
-			tdElement.style.minWidth = instance.cellWidth + 'px';
+			tdElement.classList.add(instance.inner.selectors.dataCell);
+			tdElement.style.minWidth = instance.dimensions.cellWidth + 'px';
 
 			trBody.appendChild(tdElement);
 		}
 
 		tdElement = document.createElement('td');
-		tdElement.classList.add(instance.bufferColumnRightClass);
+		tdElement.classList.add(instance.inner.selectors.bufferColumnRight);
 
 		trBody.appendChild(tdElement);
 
@@ -109,17 +109,17 @@ function initTable(instance) {
 	}
 
 	bufferRowBottom = document.createElement('tr');
-	bufferRowBottom.classList.add(instance.bufferRowBottomClass);
+	bufferRowBottom.classList.add(instance.inner.selectors.bufferRowBottom);
 
 	virtualTbody.appendChild(bufferRowBottom);
 
-	document.querySelector('.' + instance.virtualTableClass).appendChild(virtualThead);
-	document.querySelector('.' + instance.virtualTableClass).appendChild(virtualTbody);
+	document.querySelector('.' + instance.selectors.virtualTable).appendChild(virtualThead);
+	document.querySelector('.' + instance.selectors.virtualTable).appendChild(virtualTbody);
 
-	instance.bufferLeft = document.querySelectorAll('.' + instance.bufferColumnLeftClass);
-	instance.bufferRight = document.querySelectorAll('.' + instance.bufferColumnRightClass);
-	instance.bufferTop = document.querySelectorAll('.' + instance.bufferRowTopClass);
-	instance.bufferBottom = document.querySelectorAll('.' + instance.bufferRowBottomClass);
+	instance.inner.bufferLeft = document.querySelectorAll('.' + instance.inner.selectors.bufferColumnLeft);
+	instance.inner.bufferRight = document.querySelectorAll('.' + instance.inner.selectors.bufferColumnRight);
+	instance.inner.bufferTop = document.querySelectorAll('.' + instance.inner.selectors.bufferRowTopClass);
+	instance.inner.bufferBottom = document.querySelectorAll('.' + instance.inner.selectors.bufferRowBottom);
 
 	// Generate fixed table
 
@@ -134,13 +134,13 @@ function initTable(instance) {
 
 	for (i = 0; i < instance.fixedHeaders.length; i++) {
 		trHead = document.createElement('tr');
-		trHead.classList.add(instance.headerRowClass);
-		trHead.style.height = instance.cellHeight + 'px';
+		trHead.classList.add(instance.inner.selectors.headerRow);
+		trHead.style.height = instance.dimensions.cellHeight + 'px';
 
 		for (j = 0; j < instance.fixedHeaders[i].length; j++) {
 			tdElement = document.createElement('td');
-			tdElement.classList.add(instance.headerCellClass);
-			tdElement.style.minWidth = instance.cellWidth + 'px';
+			tdElement.classList.add(instance.inner.selectors.headerCell);
+			tdElement.style.minWidth = instance.dimensions.cellWidth + 'px';
 			tdElement.innerHTML = instance.fixedHeaders[i][j].text || instance.fixedHeaders[i][j].key || '';
 
 			trHead.appendChild(tdElement);
@@ -151,15 +151,15 @@ function initTable(instance) {
 
 	// Generate fixed body
 
-	for (i = 0; i < instance.visibleRowNumber; i++) {
+	for (i = 0; i < instance.inner.visibleRowNumber; i++) {
 		trBody = document.createElement('tr');
-		trBody.classList.add(instance.dataRowClass);
-		trBody.style.height = instance.cellHeight + 'px';
+		trBody.classList.add(instance.inner.selectors.dataRow);
+		trBody.style.height = instance.dimensions.cellHeight + 'px';
 
-		for (j = 0; j < instance.fixedHeaders[instance.indexOfCellKeyHeader].length; j++) {
+		for (j = 0; j < instance.fixedHeaders[instance.inner.indexOfCellKeyHeader].length; j++) {
 			tdElement = document.createElement('td');
-			tdElement.classList.add(instance.dataCellClass);
-			tdElement.style.minWidth = instance.cellWidth + 'px';
+			tdElement.classList.add(instance.inner.selectors.dataCell);
+			tdElement.style.minWidth = instance.dimensions.cellWidth + 'px';
 
 			trBody.appendChild(tdElement);
 		}
@@ -167,35 +167,35 @@ function initTable(instance) {
 		fixedTbody.appendChild(trBody);
 	}
 
-	document.querySelector('.' + instance.fixedTableClass).appendChild(fixedThead);
-	document.querySelector('.' + instance.fixedTableClass).appendChild(fixedTbody);
+	document.querySelector('.' + instance.selectors.fixedTable).appendChild(fixedThead);
+	document.querySelector('.' + instance.selectors.fixedTable).appendChild(fixedTbody);
 }
 
 function initBuffers(instance) {
-	var left = document.querySelector('.' + instance.virtualContainerClass).scrollLeft - document.querySelector('.' + instance.virtualContainerClass).scrollLeft % instance.cellWidth - instance.colspanOffset * instance.cellWidth,
+	var left = document.querySelector('.' + instance.selectors.virtualContainer).scrollLeft - document.querySelector('.' + instance.selectors.virtualContainer).scrollLeft % instance.dimensions.cellWidth - instance.inner.colspanOffset * instance.dimensions.cellWidth,
 		right = instance.tableWidth - left,
-		top = document.querySelector('.' + instance.virtualContainerClass).scrollTop,
+		top = document.querySelector('.' + instance.selectors.virtualContainer).scrollTop,
 		bottom = instance.tableHeight - top;
 
 	left = left > instance.tableWidth ? instance.tableWidth : left;
 	left = left < 0 ? 0 : left;
 	right = instance.tableWidth - left;
-	top = top + instance.minCellHeight > instance.tableHeight ? instance.tableHeight + instance.minCellHeight : top + instance.minCellHeight;
+	top = top + instance.inner.minCellHeight > instance.tableHeight ? instance.tableHeight + instance.inner.minCellHeight : top + instance.inner.minCellHeight;
 	bottom = instance.tableHeight - top;
 
-	instance.leftCellOffset = Math.floor(left / instance.cellWidth);
-	instance.topCellOffset = Math.floor((top - top % instance.cellHeight) / instance.cellHeight);
+	instance.inner.leftCellOffset = Math.floor(left / instance.dimensions.cellWidth);
+	instance.inner.topCellOffset = Math.floor((top - top % instance.dimensions.cellHeight) / instance.dimensions.cellHeight);
 
-	instance.bufferLeft.forEach(function(el) {
+	instance.inner.bufferLeft.forEach(function(el) {
 		el.style.minWidth = left + 'px';
 	});
-	instance.bufferRight.forEach(function(el) {
+	instance.inner.bufferRight.forEach(function(el) {
 		el.style.minWidth = right + 'px';
 	});
-	instance.bufferTop.forEach(function(el) {
+	instance.inner.bufferTop.forEach(function(el) {
 		el.style.height = top + 'px';
 	});
-	instance.bufferBottom.forEach(function(el) {
+	instance.inner.bufferBottom.forEach(function(el) {
 		el.style.height = bottom + 'px';
 	});
 }
