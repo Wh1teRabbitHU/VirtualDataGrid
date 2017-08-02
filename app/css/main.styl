@@ -1,0 +1,70 @@
+// TODO: Kiszervezni fájlba
+
+$black = #000000
+$gray = #5e5e5e
+$dirtyWhite = #eaeaea
+$green = #43A047
+$darkGray = #2f2f2f
+$cTableRowBorder = #d3d3d3
+
+.virtual-container,
+.fixed-container
+	overflow-anchor none
+
+	.virtual-table,
+	.fixed-table
+		border-spacing 0
+
+	td
+		border-bottom none
+
+	.data-row
+		padding 2px 4px
+
+	.header-cell
+		background $dirtyWhite
+		color $black
+
+		&[colspan]
+			font-size 15px
+			text-align center
+
+	.header-cell,
+	.data-cell
+		padding 4px 8px
+		border-right 1px solid $cTableRowBorder
+		border-bottom 1px solid $cTableRowBorder
+		font-size 13px
+
+		&.editing-cell
+			padding 0
+			background-color $dirtyWhite
+
+			input
+				color $darkGray
+				padding 4px 8px
+				border none
+				width 100%
+				height 100%
+				box-shadow 0 0 6px 0 $gray
+
+				&:focus
+					outline none
+
+		&.edited-cell
+			background-color lighten($green, 80%)
+
+
+	.data-cell
+		color $darkGray
+		background-color $dirtyWhite
+
+	td:nth-last-child(2)
+		border-right none
+
+	tr:nth-last-child(1) > td
+		border-top none
+
+	.buffer-column-left,
+	.buffer-column-right
+		border none
