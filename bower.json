@@ -1,0 +1,26 @@
+{
+  "name": "virtual-data-grid",
+  "description": "Virtual data grid written in javascript. Can be used to display and manipulate extensive amount of data.",
+  "main": "index.js",
+  "authors": [
+    "Tamas Ruszka <ruszka.tamas@gmail.com> (https://github.com/Wh1teRabbitHU)"
+  ],
+  "license": "GPL-3.0",
+  "keywords": [
+    "virtual",
+    "data",
+    "grid",
+    "javascript",
+    "html5",
+    "css3",
+    "table"
+  ],
+  "homepage": "https://github.com/Wh1teRabbitHU/VirtualDataGrid",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
