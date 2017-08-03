@@ -6,7 +6,7 @@ var generator = require('./modules/generator');
 
 var uniqueIdSequence = 1;
 
-window.VirtualDataGrid = function() {
+function VirtualDataGrid() {
 	var self = this;
 
 	self.uniqueId = uniqueIdSequence++;
@@ -17,4 +17,6 @@ window.VirtualDataGrid = function() {
 	self.getId = function() {
 		return self.uniqueId;
 	};
-};
+}
+
+window.VirtualDataGrid = VirtualDataGrid;

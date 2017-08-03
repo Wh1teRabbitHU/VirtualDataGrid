@@ -32,7 +32,7 @@ function isProduction() {
 
 gulp.task('set-dev-enviroment', (done) => {
 	SRV_ENV = 'development';
-	TARGET_FOLDER = 'example';
+	TARGET_FOLDER = 'example/';
 	CSS_FILENAME = APP_NAME + '.css';
 	JS_FILENAME = APP_NAME + '.js';
 
@@ -41,7 +41,7 @@ gulp.task('set-dev-enviroment', (done) => {
 
 gulp.task('set-prod-enviroment', (done) => {
 	SRV_ENV = 'production';
-	TARGET_FOLDER = 'releases/' + VERSION;
+	TARGET_FOLDER = 'releases/' + VERSION + '/';
 	CSS_FILENAME = APP_NAME + '.min.css';
 	JS_FILENAME = APP_NAME + '.min.js';
 
@@ -49,17 +49,17 @@ gulp.task('set-prod-enviroment', (done) => {
 });
 
 gulp.task('css', () => {
-	return gulp.src('./app/css/main.styl')
+	return gulp.src('./app/style/main.styl')
 		.pipe(gulpif(isDevelopment(), sourcemaps.init()))
 		.pipe(stylus())
 		.pipe(concatCss(CSS_FILENAME))
 		.pipe(gulpif(isProduction(), cleanCss()))
 		.pipe(gulpif(isDevelopment(), sourcemaps.write()))
-		.pipe(gulp.dest('./' + TARGET_FOLDER + '/css'));
+		.pipe(gulp.dest('./' + TARGET_FOLDER ));
 });
 
 gulp.task('js', () => {
-	return browserify('app/js/virtual-data-grid.js')
+	return browserify('app/browser.js')
 		.transform(globify)
 		.bundle()
 		.pipe(source(JS_FILENAME))
@@ -67,7 +67,7 @@ gulp.task('js', () => {
 		.pipe(gulpif(isDevelopment(), sourcemaps.init()))
 		.pipe(gulpif(isProduction(), uglify()))
 		.pipe(gulpif(isDevelopment(), sourcemaps.write()))
-		.pipe(gulp.dest('./' + TARGET_FOLDER + '/js'));
+		.pipe(gulp.dest('./' + TARGET_FOLDER));
 });
 
 gulp.task('start-server', (done) => {
@@ -87,12 +87,12 @@ gulp.task('reload-resources', (done) => {
 });
 
 gulp.task('watch', (done) => {
-	gulp.watch([ './index.js', './app/js/**/*' ], gulp.series('js', 'reload-resources'));
-	gulp.watch('./app/css/**/*', gulp.series('css', 'reload-resources'));
+	gulp.watch([ './index.js', './app/**/*.js' ], gulp.series('js', 'reload-resources'));
+	gulp.watch('./app/style/**/*', gulp.series('css', 'reload-resources'));
 	gulp.watch([
 		'./example/index.html',
-		'./example/js/main.js',
-		'./example/css/main.css' ], gulp.series('reload-resources'));
+		'./example/main.js',
+		'./example/main.css' ], gulp.series('reload-resources'));
 
 	done();
 });
