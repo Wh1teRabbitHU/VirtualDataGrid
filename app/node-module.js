@@ -1,6 +1,7 @@
 'use strict';
 
-var generator = require('./modules/generator');
+var requireDir = require('require-dir'),
+	generator = require('./modules/generator');
 
 var uniqueIdSequence = 1;
 
@@ -15,6 +16,7 @@ function VirtualDataGrid() {
 	self.getId = function() {
 		return self.uniqueId;
 	};
+	self.loadPollyfills = function() { requireDir('./pollyfills'); };
 }
 
 module.exports = VirtualDataGrid;
