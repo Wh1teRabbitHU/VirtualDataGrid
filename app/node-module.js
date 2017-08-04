@@ -1,9 +1,13 @@
 'use strict';
 
-var requireDir = require('require-dir'),
-	generator = require('./modules/generator');
+var generator = require('./modules/generator');
 
 var uniqueIdSequence = 1;
+
+function loadPollyfills() {
+	require('./pollyfills/Array.find'); // eslint-disable-line global-require
+	require('./pollyfills/NodeList.forEach'); // eslint-disable-line global-require
+}
 
 function VirtualDataGrid() {
 	var self = this;
@@ -16,7 +20,7 @@ function VirtualDataGrid() {
 	self.getId = function() {
 		return self.uniqueId;
 	};
-	self.loadPollyfills = function() { requireDir('./pollyfills'); };
+	self.loadPollyfills = loadPollyfills;
 }
 
 module.exports = VirtualDataGrid;

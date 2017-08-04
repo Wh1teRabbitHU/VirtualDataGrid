@@ -21,9 +21,6 @@
   ],
   "author": "Tamas Ruszka <ruszka.tamas@gmail.com> (https://github.com/Wh1teRabbitHU)",
   "license": "GPL-3.0",
-  "dependencies": {
-    "require-dir": "^0.3.2"
-  },
   "devDependencies": {
     "browser-sync": "^2.18.13",
     "browserify": "^14.4.0",
