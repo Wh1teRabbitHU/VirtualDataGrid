@@ -4,27 +4,25 @@ var EventArguments = require('../models/event-arguments'),
 	tableUtil = require('./table'),
 	domUtil   = require('./dom');
 
-var configInstance = require('../instances/configuration');
-
-function saveCells() {
-	if (!configInstance.edit.enabled) {
+function saveCells(config) {
+	if (!config.edit.enabled) {
 		return;
 	}
 
 	var args = new EventArguments({
-		cellObject: configInstance.inner.editedCells,
+		cellObject: config.inner.editedCells,
 		cancelEvent: false
 	});
 
-	configInstance.eventHandlers.onBeforeSave(args);
+	config.eventHandlers.onBeforeSave(args);
 
 	if (!args.cancelEvent) {
-		configInstance.inner.editedCells.forEach(function(cell) {
-			tableUtil.setCellValue(cell.rowNumber, cell.columnNumber, cell.value);
+		config.inner.editedCells.forEach(function(cell) {
+			tableUtil.setCellValue(config, cell.rowNumber, cell.columnNumber, cell.value);
 		});
-		domUtil.resetEditedCell();
+		domUtil.resetEditedCell(config);
 
-		configInstance.eventHandlers.onAfterSave(args);
+		config.eventHandlers.onAfterSave(args);
 	}
 }
 

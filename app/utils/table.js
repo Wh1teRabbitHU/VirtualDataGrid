@@ -2,18 +2,16 @@
 
 var Cell = require('../models/cell');
 
-var configInstance = require('../instances/configuration');
-
-function getCell(rowNumber, columnNumber) {
-	var cellObj = configInstance.inner.editedCells.find(function(el) {
+function getCell(config, rowNumber, columnNumber) {
+	var cellObj = config.inner.editedCells.find(function(el) {
 			return el.rowNumber === rowNumber && el.columnNumber === columnNumber;
 		}),
-		rowObj = configInstance.headers[configInstance.inner.indexOfCellKeyHeader];
+		rowObj = config.headers[config.inner.indexOfCellKeyHeader];
 
 	if (typeof cellObj == 'undefined') {
 		cellObj = new Cell({
 			key: rowObj[columnNumber].key,
-			value: configInstance.dataSource[rowNumber][rowObj[columnNumber].key]
+			value: config.dataSource[rowNumber][rowObj[columnNumber].key]
 		});
 
 		cellObj.updateAttributes({
@@ -25,27 +23,27 @@ function getCell(rowNumber, columnNumber) {
 	return cellObj;
 }
 
-function getFixedCell(rowNumber, columnNumber) {
+function getFixedCell(config, rowNumber, columnNumber) {
 	var cellObj = null,
-		rowObj = configInstance.fixedHeaders[configInstance.inner.indexOfCellKeyHeader];
+		rowObj = config.fixedHeaders[config.inner.indexOfCellKeyHeader];
 
 	cellObj = new Cell({
 		key: rowObj[columnNumber].key,
-		value: configInstance.dataSource[rowNumber][rowObj[columnNumber].key]
+		value: config.dataSource[rowNumber][rowObj[columnNumber].key]
 	});
 
 	return cellObj;
 }
 
-function setCellValue(rowNumber, columnNumber, value) {
-	var rowObj = configInstance.headers[configInstance.inner.indexOfCellKeyHeader];
+function setCellValue(config, rowNumber, columnNumber, value) {
+	var rowObj = config.headers[config.inner.indexOfCellKeyHeader];
 
-	configInstance.dataSource[rowNumber][rowObj[columnNumber].key] = value;
+	config.dataSource[rowNumber][rowObj[columnNumber].key] = value;
 }
 
-function isCellChanged(cellObj) {
-	var originalObj = getCell(cellObj.rowNumber, cellObj.columnNumber),
-		editedObj = configInstance.inner.editedCells.find(function(el) {
+function isCellChanged(config, cellObj) {
+	var originalObj = getCell(config, cellObj.rowNumber, cellObj.columnNumber),
+		editedObj = config.inner.editedCells.find(function(el) {
 			return el.rowNumber === cellObj.rowNumber && el.columnNumber === cellObj.columnNumber;
 		}),
 		originalVal = originalObj.value || '';
@@ -53,13 +51,13 @@ function isCellChanged(cellObj) {
 	return originalVal !== cellObj.value || typeof editedObj != 'undefined';
 }
 
-function setUpdatedCellValue(cellObj) {
-	var prev = configInstance.inner.editedCells.find(function(el) {
+function setUpdatedCellValue(config, cellObj) {
+	var prev = config.inner.editedCells.find(function(el) {
 		return el.rowNumber === cellObj.rowNumber && el.columnNumber === cellObj.columnNumber;
 	});
 
 	if (typeof prev == 'undefined') {
-		configInstance.inner.editedCells.push(cellObj);
+		config.inner.editedCells.push(cellObj);
 	} else {
 		prev.value = cellObj.value;
 	}

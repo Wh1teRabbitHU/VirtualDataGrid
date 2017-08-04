@@ -2,8 +2,6 @@
 
 var tableUtil = require('./table');
 
-var configInstance = require('../instances/configuration');
-
 function indexOfElement(element) {
 	var collection = element.parentNode.childNodes;
 
@@ -16,18 +14,18 @@ function indexOfElement(element) {
 	return -1;
 }
 
-function updateCell(cell, cellObj) {
+function updateCell(config, cell, cellObj) {
 	cell.innerHTML = cellObj.value;
-	cell.className = configInstance.inner.selectors.dataCell + ' ' + (cellObj.class || '');
+	cell.className = config.inner.selectors.dataCell + ' ' + (cellObj.class || '');
 }
 
-function updateTable() {
+function updateTable(config) {
 	var countRow = 0,
 		colspan = 1;
 
-	document.querySelectorAll('.' + configInstance.selectors.virtualTable + ' tr.' + configInstance.inner.selectors.headerRow).forEach(function(row) {
-		row.querySelectorAll('td.' + configInstance.inner.selectors.headerCell).forEach(function(cell, cellNumber) {
-			var cellObj = configInstance.headers[countRow][configInstance.inner.leftCellOffset + cellNumber];
+	document.querySelectorAll('.' + config.selectors.virtualTable + ' tr.' + config.inner.selectors.headerRow).forEach(function(row) {
+		row.querySelectorAll('td.' + config.inner.selectors.headerCell).forEach(function(cell, cellNumber) {
+			var cellObj = config.headers[countRow][config.inner.leftCellOffset + cellNumber];
 
 			if (colspan > 1) {
 				cell.style.display = 'none';
@@ -40,7 +38,7 @@ function updateTable() {
 			if (typeof cellObj.colspan == 'undefined') {
 				cell.removeAttribute('colspan');
 			} else {
-				var calculatedColspan = configInstance.inner.visibleColumnNumber <= cellNumber + cellObj.colspan ? configInstance.inner.visibleColumnNumber - cellNumber : cellObj.colspan;
+				var calculatedColspan = config.inner.visibleColumnNumber <= cellNumber + cellObj.colspan ? config.inner.visibleColumnNumber - cellNumber : cellObj.colspan;
 
 				cell.setAttribute('colspan', calculatedColspan);
 				colspan = calculatedColspan;
@@ -50,40 +48,40 @@ function updateTable() {
 		colspan = 1;
 	});
 
-	document.querySelectorAll('.' + configInstance.selectors.virtualTable + ' tr.' + configInstance.inner.selectors.dataRow).forEach(function(row, rowNumber) {
-		row.querySelectorAll('td.' + configInstance.inner.selectors.dataCell).forEach(function(cell, cellNumber) {
-			updateCell(cell, tableUtil.getCell(configInstance.inner.topCellOffset + rowNumber, configInstance.inner.leftCellOffset + cellNumber));
+	document.querySelectorAll('.' + config.selectors.virtualTable + ' tr.' + config.inner.selectors.dataRow).forEach(function(row, rowNumber) {
+		row.querySelectorAll('td.' + config.inner.selectors.dataCell).forEach(function(cell, cellNumber) {
+			updateCell(config, cell, tableUtil.getCell(config, config.inner.topCellOffset + rowNumber, config.inner.leftCellOffset + cellNumber));
 		});
 	});
 
-	document.querySelectorAll('.' + configInstance.selectors.fixedTable + ' tr.' + configInstance.inner.selectors.dataRow).forEach(function(row, rowNumber) {
-		row.querySelectorAll('td.' + configInstance.inner.selectors.dataCell).forEach(function(cell, cellNumber) {
-			updateCell(cell, tableUtil.getFixedCell(configInstance.inner.topCellOffset + rowNumber, cellNumber));
+	document.querySelectorAll('.' + config.selectors.fixedTable + ' tr.' + config.inner.selectors.dataRow).forEach(function(row, rowNumber) {
+		row.querySelectorAll('td.' + config.inner.selectors.dataCell).forEach(function(cell, cellNumber) {
+			updateCell(config, cell, tableUtil.getFixedCell(config, config.inner.topCellOffset + rowNumber, cellNumber));
 		});
 	});
 }
 
-function resetEditingCell(onInputBlurEventHandler) {
-	document.querySelectorAll('.' + configInstance.selectors.virtualTable + ' td.' + configInstance.selectors.editingCell).forEach(function(editingCell) {
+function resetEditingCell(config, onInputBlurEventHandler) {
+	document.querySelectorAll('.' + config.selectors.virtualTable + ' td.' + config.selectors.editingCell).forEach(function(editingCell) {
 		var input = editingCell.querySelector('input');
 
 		input.removeEventListener('blur', onInputBlurEventHandler);
 		editingCell.innerHTML = input.value;
-		editingCell.classList.remove(configInstance.selectors.editingCell);
+		editingCell.classList.remove(config.selectors.editingCell);
 	});
 }
 
-function resetEditedCell() {
-	document.querySelectorAll('.' + configInstance.selectors.virtualTable + ' td.' + configInstance.selectors.editingCell).forEach(function(editedCell) {
-		editedCell.classList.remove(configInstance.selectors.editedCell);
+function resetEditedCell(config) {
+	document.querySelectorAll('.' + config.selectors.virtualTable + ' td.' + config.selectors.editingCell).forEach(function(editedCell) {
+		editedCell.classList.remove(config.selectors.editedCell);
 	});
 
-	configInstance.inner.editedCells = [];
-	updateTable();
+	config.inner.editedCells = [];
+	updateTable(config);
 }
 
-function destroyTable() {
-	document.querySelector(configInstance.selectors.mainContainer).innerHTML = '';
+function destroyTable(config) {
+	document.querySelector(config.selectors.mainContainer).innerHTML = '';
 }
 
 module.exports = {

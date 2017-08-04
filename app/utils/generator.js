@@ -1,16 +1,16 @@
 'use strict';
 
-function initContainers(instance) {
-	var container = document.querySelector(instance.selectors.mainContainer),
+function initContainers(config) {
+	var container = document.querySelector(config.selectors.mainContainer),
 		virtualContainer = document.createElement('div'),
 		virtualTable = document.createElement('table'),
 		fixedContainer = document.createElement('div'),
 		fixedTable = document.createElement('table');
 
-	virtualContainer.classList.add(instance.selectors.virtualContainer);
-	virtualTable.classList.add(instance.selectors.virtualTable);
-	fixedContainer.classList.add(instance.selectors.fixedContainer);
-	fixedTable.classList.add(instance.selectors.fixedTable);
+	virtualContainer.classList.add(config.selectors.virtualContainer);
+	virtualTable.classList.add(config.selectors.virtualTable);
+	fixedContainer.classList.add(config.selectors.fixedContainer);
+	fixedTable.classList.add(config.selectors.fixedTable);
 
 	container.appendChild(fixedContainer);
 	fixedContainer.appendChild(fixedTable);
@@ -18,63 +18,63 @@ function initContainers(instance) {
 	container.appendChild(virtualContainer);
 	virtualContainer.appendChild(virtualTable);
 
-	virtualContainer.style.maxHeight = instance.dimensions.containerHeight + 'px';
+	virtualContainer.style.maxHeight = config.dimensions.containerHeight + 'px';
 	virtualContainer.style.overflow = 'scroll';
 
-	fixedContainer.style.padding = instance.inner.minCellHeight + 'px 0';
+	fixedContainer.style.padding = config.inner.minCellHeight + 'px 0';
 	fixedContainer.style.float = 'left';
 }
 
-function initTable(instance) {
+function initTable(config) {
 	// Generate virtual table
 	var virtualThead = document.createElement('thead'),
 		virtualTbody = document.createElement('tbody'),
 		trHeadBuffer = document.createElement('tr');
 
-	trHeadBuffer.classList.add(instance.inner.selectors.bufferRowTopClass);
+	trHeadBuffer.classList.add(config.inner.selectors.bufferRowTopClass);
 
 	var i, j, trHead, trBody, bufferColumnLeft, bufferColumnRight, bufferRowBottom, tdElement;
 
 	// Generate virtual header
 	bufferColumnLeft = document.createElement('td');
-	bufferColumnLeft.classList.add(instance.inner.selectors.bufferColumnLeft);
+	bufferColumnLeft.classList.add(config.inner.selectors.bufferColumnLeft);
 
 	trHeadBuffer.appendChild(bufferColumnLeft);
 
-	for (i = 0; i < instance.inner.visibleColumnNumber; i++) {
+	for (i = 0; i < config.inner.visibleColumnNumber; i++) {
 		tdElement = document.createElement('td');
-		tdElement.style.minWidth = instance.dimensions.cellWidth + 'px';
+		tdElement.style.minWidth = config.dimensions.cellWidth + 'px';
 		trHeadBuffer.appendChild(tdElement);
 	}
 
 	bufferColumnRight = document.createElement('td');
-	bufferColumnRight.classList.add(instance.inner.selectors.bufferColumnRight);
+	bufferColumnRight.classList.add(config.inner.selectors.bufferColumnRight);
 
 	trHeadBuffer.appendChild(bufferColumnRight);
 
 	virtualThead.appendChild(trHeadBuffer);
 
-	instance.headers.forEach(function(headerRow) {
+	config.headers.forEach(function(headerRow) {
 		trHead = document.createElement('tr');
-		trHead.classList.add(instance.inner.selectors.headerRow);
-		trHead.style.height = instance.dimensions.cellHeight + 'px';
+		trHead.classList.add(config.inner.selectors.headerRow);
+		trHead.style.height = config.dimensions.cellHeight + 'px';
 
 		tdElement = document.createElement('td');
-		tdElement.classList.add(instance.inner.selectors.bufferColumnLeft);
+		tdElement.classList.add(config.inner.selectors.bufferColumnLeft);
 
 		trHead.appendChild(tdElement);
 
-		for (j = 0; j < instance.inner.visibleColumnNumber; j++) {
+		for (j = 0; j < config.inner.visibleColumnNumber; j++) {
 			tdElement = document.createElement('td');
-			tdElement.classList.add(instance.inner.selectors.headerCell);
-			tdElement.style.minWidth = instance.dimensions.cellWidth + 'px';
+			tdElement.classList.add(config.inner.selectors.headerCell);
+			tdElement.style.minWidth = config.dimensions.cellWidth + 'px';
 			tdElement.innerHTML = headerRow[j].text || headerRow[j].key || '';
 
 			trHead.appendChild(tdElement);
 		}
 
 		tdElement = document.createElement('td');
-		tdElement.classList.add(instance.inner.selectors.bufferColumnRight);
+		tdElement.classList.add(config.inner.selectors.bufferColumnRight);
 
 		trHead.appendChild(tdElement);
 
@@ -82,26 +82,26 @@ function initTable(instance) {
 	});
 
 	// Generate virtual body
-	for (i = 0; i < instance.inner.visibleRowNumber; i++) {
+	for (i = 0; i < config.inner.visibleRowNumber; i++) {
 		trBody = document.createElement('tr');
-		trBody.classList.add(instance.inner.selectors.dataRow);
-		trBody.style.height = instance.dimensions.cellHeight + 'px';
+		trBody.classList.add(config.inner.selectors.dataRow);
+		trBody.style.height = config.dimensions.cellHeight + 'px';
 
 		tdElement = document.createElement('td');
-		tdElement.classList.add(instance.inner.selectors.bufferColumnLeft);
+		tdElement.classList.add(config.inner.selectors.bufferColumnLeft);
 
 		trBody.appendChild(tdElement);
 
-		for (j = 0; j < instance.inner.visibleColumnNumber; j++) {
+		for (j = 0; j < config.inner.visibleColumnNumber; j++) {
 			tdElement = document.createElement('td');
-			tdElement.classList.add(instance.inner.selectors.dataCell);
-			tdElement.style.minWidth = instance.dimensions.cellWidth + 'px';
+			tdElement.classList.add(config.inner.selectors.dataCell);
+			tdElement.style.minWidth = config.dimensions.cellWidth + 'px';
 
 			trBody.appendChild(tdElement);
 		}
 
 		tdElement = document.createElement('td');
-		tdElement.classList.add(instance.inner.selectors.bufferColumnRight);
+		tdElement.classList.add(config.inner.selectors.bufferColumnRight);
 
 		trBody.appendChild(tdElement);
 
@@ -109,21 +109,21 @@ function initTable(instance) {
 	}
 
 	bufferRowBottom = document.createElement('tr');
-	bufferRowBottom.classList.add(instance.inner.selectors.bufferRowBottom);
+	bufferRowBottom.classList.add(config.inner.selectors.bufferRowBottom);
 
 	virtualTbody.appendChild(bufferRowBottom);
 
-	document.querySelector('.' + instance.selectors.virtualTable).appendChild(virtualThead);
-	document.querySelector('.' + instance.selectors.virtualTable).appendChild(virtualTbody);
+	document.querySelector('.' + config.selectors.virtualTable).appendChild(virtualThead);
+	document.querySelector('.' + config.selectors.virtualTable).appendChild(virtualTbody);
 
-	instance.inner.bufferLeft = document.querySelectorAll('.' + instance.inner.selectors.bufferColumnLeft);
-	instance.inner.bufferRight = document.querySelectorAll('.' + instance.inner.selectors.bufferColumnRight);
-	instance.inner.bufferTop = document.querySelectorAll('.' + instance.inner.selectors.bufferRowTopClass);
-	instance.inner.bufferBottom = document.querySelectorAll('.' + instance.inner.selectors.bufferRowBottom);
+	config.inner.bufferLeft = document.querySelectorAll('.' + config.inner.selectors.bufferColumnLeft);
+	config.inner.bufferRight = document.querySelectorAll('.' + config.inner.selectors.bufferColumnRight);
+	config.inner.bufferTop = document.querySelectorAll('.' + config.inner.selectors.bufferRowTopClass);
+	config.inner.bufferBottom = document.querySelectorAll('.' + config.inner.selectors.bufferRowBottom);
 
 	// Generate fixed table
 
-	if (instance.fixedHeaders.length === 0) {
+	if (config.fixedHeaders.length === 0) {
 		return;
 	}
 
@@ -132,16 +132,16 @@ function initTable(instance) {
 
 	// Generate fixed header
 
-	for (i = 0; i < instance.fixedHeaders.length; i++) {
+	for (i = 0; i < config.fixedHeaders.length; i++) {
 		trHead = document.createElement('tr');
-		trHead.classList.add(instance.inner.selectors.headerRow);
-		trHead.style.height = instance.dimensions.cellHeight + 'px';
+		trHead.classList.add(config.inner.selectors.headerRow);
+		trHead.style.height = config.dimensions.cellHeight + 'px';
 
-		for (j = 0; j < instance.fixedHeaders[i].length; j++) {
+		for (j = 0; j < config.fixedHeaders[i].length; j++) {
 			tdElement = document.createElement('td');
-			tdElement.classList.add(instance.inner.selectors.headerCell);
-			tdElement.style.minWidth = instance.dimensions.cellWidth + 'px';
-			tdElement.innerHTML = instance.fixedHeaders[i][j].text || instance.fixedHeaders[i][j].key || '';
+			tdElement.classList.add(config.inner.selectors.headerCell);
+			tdElement.style.minWidth = config.dimensions.cellWidth + 'px';
+			tdElement.innerHTML = config.fixedHeaders[i][j].text || config.fixedHeaders[i][j].key || '';
 
 			trHead.appendChild(tdElement);
 		}
@@ -151,15 +151,15 @@ function initTable(instance) {
 
 	// Generate fixed body
 
-	for (i = 0; i < instance.inner.visibleRowNumber; i++) {
+	for (i = 0; i < config.inner.visibleRowNumber; i++) {
 		trBody = document.createElement('tr');
-		trBody.classList.add(instance.inner.selectors.dataRow);
-		trBody.style.height = instance.dimensions.cellHeight + 'px';
+		trBody.classList.add(config.inner.selectors.dataRow);
+		trBody.style.height = config.dimensions.cellHeight + 'px';
 
-		for (j = 0; j < instance.fixedHeaders[instance.inner.indexOfCellKeyHeader].length; j++) {
+		for (j = 0; j < config.fixedHeaders[config.inner.indexOfCellKeyHeader].length; j++) {
 			tdElement = document.createElement('td');
-			tdElement.classList.add(instance.inner.selectors.dataCell);
-			tdElement.style.minWidth = instance.dimensions.cellWidth + 'px';
+			tdElement.classList.add(config.inner.selectors.dataCell);
+			tdElement.style.minWidth = config.dimensions.cellWidth + 'px';
 
 			trBody.appendChild(tdElement);
 		}
@@ -167,35 +167,35 @@ function initTable(instance) {
 		fixedTbody.appendChild(trBody);
 	}
 
-	document.querySelector('.' + instance.selectors.fixedTable).appendChild(fixedThead);
-	document.querySelector('.' + instance.selectors.fixedTable).appendChild(fixedTbody);
+	document.querySelector('.' + config.selectors.fixedTable).appendChild(fixedThead);
+	document.querySelector('.' + config.selectors.fixedTable).appendChild(fixedTbody);
 }
 
-function initBuffers(instance) {
-	var left = document.querySelector('.' + instance.selectors.virtualContainer).scrollLeft - document.querySelector('.' + instance.selectors.virtualContainer).scrollLeft % instance.dimensions.cellWidth - instance.inner.colspanOffset * instance.dimensions.cellWidth,
-		right = instance.tableWidth - left,
-		top = document.querySelector('.' + instance.selectors.virtualContainer).scrollTop,
-		bottom = instance.tableHeight - top;
+function initBuffers(config) {
+	var left = document.querySelector('.' + config.selectors.virtualContainer).scrollLeft - document.querySelector('.' + config.selectors.virtualContainer).scrollLeft % config.dimensions.cellWidth - config.inner.colspanOffset * config.dimensions.cellWidth,
+		right = config.tableWidth - left,
+		top = document.querySelector('.' + config.selectors.virtualContainer).scrollTop,
+		bottom = config.tableHeight - top;
 
-	left = left > instance.tableWidth ? instance.tableWidth : left;
+	left = left > config.tableWidth ? config.tableWidth : left;
 	left = left < 0 ? 0 : left;
-	right = instance.tableWidth - left;
-	top = top + instance.inner.minCellHeight > instance.tableHeight ? instance.tableHeight + instance.inner.minCellHeight : top + instance.inner.minCellHeight;
-	bottom = instance.tableHeight - top;
+	right = config.tableWidth - left;
+	top = top + config.inner.minCellHeight > config.tableHeight ? config.tableHeight + config.inner.minCellHeight : top + config.inner.minCellHeight;
+	bottom = config.tableHeight - top;
 
-	instance.inner.leftCellOffset = Math.floor(left / instance.dimensions.cellWidth);
-	instance.inner.topCellOffset = Math.floor((top - top % instance.dimensions.cellHeight) / instance.dimensions.cellHeight);
+	config.inner.leftCellOffset = Math.floor(left / config.dimensions.cellWidth);
+	config.inner.topCellOffset = Math.floor((top - top % config.dimensions.cellHeight) / config.dimensions.cellHeight);
 
-	instance.inner.bufferLeft.forEach(function(el) {
+	config.inner.bufferLeft.forEach(function(el) {
 		el.style.minWidth = left + 'px';
 	});
-	instance.inner.bufferRight.forEach(function(el) {
+	config.inner.bufferRight.forEach(function(el) {
 		el.style.minWidth = right + 'px';
 	});
-	instance.inner.bufferTop.forEach(function(el) {
+	config.inner.bufferTop.forEach(function(el) {
 		el.style.height = top + 'px';
 	});
-	instance.inner.bufferBottom.forEach(function(el) {
+	config.inner.bufferBottom.forEach(function(el) {
 		el.style.height = bottom + 'px';
 	});
 }

@@ -7,9 +7,14 @@ var domUtil = require('../utils/dom'),
 	editUtil = require('../utils/edit'),
 	generatorUtil = require('../utils/generator');
 
-var configInstance = require('../instances/configuration');
-
 var container;
+
+var instances = {
+	onScrollEventHandler: function() {},
+	onInputBlurEventHandler: function() {},
+	onClickCellEventHandler: function() {},
+	onClickSaveButtonEventHandler: function() {}
+};
 
 function onWheelEventHandler(event) {
 	event.preventDefault();
@@ -18,25 +23,25 @@ function onWheelEventHandler(event) {
 	container.scrollLeft += event.deltaX;
 }
 
-function onScrollEventHandler() {
-	domUtil.resetEditingCell(onInputBlurEventHandler);
-	generatorUtil.initBuffers(configInstance);
-	domUtil.updateTable();
+function onScrollEventHandler(event, config) {
+	domUtil.resetEditingCell(config, instances.onInputBlurEventHandler);
+	generatorUtil.initBuffers(config);
+	domUtil.updateTable(config);
 }
 
-function onInputBlurEventHandler() {
-	var cell = this.parentNode,
-		rowNumber = domUtil.indexOfElement(cell.parentNode) + configInstance.inner.topCellOffset,
-		columnNumber = domUtil.indexOfElement(cell) - 1 + configInstance.inner.leftCellOffset,
-		editedObj = tableUtil.getCell(rowNumber, columnNumber);
+function onInputBlurEventHandler(event, config) {
+	var cell = event.target.parentNode,
+		rowNumber = domUtil.indexOfElement(cell.parentNode) + config.inner.topCellOffset,
+		columnNumber = domUtil.indexOfElement(cell) - 1 + config.inner.leftCellOffset,
+		editedObj = tableUtil.getCell(config, rowNumber, columnNumber);
 
 	editedObj.updateAttributes({
-		value: this.value,
-		class: configInstance.selectors.editedCell
+		value: event.target.value,
+		class: config.selectors.editedCell
 	});
 
-	if (!tableUtil.isCellChanged(editedObj)) {
-		domUtil.resetEditingCell(onInputBlurEventHandler);
+	if (!tableUtil.isCellChanged(config, editedObj)) {
+		domUtil.resetEditingCell(config, instances.onInputBlurEventHandler);
 
 		return;
 	}
@@ -47,73 +52,97 @@ function onInputBlurEventHandler() {
 		cancelEvent: false
 	});
 
-	configInstance.eventHandlers.onValidation(args);
+	config.eventHandlers.onValidation(args);
 
 	if (args.cancelEdit !== true) {
-		tableUtil.setUpdatedCellValue(args.cellObject);
-		domUtil.updateCell(args.cell, args.cellObject);
+		tableUtil.setUpdatedCellValue(config, args.cellObject);
+		domUtil.updateCell(config, args.cell, args.cellObject);
 
-		configInstance.eventHandlers.onAfterEdit(args);
+		config.eventHandlers.onAfterEdit(args);
 	}
 }
 
-function onClickCellEventHandler() {
-	if (!configInstance.edit.enabled) {
+function onClickCellEventHandler(event, config) {
+	if (!config.edit.enabled) {
 		return;
 	}
 
-	var rowNumber = domUtil.indexOfElement(this.parentNode) + configInstance.inner.topCellOffset,
-		columnNumber = domUtil.indexOfElement(this) - 1 + configInstance.inner.leftCellOffset,
-		editedObj = tableUtil.getCell(rowNumber, columnNumber),
+	var rowNumber = domUtil.indexOfElement(event.target.parentNode) + config.inner.topCellOffset,
+		columnNumber = domUtil.indexOfElement(event.target) - 1 + config.inner.leftCellOffset,
+		editedObj = tableUtil.getCell(config, rowNumber, columnNumber),
 		input = document.createElement('input');
 
 	input.setAttribute('type', 'text');
 
 	var args = new EventArguments({
-		cell: this,
+		cell: event.target,
 		cellObject: editedObj,
 		cancelEvent: false
 	});
 
-	configInstance.eventHandlers.onBeforeEdit(args);
+	config.eventHandlers.onBeforeEdit(args);
 
 	if (!args.cancelEvent) {
-		this.classList.add(configInstance.selectors.editingCell);
-		this.classList.remove(configInstance.selectors.editedCell);
-		this.innerHTML = '';
-		this.appendChild(input);
+		event.target.classList.add(config.selectors.editingCell);
+		event.target.classList.remove(config.selectors.editedCell);
+		event.target.innerHTML = '';
+		event.target.appendChild(input);
+
+		instances.onInputBlurEventHandler = function(ev) { onInputBlurEventHandler(ev, config); };
 
 		input.focus();
 		input.value = editedObj.value;
-		input.addEventListener('blur', onInputBlurEventHandler);
+		input.addEventListener('blur', instances.onInputBlurEventHandler);
 	}
 }
 
-function addEvents() {
-	container = document.querySelector('.' + configInstance.selectors.virtualContainer);
+function onClickSaveButtonEventHandler(event, config) {
+	editUtil.saveCells(config);
+}
+
+function addEvents(config) {
+	container = document.querySelector('.' + config.selectors.virtualContainer);
+
+	instances.onScrollEventHandler = function(event) { onScrollEventHandler(event, config); };
+	instances.onClickCellEventHandler = function(event) { onClickCellEventHandler(event, config); };
+	instances.onClickSaveButtonEventHandler = function(event) { onClickSaveButtonEventHandler(event, config); };
 
 	if (container !== null) {
 		container.addEventListener('wheel', onWheelEventHandler, { passive: false, capture: true });
-		container.addEventListener('scroll', onScrollEventHandler);
+		container.addEventListener('scroll', instances.onScrollEventHandler);
 	}
 
-	if (configInstance.edit.enabled && configInstance.selectors.saveButton !== null) {
-		document.querySelector(configInstance.selectors.saveButton).addEventListener('click', editUtil.saveCells);
+	if (config.edit.enabled && config.selectors.saveButton !== null) {
+		document.querySelector(config.selectors.saveButton).addEventListener('click', instances.onClickSaveButtonEventHandler);
 	}
 
-	if (configInstance.edit.enabled) {
-		document.querySelectorAll('.' + configInstance.selectors.virtualTable + ' td.' + configInstance.inner.selectors.dataCell).forEach(function(el) {
-			el.addEventListener('click', onClickCellEventHandler);
+	if (config.edit.enabled) {
+		document.querySelectorAll('.' + config.selectors.virtualTable + ' td.' + config.inner.selectors.dataCell).forEach(function(el) {
+			el.addEventListener('click', instances.onClickCellEventHandler);
 		});
 	}
 }
 
-function removeEvents() {
-	document.querySelector('.' + configInstance.selectors.virtualContainer).removeEventListener('scroll', onScrollEventHandler);
+function removeEvents(config) {
+	container = document.querySelector('.' + config.selectors.virtualContainer);
+
+	if (container !== null) {
+		container.removeEventListener('wheel', onWheelEventHandler);
+		container.removeEventListener('scroll', instances.onScrollEventHandler);
+	}
+
+	if (config.edit.enabled && config.selectors.saveButton !== null) {
+		document.querySelector(config.selectors.saveButton).removeEventListener('click', instances.onClickSaveButtonEventHandler);
+	}
+
+	if (config.edit.enabled) {
+		document.querySelectorAll('.' + config.selectors.virtualTable + ' td.' + config.inner.selectors.dataCell).forEach(function(el) {
+			el.removeEventListener('click', instances.onClickCellEventHandler);
+		});
+	}
 }
 
 module.exports = {
-	onClickCellEventHandler: onClickCellEventHandler,
 	addEvents: addEvents,
 	removeEvents: removeEvents
 };

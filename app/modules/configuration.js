@@ -1,7 +1,5 @@
 'use strict';
 
-var configInstance = require('../instances/configuration');
-
 var configUtil = require('../utils/configuration'),
 	generatorUtil = require('../utils/generator');
 
@@ -14,7 +12,7 @@ var DEFAULTS = {
 		virtualTable: 'virtual-table',
 		editingCell: 'editing-cell',
 		editedCell: 'edited-cell',
-		saveButton: 'btn-save'
+		saveButton: null
 	},
 	dimensions: {
 		cellWidth: 150,
@@ -37,88 +35,92 @@ var DEFAULTS = {
 	inner: {}
 };
 
-function init(options) {
-	initInnerStaticValues();
+function init(config, options) {
+	initConfigObject(config);
+	initInnerStaticValues(config);
 
-	updateValue('selectors.mainContainer', options);
-	updateValue('selectors.fixedContainer', options);
-	updateValue('selectors.fixedTable', options);
-	updateValue('selectors.virtualContainer', options);
-	updateValue('selectors.virtualTable', options);
-	updateValue('selectors.editingCell', options);
-	updateValue('selectors.editedCell', options);
-	updateValue('dimensions.cellWidth', options);
-	updateValue('dimensions.cellHeight', options);
+	updateValue(config, options, 'selectors.mainContainer');
+	updateValue(config, options, 'selectors.fixedContainer');
+	updateValue(config, options, 'selectors.fixedTable');
+	updateValue(config, options, 'selectors.virtualContainer');
+	updateValue(config, options, 'selectors.virtualTable');
+	updateValue(config, options, 'selectors.editingCell');
+	updateValue(config, options, 'selectors.editedCell');
+	updateValue(config, options, 'selectors.saveButton');
+	updateValue(config, options, 'dimensions.cellWidth');
+	updateValue(config, options, 'dimensions.cellHeight');
 
-	calculateVirtualContainerHeight(options);
+	calculateVirtualContainerHeight(config, options);
 
-	generatorUtil.initContainers(configInstance);
+	generatorUtil.initContainers(config);
 
-	updateValue('dataSource', options);
-	updateValue('headers', options);
-	updateValue('fixedHeaders', options);
-	updateValue('edit.enabled', options);
-	updateValue('selectors.saveButton', options);
-	updateValue('visibleColumnNumber', options);
-	updateValue('onBeforeEdit', options);
-	updateValue('onValidation', options);
-	updateValue('onAfterEdit', options);
-	updateValue('onBeforeSave', options);
-	updateValue('onAfterSave', options);
+	updateValue(config, options, 'dataSource');
+	updateValue(config, options, 'headers');
+	updateValue(config, options, 'fixedHeaders');
+	updateValue(config, options, 'edit.enabled');
+	updateValue(config, options, 'eventHandlers.onBeforeEdit');
+	updateValue(config, options, 'eventHandlers.onValidation');
+	updateValue(config, options, 'eventHandlers.onAfterEdit');
+	updateValue(config, options, 'eventHandlers.onBeforeSave');
+	updateValue(config, options, 'eventHandlers.onAfterSave');
 
-	initInnerCalculatedValues();
+	initInnerCalculatedValues(config);
 }
 
-function initInnerStaticValues() {
-	configInstance.inner = {};
-	configInstance.inner.selectors = {};
+function initConfigObject(config) {
+	config.selectors = {};
+	config.eventHandlers = {};
+	config.inner = {};
+	config.inner.selectors = {};
+}
 
-	configInstance.inner.selectors.bufferRowTop = 'buffer-row-top';
-	configInstance.inner.selectors.bufferRowBottom = 'buffer-row-bottom';
-	configInstance.inner.selectors.bufferColumnLeft = 'buffer-column-left';
-	configInstance.inner.selectors.bufferColumnRight = 'buffer-column-right';
-	configInstance.inner.selectors.headerRow = 'header-row';
-	configInstance.inner.selectors.headerCell = 'header-cell';
-	configInstance.inner.selectors.dataRow = 'data-row';
-	configInstance.inner.selectors.dataCell = 'data-cell';
+function initInnerStaticValues(config) {
+	config.inner.selectors.bufferRowTop = 'buffer-row-top';
+	config.inner.selectors.bufferRowBottom = 'buffer-row-bottom';
+	config.inner.selectors.bufferColumnLeft = 'buffer-column-left';
+	config.inner.selectors.bufferColumnRight = 'buffer-column-right';
+	config.inner.selectors.headerRow = 'header-row';
+	config.inner.selectors.headerCell = 'header-cell';
+	config.inner.selectors.dataRow = 'data-row';
+	config.inner.selectors.dataCell = 'data-cell';
 
 	// Minimum buffer cell height. Azért van rá szükség, mert ha nincs megadva, akkor ugrik egyett a scroll ha a végére vagy az elejére értünk a táblázatban
-	configInstance.inner.minCellHeight = 2;
+	config.inner.minCellHeight = 2;
 
 	// Az offset miatt kell a számoláshoz
-	configInstance.inner.tableHeightOffset = configInstance.inner.minCellHeight * 2;
-	configInstance.inner.editedCells = [];
-	configInstance.inner.leftCellOffset = 0;
-	configInstance.inner.topCellOffset = 0;
+	config.inner.tableHeightOffset = config.inner.minCellHeight * 2;
+	config.inner.editedCells = [];
+	config.inner.leftCellOffset = 0;
+	config.inner.topCellOffset = 0;
 }
 
-function calculateVirtualContainerHeight(options) {
+function calculateVirtualContainerHeight(config, options) {
 	var containerHeight = getInnerValue(options, 'dimensions.containerHeight');
 
 	if (typeof containerHeight == 'undefined') {
-		containerHeight = configUtil.getDefaultContainerHeight(configInstance);
+		containerHeight = configUtil.getDefaultContainerHeight(config);
 	}
 
-	updateValue('dimensions.containerHeight', configUtil.calculateVirtualContainerHeight(configInstance, containerHeight));
+	config.dimensions.containerHeight = configUtil.calculateVirtualContainerHeight(config, containerHeight);
 }
 
-function initInnerCalculatedValues() {
-	configInstance.inner.indexOfCellKeyHeader = configUtil.getIndexOfCellKeyHeader(configInstance);
-	configInstance.inner.colspanOffset = configUtil.getMaxColspan(configInstance);
-	configInstance.inner.visibleRowNumber = configUtil.getVisibleRowNumber(configInstance);
-	configInstance.inner.visibleColumnNumber = configUtil.getVisibleColumnNumber(configInstance);
-	configInstance.tableWidth = configUtil.getTableWidth(configInstance);
-	configInstance.tableHeight = configUtil.getTableHeight(configInstance);
+function initInnerCalculatedValues(config) {
+	config.inner.indexOfCellKeyHeader = configUtil.getIndexOfCellKeyHeader(config);
+	config.inner.colspanOffset = configUtil.getMaxColspan(config);
+	config.inner.visibleRowNumber = configUtil.getVisibleRowNumber(config);
+	config.inner.visibleColumnNumber = configUtil.getVisibleColumnNumber(config);
+	config.tableWidth = configUtil.getTableWidth(config);
+	config.tableHeight = configUtil.getTableHeight(config);
 }
 
-function updateValue(key, options) {
-	var target = getInnerObject(configInstance, key), // eslint-disable-line no-unused-vars
+function updateValue(config, options, key) {
+	var target = getInnerObject(config, key), // eslint-disable-line no-unused-vars
 		value = getInnerValue(options, key),
 		keys = key.split('.'),
 		lastKey = keys[keys.length - 1];
 
 	if (typeof value == 'undefined') {
-		target[lastKey] = typeof getInnerValue(DEFAULTS, key) == 'function' ? getInnerValue(DEFAULTS, key)(configInstance) : getInnerValue(DEFAULTS, key);
+		target[lastKey] = typeof getInnerValue(DEFAULTS, key) == 'function' ? getInnerValue(DEFAULTS, key)(config) : getInnerValue(DEFAULTS, key);
 	} else {
 		target[lastKey] = value;
 	}
