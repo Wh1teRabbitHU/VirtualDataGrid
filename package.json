@@ -1,10 +1,14 @@
 {
   "name": "virtual-data-grid",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Virtual data grid written in javascript. Can be used to display and manipulate extensive amount of data.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Wh1teRabbitHU/VirtualDataGrid.git"
   },
   "keywords": [
     "virtual",
@@ -25,9 +29,11 @@
     "gulp-clean-css": "^3.7.0",
     "gulp-concat-css": "^2.3.0",
     "gulp-if": "^2.0.2",
+    "gulp-rename": "^1.2.2",
     "gulp-sourcemaps": "^2.6.0",
     "gulp-stylus": "^2.6.0",
     "gulp-uglify": "^3.0.0",
+    "require-dir": "^0.3.2",
     "require-globify": "^1.4.1",
     "stylint": "^1.5.9",
     "vinyl-buffer": "^1.0.0",

@@ -1,12 +1,11 @@
 'use strict';
 
-require('./pollyfills/**/*.js', { mode: 'expand' });
-
-var generator = require('./modules/generator');
+var requireDir = require('require-dir'),
+	generator = require('./modules/generator');
 
 var uniqueIdSequence = 1;
 
-window.VirtualDataGrid = function() {
+function VirtualDataGrid() {
 	var self = this;
 
 	self.uniqueId = uniqueIdSequence++;
@@ -17,4 +16,7 @@ window.VirtualDataGrid = function() {
 	self.getId = function() {
 		return self.uniqueId;
 	};
-};
+	self.loadPollyfills = function() { requireDir('./pollyfills'); };
+}
+
+module.exports = VirtualDataGrid;

@@ -26,13 +26,13 @@ function onScrollEventHandler() {
 
 function onInputBlurEventHandler() {
 	var cell = this.parentNode,
-		rowNumber = domUtil.indexOfElement(cell.parentNode) + configInstance.topCellOffset,
-		columnNumber = domUtil.indexOfElement(cell) - 1 + configInstance.leftCellOffset,
+		rowNumber = domUtil.indexOfElement(cell.parentNode) + configInstance.inner.topCellOffset,
+		columnNumber = domUtil.indexOfElement(cell) - 1 + configInstance.inner.leftCellOffset,
 		editedObj = tableUtil.getCell(rowNumber, columnNumber);
 
 	editedObj.updateAttributes({
 		value: this.value,
-		class: configInstance.editedCellClass
+		class: configInstance.selectors.editedCell
 	});
 
 	if (!tableUtil.isCellChanged(editedObj)) {
@@ -47,23 +47,23 @@ function onInputBlurEventHandler() {
 		cancelEvent: false
 	});
 
-	configInstance.onValidation(args);
+	configInstance.eventHandlers.onValidation(args);
 
 	if (args.cancelEdit !== true) {
 		tableUtil.setUpdatedCellValue(args.cellObject);
 		domUtil.updateCell(args.cell, args.cellObject);
 
-		configInstance.onAfterEdit(args);
+		configInstance.eventHandlers.onAfterEdit(args);
 	}
 }
 
 function onClickCellEventHandler() {
-	if (!configInstance.editable) {
+	if (!configInstance.edit.enabled) {
 		return;
 	}
 
-	var rowNumber = domUtil.indexOfElement(this.parentNode) + configInstance.topCellOffset,
-		columnNumber = domUtil.indexOfElement(this) - 1 + configInstance.leftCellOffset,
+	var rowNumber = domUtil.indexOfElement(this.parentNode) + configInstance.inner.topCellOffset,
+		columnNumber = domUtil.indexOfElement(this) - 1 + configInstance.inner.leftCellOffset,
 		editedObj = tableUtil.getCell(rowNumber, columnNumber),
 		input = document.createElement('input');
 
@@ -75,11 +75,11 @@ function onClickCellEventHandler() {
 		cancelEvent: false
 	});
 
-	configInstance.onBeforeEdit(args);
+	configInstance.eventHandlers.onBeforeEdit(args);
 
 	if (!args.cancelEvent) {
-		this.classList.add(configInstance.editingCellClass);
-		this.classList.remove(configInstance.editedCellClass);
+		this.classList.add(configInstance.selectors.editingCell);
+		this.classList.remove(configInstance.selectors.editedCell);
 		this.innerHTML = '';
 		this.appendChild(input);
 
@@ -90,26 +90,26 @@ function onClickCellEventHandler() {
 }
 
 function addEvents() {
-	container = document.querySelector('.' + configInstance.virtualContainerClass);
+	container = document.querySelector('.' + configInstance.selectors.virtualContainer);
 
 	if (container !== null) {
 		container.addEventListener('wheel', onWheelEventHandler, { passive: false, capture: true });
 		container.addEventListener('scroll', onScrollEventHandler);
 	}
 
-	if (configInstance.editable && configInstance.saveButtonSelector !== null) {
-		document.querySelector(configInstance.saveButtonSelector).addEventListener('click', editUtil.saveCells);
+	if (configInstance.edit.enabled && configInstance.selectors.saveButton !== null) {
+		document.querySelector(configInstance.selectors.saveButton).addEventListener('click', editUtil.saveCells);
 	}
 
-	if (configInstance.editable) {
-		document.querySelectorAll('.' + configInstance.virtualTableClass + ' td.' + configInstance.dataCellClass).forEach(function(el) {
+	if (configInstance.edit.enabled) {
+		document.querySelectorAll('.' + configInstance.selectors.virtualTable + ' td.' + configInstance.inner.selectors.dataCell).forEach(function(el) {
 			el.addEventListener('click', onClickCellEventHandler);
 		});
 	}
 }
 
 function removeEvents() {
-	document.querySelector('.' + configInstance.virtualContainerClass).removeEventListener('scroll', onScrollEventHandler);
+	document.querySelector('.' + configInstance.selectors.virtualContainer).removeEventListener('scroll', onScrollEventHandler);
 }
 
 module.exports = {

@@ -18,7 +18,7 @@ function generateHeader() {
 function generateData(headers) {
 	var ds = [];
 
-	for (var i = 1; i <= 200; i++) {
+	for (var i = 1; i <= 2000; i++) {
 		var row = {};
 
 		for (var j = 1; j <= headers[0].length; j++) {
