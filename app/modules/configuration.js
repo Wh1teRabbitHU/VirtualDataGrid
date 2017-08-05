@@ -57,8 +57,8 @@ var STATIC_INNER_ATTRS = {
 	},
 	icons: {
 		sort: {
-			inc: 'sort-asc',
-			desc: 'sort-desc'
+			asc: 'fa fa-arrow-down',
+			desc: 'fa fa-arrow-up'
 		}
 	},
 	sort: { },

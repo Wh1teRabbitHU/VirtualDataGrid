@@ -95,7 +95,7 @@ function getHeaderCellHtml(config, cell, cellObj) {
 			arrowClass = direction === 'down' ? config.inner.icons.sort.asc : config.inner.icons.sort.desc,
 			iconClass = config.inner.selectors.sortIcon + (isSorted ? ' ' + arrowClass : '');
 
-		innerHTML += '<span class="' + iconClass + '">' + (isSorted ? direction : '') + ' </span>';
+		innerHTML += '<i class="' + iconClass + '" aria-hidden="true"></i>';
 
 		cell.setAttribute('data-direction', direction);
 		cell.setAttribute('data-attribute', attribute);

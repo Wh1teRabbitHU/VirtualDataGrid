@@ -24,6 +24,7 @@
   "devDependencies": {
     "browser-sync": "^2.18.13",
     "browserify": "^14.4.0",
+    "del": "^3.0.0",
     "eslint": "^4.3.0",
     "gulp": "github:gulpjs/gulp#4.0",
     "gulp-clean-css": "^3.7.0",

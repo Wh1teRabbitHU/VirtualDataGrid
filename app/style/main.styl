@@ -24,10 +24,10 @@ $cTableRowBorder = #d3d3d3
 	.header-cell
 		background $dirtyWhite
 		color $black
+		text-align center
 
 		&[colspan]
 			font-size 15px
-			text-align center
 
 	.header-cell,
 	.data-cell
@@ -68,3 +68,9 @@ $cTableRowBorder = #d3d3d3
 	.buffer-column-left,
 	.buffer-column-right
 		border none
+
+	.sort-column
+		cursor pointer
+
+	.sort-icon
+		margin-right 4px
