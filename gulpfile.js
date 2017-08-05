@@ -8,6 +8,7 @@ var gulp       = require('gulp'),
 	cleanCss   = require('gulp-clean-css'),
 	uglify     = require('gulp-uglify'),
 	rename     = require('gulp-rename'),
+	del        = require('del'),
 	browserify = require('browserify'),
 	source     = require('vinyl-source-stream'),
 	buffer     = require('vinyl-buffer'),
@@ -17,25 +18,18 @@ var gulp       = require('gulp'),
 
 const APP_NAME = pconfig.name;
 
-var SRV_ENV = 'development',
-	TARGET_FOLDER = './example/assets/',
-	EXAMPLE_FOLDER = './app/example/',
-	CSS_FILENAME = APP_NAME + '.min.css',
+var SRV_ENV, TARGET_FOLDER;
+
+var CSS_FILENAME = APP_NAME + '.min.css',
 	JS_FILENAME = APP_NAME + '.min.js';
 
 function isDevelopment() {
 	return SRV_ENV === 'development';
 }
 
-function isProduction() {
-	return SRV_ENV === 'production';
-}
-
 gulp.task('set-dev-enviroment', (done) => {
 	SRV_ENV = 'development';
 	TARGET_FOLDER = './example/assets/';
-	CSS_FILENAME = APP_NAME + '.css';
-	JS_FILENAME = APP_NAME + '.js';
 
 	done();
 });
@@ -43,10 +37,12 @@ gulp.task('set-dev-enviroment', (done) => {
 gulp.task('set-prod-enviroment', (done) => {
 	SRV_ENV = 'production';
 	TARGET_FOLDER = './release/';
-	CSS_FILENAME = APP_NAME + '.min.css';
-	JS_FILENAME = APP_NAME + '.min.js';
 
 	done();
+});
+
+gulp.task('clean', () => {
+	return del('./example/**/*');
 });
 
 gulp.task('example-static', () => {
@@ -54,13 +50,27 @@ gulp.task('example-static', () => {
 		.pipe(gulp.dest('./example'));
 });
 
+gulp.task('example-fonts', () => {
+	return gulp.src('./app/example/fonts/**/*')
+		.pipe(gulp.dest(TARGET_FOLDER));
+});
+
 gulp.task('example-css', () => {
-	return gulp.src(EXAMPLE_FOLDER + 'style/main.styl')
-		.pipe(gulpif(isDevelopment(), sourcemaps.init()))
+	return gulp.src('./app/example/style/main.styl')
+		.pipe(sourcemaps.init())
 		.pipe(stylus())
-		.pipe(concatCss('example.css'))
-		.pipe(gulpif(isProduction(), cleanCss()))
-		.pipe(gulpif(isDevelopment(), sourcemaps.write()))
+		.pipe(concatCss('example.min.css'))
+		.pipe(cleanCss())
+		.pipe(sourcemaps.write())
+		.pipe(gulp.dest(TARGET_FOLDER));
+});
+
+gulp.task('example-css-vendor', () => {
+	return gulp.src('./app/example/style/font-awesome.css')
+		.pipe(sourcemaps.init())
+		.pipe(concatCss('example-vendor.min.css'))
+		.pipe(cleanCss())
+		.pipe(sourcemaps.write())
 		.pipe(gulp.dest(TARGET_FOLDER));
 });
 
@@ -69,17 +79,17 @@ gulp.task('project-css', () => {
 		.pipe(gulpif(isDevelopment(), sourcemaps.init()))
 		.pipe(stylus())
 		.pipe(concatCss(CSS_FILENAME))
-		.pipe(gulpif(isProduction(), cleanCss()))
+		.pipe(cleanCss())
 		.pipe(gulpif(isDevelopment(), sourcemaps.write()))
 		.pipe(gulp.dest(TARGET_FOLDER));
 });
 
 gulp.task('example-js', () => {
-	return gulp.src(EXAMPLE_FOLDER + 'script/main.js')
+	return gulp.src('./app/example/script/main.js')
 		.pipe(sourcemaps.init())
 		.pipe(uglify())
 		.pipe(sourcemaps.write())
-		.pipe(rename('example.js'))
+		.pipe(rename('example.min.js'))
 		.pipe(gulp.dest(TARGET_FOLDER));
 });
 
@@ -90,7 +100,7 @@ gulp.task('project-js', () => {
 		.pipe(source(JS_FILENAME))
 		.pipe(buffer())
 		.pipe(gulpif(isDevelopment(), sourcemaps.init()))
-		.pipe(gulpif(isProduction(), uglify()))
+		.pipe(uglify())
 		.pipe(gulpif(isDevelopment(), sourcemaps.write()))
 		.pipe(gulp.dest(TARGET_FOLDER));
 });
@@ -112,7 +122,7 @@ gulp.task('reload-resources', (done) => {
 });
 
 gulp.task('js', gulp.parallel('example-js', 'project-js'));
-gulp.task('css', gulp.parallel('example-css', 'project-css'));
+gulp.task('css', gulp.parallel('example-css', 'example-css-vendor', 'project-css'));
 
 gulp.task('watch', (done) => {
 	gulp.watch([ './index.js', './app/**/*.js' ], gulp.series('js', 'reload-resources'));
@@ -123,9 +133,9 @@ gulp.task('watch', (done) => {
 });
 
 gulp.task('compile-project', gulp.parallel('project-css', 'project-js'));
-gulp.task('compile-example', gulp.parallel('example-static', 'example-css', 'example-js'));
+gulp.task('compile-example', gulp.parallel('example-static', 'example-fonts', 'example-css', 'example-css-vendor', 'example-js'));
 
-gulp.task('compile-development', gulp.series('set-dev-enviroment', gulp.parallel('compile-example', 'compile-project')));
+gulp.task('compile-development', gulp.series('set-dev-enviroment', 'clean', gulp.parallel('compile-example', 'compile-project')));
 gulp.task('compile-production', gulp.series('set-prod-enviroment', 'compile-project'));
 
 gulp.task('default', gulp.series('compile-development', 'start-server', 'watch'));

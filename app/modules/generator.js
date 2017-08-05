@@ -5,22 +5,20 @@ var configuration    = require('./configuration'),
 	generatorUtil    = require('../utils/generator'),
 	domUtil          = require('../utils/dom');
 
-var configInstance   = require('../instances/configuration');
+function generateTable(config, options) {
+	configuration.init(config, options);
 
-function generateTable(id, options) {
-	configuration.init(options);
+	generatorUtil.initTable(config);
+	generatorUtil.initBuffers(config);
 
-	generatorUtil.initTable(configInstance);
-	generatorUtil.initBuffers(configInstance);
+	domUtil.updateTable(config);
 
-	domUtil.updateTable();
-
-	eventHandlerUtil.addEvents();
+	eventHandlerUtil.addEvents(config);
 }
 
-function destroyTable() {
-	eventHandlerUtil.removeEvents();
-	domUtil.destroyTable();
+function destroyTable(config) {
+	eventHandlerUtil.removeEvents(config);
+	domUtil.destroyTable(config);
 }
 
 module.exports = {

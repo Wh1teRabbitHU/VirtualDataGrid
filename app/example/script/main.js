@@ -39,9 +39,16 @@ window.addEventListener('load', function() {
 		generator = new window.VirtualDataGrid();
 
 	generator.generateTable({
-		containerSelector: '.data-container',
 		dataSource: data,
 		headers: headers,
-		editable: true
+		selectors: {
+			mainContainer: '.data-container'
+		},
+		edit: {
+			enabled: true
+		},
+		sort: {
+			enabled: true
+		}
 	});
 });

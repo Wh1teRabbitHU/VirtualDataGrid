@@ -1,7 +1,5 @@
 'use strict';
 
-var configInstance = require('../instances/configuration');
-
 var configUtil = require('../utils/configuration'),
 	generatorUtil = require('../utils/generator');
 
@@ -14,7 +12,7 @@ var DEFAULTS = {
 		virtualTable: 'virtual-table',
 		editingCell: 'editing-cell',
 		editedCell: 'edited-cell',
-		saveButton: 'btn-save'
+		saveButton: null
 	},
 	dimensions: {
 		cellWidth: 150,
@@ -24,6 +22,14 @@ var DEFAULTS = {
 	edit: {
 		enabled: false
 	},
+	filter: {
+		enabled: false
+	},
+	sort: {
+		enabled: true,
+		default: configUtil.getSortDefault,
+		comparator: null
+	},
 	eventHandlers: {
 		onBeforeEdit: configUtil.nil,
 		onValidation: configUtil.nil,
@@ -31,94 +37,110 @@ var DEFAULTS = {
 		onBeforeSave: configUtil.nil,
 		onAfterSave: configUtil.nil
 	},
-	dataSource: [ {} ],
-	headers: [ [ {} ] ],
-	fixedHeaders: [ [ {} ] ],
+	dataSource: [ ],
+	headers: [ [ ] ],
+	fixedHeaders: [ [ ] ],
+	debug: false,
 	inner: {}
 };
 
-function init(options) {
-	initInnerStaticValues();
+var STATIC_INNER_ATTRS = {
+	selectors: {
+		bufferRowTop: 'buffer-row-top',
+		bufferRowBottom: 'buffer-row-bottom',
+		bufferColumnLeft: 'buffer-column-left',
+		bufferColumnRight: 'buffer-column-right',
+		headerRow: 'header-row',
+		headerCell: 'header-cell',
+		dataRow: 'data-row',
+		dataCell: 'data-cell',
+		sortColumn: 'sort-column',
+		sortIcon: 'sort-icon'
+	},
+	icons: {
+		sort: {
+			asc: 'fa fa-arrow-down',
+			desc: 'fa fa-arrow-up'
+		}
+	},
+	sort: { },
+	minBufferWidth: 2,
+	minBufferHeight: 2, // Azért van rá szükség, mert ha nincs megadva, akkor ugrik egyett a scroll ha a végére vagy az elejére értünk a táblázatban
+	leftCellOffset: 0,
+	topCellOffset: 0,
+	editedCells: []
+};
 
-	updateValue('selectors.mainContainer', options);
-	updateValue('selectors.fixedContainer', options);
-	updateValue('selectors.fixedTable', options);
-	updateValue('selectors.virtualContainer', options);
-	updateValue('selectors.virtualTable', options);
-	updateValue('selectors.editingCell', options);
-	updateValue('selectors.editedCell', options);
-	updateValue('dimensions.cellWidth', options);
-	updateValue('dimensions.cellHeight', options);
+function init(config, options) {
+	initConfigObject(config);
 
-	calculateVirtualContainerHeight(options);
+	updateValue(config, options, 'selectors.mainContainer');
+	updateValue(config, options, 'selectors.fixedContainer');
+	updateValue(config, options, 'selectors.fixedTable');
+	updateValue(config, options, 'selectors.virtualContainer');
+	updateValue(config, options, 'selectors.virtualTable');
+	updateValue(config, options, 'selectors.editingCell');
+	updateValue(config, options, 'selectors.editedCell');
+	updateValue(config, options, 'selectors.saveButton');
+	updateValue(config, options, 'dimensions.cellWidth');
+	updateValue(config, options, 'dimensions.cellHeight');
 
-	generatorUtil.initContainers(configInstance);
+	calculateVirtualContainerHeight(config, options);
 
-	updateValue('dataSource', options);
-	updateValue('headers', options);
-	updateValue('fixedHeaders', options);
-	updateValue('edit.enabled', options);
-	updateValue('selectors.saveButton', options);
-	updateValue('visibleColumnNumber', options);
-	updateValue('onBeforeEdit', options);
-	updateValue('onValidation', options);
-	updateValue('onAfterEdit', options);
-	updateValue('onBeforeSave', options);
-	updateValue('onAfterSave', options);
+	generatorUtil.initContainers(config);
 
-	initInnerCalculatedValues();
+	updateValue(config, options, 'dataSource');
+	updateValue(config, options, 'headers');
+	updateValue(config, options, 'fixedHeaders');
+	updateValue(config, options, 'edit.enabled');
+	updateValue(config, options, 'filter.enabled');
+	updateValue(config, options, 'sort.enabled');
+	updateValue(config, options, 'sort.default');
+	updateValue(config, options, 'sort.comparator');
+	updateValue(config, options, 'debug');
+	updateValue(config, options, 'eventHandlers.onBeforeEdit');
+	updateValue(config, options, 'eventHandlers.onValidation');
+	updateValue(config, options, 'eventHandlers.onAfterEdit');
+	updateValue(config, options, 'eventHandlers.onBeforeSave');
+	updateValue(config, options, 'eventHandlers.onAfterSave');
+
+	initInnerCalculatedValues(config);
 }
 
-function initInnerStaticValues() {
-	configInstance.inner = {};
-	configInstance.inner.selectors = {};
-
-	configInstance.inner.selectors.bufferRowTop = 'buffer-row-top';
-	configInstance.inner.selectors.bufferRowBottom = 'buffer-row-bottom';
-	configInstance.inner.selectors.bufferColumnLeft = 'buffer-column-left';
-	configInstance.inner.selectors.bufferColumnRight = 'buffer-column-right';
-	configInstance.inner.selectors.headerRow = 'header-row';
-	configInstance.inner.selectors.headerCell = 'header-cell';
-	configInstance.inner.selectors.dataRow = 'data-row';
-	configInstance.inner.selectors.dataCell = 'data-cell';
-
-	// Minimum buffer cell height. Azért van rá szükség, mert ha nincs megadva, akkor ugrik egyett a scroll ha a végére vagy az elejére értünk a táblázatban
-	configInstance.inner.minCellHeight = 2;
-
-	// Az offset miatt kell a számoláshoz
-	configInstance.inner.tableHeightOffset = configInstance.inner.minCellHeight * 2;
-	configInstance.inner.editedCells = [];
-	configInstance.inner.leftCellOffset = 0;
-	configInstance.inner.topCellOffset = 0;
+function initConfigObject(config) {
+	config.selectors = {};
+	config.eventHandlers = {};
+	config.inner = Object.assign({}, STATIC_INNER_ATTRS);
 }
 
-function calculateVirtualContainerHeight(options) {
+function calculateVirtualContainerHeight(config, options) {
 	var containerHeight = getInnerValue(options, 'dimensions.containerHeight');
 
 	if (typeof containerHeight == 'undefined') {
-		containerHeight = configUtil.getDefaultContainerHeight(configInstance);
+		containerHeight = configUtil.getDefaultContainerHeight(config);
 	}
 
-	updateValue('dimensions.containerHeight', configUtil.calculateVirtualContainerHeight(configInstance, containerHeight));
+	config.dimensions.containerHeight = configUtil.calculateVirtualContainerHeight(config, containerHeight);
 }
 
-function initInnerCalculatedValues() {
-	configInstance.inner.indexOfCellKeyHeader = configUtil.getIndexOfCellKeyHeader(configInstance);
-	configInstance.inner.colspanOffset = configUtil.getMaxColspan(configInstance);
-	configInstance.inner.visibleRowNumber = configUtil.getVisibleRowNumber(configInstance);
-	configInstance.inner.visibleColumnNumber = configUtil.getVisibleColumnNumber(configInstance);
-	configInstance.tableWidth = configUtil.getTableWidth(configInstance);
-	configInstance.tableHeight = configUtil.getTableHeight(configInstance);
+function initInnerCalculatedValues(config) {
+	// Annak a header sornak az indexe, ami a cella kulcsokat is meghatározza. Mivel ez mindig az utolsó lesz, ezért TODO: Kiszedni/átalakítani
+	config.inner.indexOfCellKeyHeader = configUtil.getIndexOfCellKeyHeader(config);
+	config.inner.colspanOffset = configUtil.getMaxColspan(config);
+	config.inner.visibleRowNumber = configUtil.getVisibleRowNumber(config);
+	config.inner.visibleColumnNumber = configUtil.getVisibleColumnNumber(config);
+	config.tableWidth = configUtil.getTableWidth(config);
+	config.tableHeight = configUtil.getTableHeight(config);
 }
 
-function updateValue(key, options) {
-	var target = getInnerObject(configInstance, key), // eslint-disable-line no-unused-vars
+function updateValue(config, options, key) {
+	var target = getInnerObject(config, key), // eslint-disable-line no-unused-vars
 		value = getInnerValue(options, key),
 		keys = key.split('.'),
 		lastKey = keys[keys.length - 1];
 
 	if (typeof value == 'undefined') {
-		target[lastKey] = typeof getInnerValue(DEFAULTS, key) == 'function' ? getInnerValue(DEFAULTS, key)(configInstance) : getInnerValue(DEFAULTS, key);
+		target[lastKey] = typeof getInnerValue(DEFAULTS, key) == 'function' ? getInnerValue(DEFAULTS, key)(config) : getInnerValue(DEFAULTS, key);
 	} else {
 		target[lastKey] = value;
 	}
@@ -156,6 +178,5 @@ function getInnerValue(object, key) {
 }
 
 module.exports = {
-	init: init,
-	updateValue: updateValue
+	init: init
 };
