@@ -31,7 +31,7 @@ function updateTable(config) {
 				cell.style.display = 'none';
 				colspan--;
 			} else {
-				cell.innerHTML = getHeaderCellHtml(config, cellObj);
+				cell.innerHTML = getHeaderCellHtml(config, cell, cellObj);
 				cell.style.display = 'table-cell';
 			}
 
@@ -84,8 +84,24 @@ function destroyTable(config) {
 	document.querySelector(config.selectors.mainContainer).innerHTML = '';
 }
 
-function getHeaderCellHtml(config, cellObj) {
-	var innerHTML = cellObj.text || cellObj.key || '';
+function getHeaderCellHtml(config, cell, cellObj) {
+	var innerHTML = '',
+		columnText = cellObj.text || cellObj.key || '';
+
+	if (config.sort.enabled) {
+		var attribute = cellObj.key,
+			direction = config.inner.sort.attribute === attribute ? config.inner.sort.direction : 'none',
+			isSorted = direction !== 'none',
+			arrowClass = direction === 'down' ? config.inner.icons.sort.asc : config.inner.icons.sort.desc,
+			iconClass = config.inner.selectors.sortIcon + (isSorted ? ' ' + arrowClass : '');
+
+		innerHTML += '<span class="' + iconClass + '">' + (isSorted ? direction : '') + ' </span>';
+
+		cell.setAttribute('data-direction', direction);
+		cell.setAttribute('data-attribute', attribute);
+	}
+
+	innerHTML += columnText;
 
 	return innerHTML;
 }

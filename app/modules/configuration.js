@@ -51,8 +51,17 @@ var STATIC_INNER_ATTRS = {
 		headerRow: 'header-row',
 		headerCell: 'header-cell',
 		dataRow: 'data-row',
-		dataCell: 'data-cell'
+		dataCell: 'data-cell',
+		sortColumn: 'sort-column',
+		sortIcon: 'sort-icon'
 	},
+	icons: {
+		sort: {
+			inc: 'sort-asc',
+			desc: 'sort-desc'
+		}
+	},
+	sort: { },
 	minBufferWidth: 2,
 	minBufferHeight: 2, // Azért van rá szükség, mert ha nincs megadva, akkor ugrik egyett a scroll ha a végére vagy az elejére értünk a táblázatban
 	leftCellOffset: 0,

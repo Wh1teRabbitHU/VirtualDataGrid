@@ -70,7 +70,11 @@ function initTable(config) {
 			tdElement = document.createElement('td');
 			tdElement.classList.add(config.inner.selectors.headerCell);
 			tdElement.style.minWidth = config.dimensions.cellWidth + 'px';
-			tdElement.innerHTML = domUtil.getHeaderCellHtml(config, headerRow[j]);
+			tdElement.innerHTML = domUtil.getHeaderCellHtml(config, tdElement, headerRow[j]);
+
+			if (config.sort.enabled) {
+				tdElement.classList.add(config.inner.selectors.sortColumn);
+			}
 
 			trHead.appendChild(tdElement);
 		}

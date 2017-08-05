@@ -5,7 +5,8 @@ var EventArguments = require('../models/event-arguments');
 var domUtil = require('../utils/dom'),
 	tableUtil = require('../utils/table'),
 	editUtil = require('../utils/edit'),
-	generatorUtil = require('../utils/generator');
+	generatorUtil = require('../utils/generator'),
+	sortUtil = require('../utils/sort');
 
 var container;
 
@@ -100,12 +101,31 @@ function onClickSaveButtonEventHandler(event, config) {
 	editUtil.saveCells(config);
 }
 
+function onClickSortHeader(event, config) {
+	var sortColumnSelector = '.' + config.inner.selectors.sortColumn,
+		sortIconSelector = sortColumnSelector + ' .' + config.inner.selectors.sortIcon;
+
+	if (!event.target.matches(sortColumnSelector) &&
+		!event.target.matches(sortIconSelector)) {
+		return;
+	}
+
+	if (event.target.matches(sortIconSelector)) {
+		sortUtil.sortByColumn(config, event.target.parentNode);
+	}
+
+	if (event.target.matches(sortColumnSelector)) {
+		sortUtil.sortByColumn(config, event.target);
+	}
+}
+
 function addEvents(config) {
 	container = document.querySelector('.' + config.selectors.virtualContainer);
 
 	instances.onScrollEventHandler = function(event) { onScrollEventHandler(event, config); };
 	instances.onClickCellEventHandler = function(event) { onClickCellEventHandler(event, config); };
 	instances.onClickSaveButtonEventHandler = function(event) { onClickSaveButtonEventHandler(event, config); };
+	instances.onClickSortHeader = function(event) { onClickSortHeader(event, config); };
 
 	if (container !== null) {
 		container.addEventListener('wheel', onWheelEventHandler, { passive: false, capture: true });
@@ -120,6 +140,10 @@ function addEvents(config) {
 		document.querySelectorAll('.' + config.selectors.virtualTable + ' td.' + config.inner.selectors.dataCell).forEach(function(el) {
 			el.addEventListener('click', instances.onClickCellEventHandler);
 		});
+	}
+
+	if (config.sort.enabled) {
+		document.addEventListener('click', instances.onClickSortHeader);
 	}
 }
 
@@ -139,6 +163,10 @@ function removeEvents(config) {
 		document.querySelectorAll('.' + config.selectors.virtualTable + ' td.' + config.inner.selectors.dataCell).forEach(function(el) {
 			el.removeEventListener('click', instances.onClickCellEventHandler);
 		});
+	}
+
+	if (config.sort.enabled) {
+		document.removeEventListener('click', instances.onClickSortHeader);
 	}
 }
 
