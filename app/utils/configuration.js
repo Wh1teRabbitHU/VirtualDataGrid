@@ -5,7 +5,7 @@ function calculateVirtualContainerHeight(config, height) {
 		return height;
 	}
 
-	return config.inner.tableHeightOffset + Math.floor(height / config.dimensions.cellHeight) * config.dimensions.cellHeight;
+	return config.inner.minBufferHeight * 2 + Math.floor(height / config.dimensions.cellHeight) * config.dimensions.cellHeight;
 }
 
 function getDefaultContainerHeight(config) {
@@ -31,7 +31,12 @@ function getMaxColspan(config) {
 }
 
 function getVisibleRowNumber(config) {
-	return Math.floor((config.dimensions.containerHeight - config.inner.tableHeightOffset) / config.dimensions.cellHeight) - config.headers.length;
+	var hasFilter = config.filter.enabled,
+		containerHeight = config.dimensions.containerHeight - config.inner.minBufferHeight * 2,
+		dataCells = Math.floor(containerHeight / config.dimensions.cellHeight),
+		headerCells = config.headers.length + (hasFilter ? 1 : 0);
+
+	return dataCells - headerCells;
 }
 
 function getVisibleColumnNumber(config) {

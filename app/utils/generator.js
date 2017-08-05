@@ -1,5 +1,7 @@
 'use strict';
 
+var domUtil = require('./dom');
+
 function initContainers(config) {
 	var container = document.querySelector(config.selectors.mainContainer),
 		virtualContainer = document.createElement('div'),
@@ -21,7 +23,7 @@ function initContainers(config) {
 	virtualContainer.style.maxHeight = config.dimensions.containerHeight + 'px';
 	virtualContainer.style.overflow = 'scroll';
 
-	fixedContainer.style.padding = config.inner.minCellHeight + 'px 0';
+	fixedContainer.style.padding = config.inner.minBufferHeight + 'px 0';
 	fixedContainer.style.float = 'left';
 }
 
@@ -68,7 +70,7 @@ function initTable(config) {
 			tdElement = document.createElement('td');
 			tdElement.classList.add(config.inner.selectors.headerCell);
 			tdElement.style.minWidth = config.dimensions.cellWidth + 'px';
-			tdElement.innerHTML = headerRow[j].text || headerRow[j].key || '';
+			tdElement.innerHTML = domUtil.getHeaderCellHtml(config, headerRow[j]);
 
 			trHead.appendChild(tdElement);
 		}
@@ -123,7 +125,9 @@ function initTable(config) {
 
 	// Generate fixed table
 
-	if (config.fixedHeaders.length === 0) {
+	if (config.fixedHeaders.length === 0 || config.fixedHeaders[0].length === 0) {
+		document.querySelector('.' + config.selectors.fixedTable).remove();
+
 		return;
 	}
 
@@ -178,9 +182,9 @@ function initBuffers(config) {
 		bottom = config.tableHeight - top;
 
 	left = left > config.tableWidth ? config.tableWidth : left;
-	left = left < 0 ? 0 : left;
+	left = left < config.inner.minBufferWidth ? config.inner.minBufferWidth : left;
 	right = config.tableWidth - left;
-	top = top + config.inner.minCellHeight > config.tableHeight ? config.tableHeight + config.inner.minCellHeight : top + config.inner.minCellHeight;
+	top = top + config.inner.minBufferHeight > config.tableHeight ? config.tableHeight + config.inner.minBufferHeight : top + config.inner.minBufferHeight;
 	bottom = config.tableHeight - top;
 
 	config.inner.leftCellOffset = Math.floor(left / config.dimensions.cellWidth);

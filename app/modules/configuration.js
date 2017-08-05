@@ -22,6 +22,12 @@ var DEFAULTS = {
 	edit: {
 		enabled: false
 	},
+	filter: {
+		enabled: false
+	},
+	sort: {
+		enabled: true
+	},
 	eventHandlers: {
 		onBeforeEdit: configUtil.nil,
 		onValidation: configUtil.nil,
@@ -29,15 +35,33 @@ var DEFAULTS = {
 		onBeforeSave: configUtil.nil,
 		onAfterSave: configUtil.nil
 	},
-	dataSource: [ {} ],
-	headers: [ [ {} ] ],
-	fixedHeaders: [ [ {} ] ],
+	dataSource: [ ],
+	headers: [ [ ] ],
+	fixedHeaders: [ [ ] ],
+	debug: false,
 	inner: {}
+};
+
+var STATIC_INNER_ATTRS = {
+	selectors: {
+		bufferRowTop: 'buffer-row-top',
+		bufferRowBottom: 'buffer-row-bottom',
+		bufferColumnLeft: 'buffer-column-left',
+		bufferColumnRight: 'buffer-column-right',
+		headerRow: 'header-row',
+		headerCell: 'header-cell',
+		dataRow: 'data-row',
+		dataCell: 'data-cell'
+	},
+	minBufferWidth: 2,
+	minBufferHeight: 2, // Azért van rá szükség, mert ha nincs megadva, akkor ugrik egyett a scroll ha a végére vagy az elejére értünk a táblázatban
+	leftCellOffset: 0,
+	topCellOffset: 0,
+	editedCells: []
 };
 
 function init(config, options) {
 	initConfigObject(config);
-	initInnerStaticValues(config);
 
 	updateValue(config, options, 'selectors.mainContainer');
 	updateValue(config, options, 'selectors.fixedContainer');
@@ -58,6 +82,9 @@ function init(config, options) {
 	updateValue(config, options, 'headers');
 	updateValue(config, options, 'fixedHeaders');
 	updateValue(config, options, 'edit.enabled');
+	updateValue(config, options, 'filter.enabled');
+	updateValue(config, options, 'sort.enabled');
+	updateValue(config, options, 'debug');
 	updateValue(config, options, 'eventHandlers.onBeforeEdit');
 	updateValue(config, options, 'eventHandlers.onValidation');
 	updateValue(config, options, 'eventHandlers.onAfterEdit');
@@ -70,28 +97,7 @@ function init(config, options) {
 function initConfigObject(config) {
 	config.selectors = {};
 	config.eventHandlers = {};
-	config.inner = {};
-	config.inner.selectors = {};
-}
-
-function initInnerStaticValues(config) {
-	config.inner.selectors.bufferRowTop = 'buffer-row-top';
-	config.inner.selectors.bufferRowBottom = 'buffer-row-bottom';
-	config.inner.selectors.bufferColumnLeft = 'buffer-column-left';
-	config.inner.selectors.bufferColumnRight = 'buffer-column-right';
-	config.inner.selectors.headerRow = 'header-row';
-	config.inner.selectors.headerCell = 'header-cell';
-	config.inner.selectors.dataRow = 'data-row';
-	config.inner.selectors.dataCell = 'data-cell';
-
-	// Minimum buffer cell height. Azért van rá szükség, mert ha nincs megadva, akkor ugrik egyett a scroll ha a végére vagy az elejére értünk a táblázatban
-	config.inner.minCellHeight = 2;
-
-	// Az offset miatt kell a számoláshoz
-	config.inner.tableHeightOffset = config.inner.minCellHeight * 2;
-	config.inner.editedCells = [];
-	config.inner.leftCellOffset = 0;
-	config.inner.topCellOffset = 0;
+	config.inner = Object.assign({}, STATIC_INNER_ATTRS);
 }
 
 function calculateVirtualContainerHeight(config, options) {
@@ -105,6 +111,7 @@ function calculateVirtualContainerHeight(config, options) {
 }
 
 function initInnerCalculatedValues(config) {
+	// Annak a header sornak az indexe, ami a cella kulcsokat is meghatározza. Mivel ez mindig az utolsó lesz, ezért TODO: Kiszedni/átalakítani
 	config.inner.indexOfCellKeyHeader = configUtil.getIndexOfCellKeyHeader(config);
 	config.inner.colspanOffset = configUtil.getMaxColspan(config);
 	config.inner.visibleRowNumber = configUtil.getVisibleRowNumber(config);
@@ -158,6 +165,5 @@ function getInnerValue(object, key) {
 }
 
 module.exports = {
-	init: init,
-	updateValue: updateValue
+	init: init
 };

@@ -31,7 +31,7 @@ function updateTable(config) {
 				cell.style.display = 'none';
 				colspan--;
 			} else {
-				cell.innerHTML = cellObj.text || cellObj.key || '';
+				cell.innerHTML = getHeaderCellHtml(config, cellObj);
 				cell.style.display = 'table-cell';
 			}
 
@@ -84,11 +84,19 @@ function destroyTable(config) {
 	document.querySelector(config.selectors.mainContainer).innerHTML = '';
 }
 
+function getHeaderCellHtml(config, cellObj) {
+	var innerHTML = cellObj.text || cellObj.key || '';
+
+	return innerHTML;
+}
+
 module.exports = {
-	indexOfElement: indexOfElement,
 	updateCell: updateCell,
 	updateTable: updateTable,
 	resetEditingCell: resetEditingCell,
 	resetEditedCell: resetEditedCell,
-	destroyTable: destroyTable
+	destroyTable: destroyTable,
+
+	indexOfElement: indexOfElement,
+	getHeaderCellHtml: getHeaderCellHtml
 };
