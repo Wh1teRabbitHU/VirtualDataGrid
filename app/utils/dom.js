@@ -88,12 +88,12 @@ function getHeaderCellHtml(config, cell, cellObj) {
 	var innerHTML = '',
 		columnText = cellObj.text || cellObj.key || '';
 
-	if (config.sort.enabled) {
+	if (config.sort.enabled && !cellObj.sortDisabled) {
 		var attribute = cellObj.key,
 			direction = config.inner.sort.attribute === attribute ? config.inner.sort.direction : 'none',
 			isSorted = direction !== 'none',
 			arrowClass = direction === 'down' ? config.inner.icons.sort.asc : config.inner.icons.sort.desc,
-			iconClass = config.inner.selectors.sortIcon + (isSorted ? ' ' + arrowClass : '');
+			iconClass = config.inner.selectors.sortIcon + (isSorted ? ' ' + arrowClass : 'hidden');
 
 		innerHTML += '<i class="' + iconClass + '" aria-hidden="true"></i>';
 

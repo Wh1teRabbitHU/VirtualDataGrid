@@ -26,7 +26,9 @@ var DEFAULTS = {
 		enabled: false
 	},
 	sort: {
-		enabled: true
+		enabled: true,
+		default: configUtil.getSortDefault,
+		comparator: null
 	},
 	eventHandlers: {
 		onBeforeEdit: configUtil.nil,
@@ -93,6 +95,8 @@ function init(config, options) {
 	updateValue(config, options, 'edit.enabled');
 	updateValue(config, options, 'filter.enabled');
 	updateValue(config, options, 'sort.enabled');
+	updateValue(config, options, 'sort.default');
+	updateValue(config, options, 'sort.comparator');
 	updateValue(config, options, 'debug');
 	updateValue(config, options, 'eventHandlers.onBeforeEdit');
 	updateValue(config, options, 'eventHandlers.onValidation');

@@ -72,7 +72,7 @@ function initTable(config) {
 			tdElement.style.minWidth = config.dimensions.cellWidth + 'px';
 			tdElement.innerHTML = domUtil.getHeaderCellHtml(config, tdElement, headerRow[j]);
 
-			if (config.sort.enabled) {
+			if (config.sort.enabled && !headerRow[j].sortDisabled) {
 				tdElement.classList.add(config.inner.selectors.sortColumn);
 			}
 

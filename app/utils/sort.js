@@ -2,7 +2,7 @@
 
 var domUtil = require('./dom');
 
-function defaultCompare(a, b, attribute, isDown) {
+function defaultComparator(a, b, attribute, isDown) {
 	var attrA = a[attribute],
 		attrB = b[attribute];
 
@@ -29,19 +29,27 @@ function sortByColumn(config, column) {
 
 	config.inner.sort.direction = direction;
 	config.inner.sort.attribute = attribute;
-	config.dataSource.sort(function(a, b) { return defaultCompare(a, b, attribute, direction === 'down'); });
+	config.dataSource.sort(function(a, b) {
+		if (config.sort.comparator !== null) {
+			return config.sort.comparator(a, b, attribute, direction);
+		}
+
+		return defaultComparator(a, b, attribute, direction === 'down');
+	});
 
 	domUtil.updateTable(config);
 }
 
 function resetSort(config) {
-	if (typeof config.sort.default == 'undefined') {
-		return;
-	}
+	config.inner.sort.direction = '';
+	config.inner.sort.attribute = '';
+	config.dataSource.sort(function(a, b) {
+		if (config.sort.comparator !== null) {
+			return config.sort.comparator(a, b, config.sort.default, 'down');
+		}
 
-	config.inner.sort.direction = 'asc';
-	config.inner.sort.attribute = config.sort.default;
-	config.dataSource.sort(function(a, b) { return defaultCompare(a, b, config.sort.default, true); });
+		return defaultComparator(a, b, config.sort.default, true);
+	});
 
 	domUtil.updateTable(config);
 }

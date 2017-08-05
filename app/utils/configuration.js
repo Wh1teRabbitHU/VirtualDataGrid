@@ -16,6 +16,10 @@ function getIndexOfCellKeyHeader(config) {
 	return config.headers.length - 1;
 }
 
+function getSortDefault(config) {
+	return config.headers[config.headers.length - 1][0].key;
+}
+
 function getMaxColspan(config) {
 	var maxVal = 0;
 
@@ -60,6 +64,7 @@ module.exports = {
 	calculateVirtualContainerHeight: calculateVirtualContainerHeight,
 	getDefaultContainerHeight: getDefaultContainerHeight,
 	getIndexOfCellKeyHeader: getIndexOfCellKeyHeader,
+	getSortDefault: getSortDefault,
 	getMaxColspan: getMaxColspan,
 	getVisibleRowNumber: getVisibleRowNumber,
 	getVisibleColumnNumber: getVisibleColumnNumber,

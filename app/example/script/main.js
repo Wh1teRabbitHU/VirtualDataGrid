@@ -46,6 +46,9 @@ window.addEventListener('load', function() {
 		},
 		edit: {
 			enabled: true
+		},
+		sort: {
+			enabled: true
 		}
 	});
 });

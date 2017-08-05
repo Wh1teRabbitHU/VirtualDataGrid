@@ -111,7 +111,7 @@ function onClickSortHeader(event, config) {
 	}
 
 	if (event.target.matches(sortIconSelector)) {
-		sortUtil.sortByColumn(config, event.target.parentNode);
+		sortUtil.resetSort(config);
 	}
 
 	if (event.target.matches(sortColumnSelector)) {
