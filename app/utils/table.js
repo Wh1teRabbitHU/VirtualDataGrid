@@ -8,6 +8,13 @@ function getCell(config, rowNumber, columnNumber) {
 		}),
 		rowObj = config.headers[config.inner.indexOfCellKeyHeader];
 
+	if (rowNumber >= config.dataSource.length) {
+		cellObj = new Cell({
+			key: rowObj[columnNumber].key,
+			value: ''
+		});
+	}
+
 	if (typeof cellObj == 'undefined') {
 		cellObj = new Cell({
 			key: rowObj[columnNumber].key,

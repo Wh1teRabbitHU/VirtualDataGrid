@@ -2,11 +2,12 @@
 
 var EventArguments = require('../models/event-arguments');
 
-var domUtil = require('../utils/dom'),
-	tableUtil = require('../utils/table'),
-	editUtil = require('../utils/edit'),
+var domUtil       = require('../utils/dom'),
+	tableUtil     = require('../utils/table'),
+	editUtil      = require('../utils/edit'),
 	generatorUtil = require('../utils/generator'),
-	sortUtil = require('../utils/sort');
+	sortUtil      = require('../utils/sort'),
+	filterUtil    = require('../utils/filter');
 
 var container;
 
@@ -14,7 +15,9 @@ var instances = {
 	onScrollEventHandler: function() {},
 	onInputBlurEventHandler: function() {},
 	onClickCellEventHandler: function() {},
-	onClickSaveButtonEventHandler: function() {}
+	onClickSaveButtonEventHandler: function() {},
+	onClickSortHeader: function() {},
+	onClickFilterHeader: function() {}
 };
 
 function onWheelEventHandler(event) {
@@ -102,10 +105,10 @@ function onClickSaveButtonEventHandler(event, config) {
 }
 
 function onClickSortHeader(event, config) {
-	var sortColumnSelector = '.' + config.inner.selectors.sortColumn,
-		sortIconSelector = sortColumnSelector + ' .' + config.inner.selectors.sortIcon;
+	var sortCellSelector = '.' + config.inner.selectors.sortCell,
+		sortIconSelector = sortCellSelector + ' .' + config.inner.selectors.sortIcon;
 
-	if (!event.target.matches(sortColumnSelector) &&
+	if (!event.target.matches(sortCellSelector) &&
 		!event.target.matches(sortIconSelector)) {
 		return;
 	}
@@ -114,9 +117,32 @@ function onClickSortHeader(event, config) {
 		sortUtil.resetSort(config);
 	}
 
-	if (event.target.matches(sortColumnSelector)) {
+	if (event.target.matches(sortCellSelector)) {
 		sortUtil.sortByColumn(config, event.target);
 	}
+}
+
+function onClickFilterHeader(event, config) {
+	var filterCellSelector = '.' + config.inner.selectors.filterCell,
+		filterSearchIconSelector = filterCellSelector + ' .' + config.inner.selectors.filterSearchIcon,
+		filterClearIconSelector = filterCellSelector + ' .' + config.inner.selectors.filterClearIcon;
+
+	if (!event.target.matches(filterCellSelector) &&
+		!event.target.matches(filterSearchIconSelector) &&
+		!event.target.matches(filterClearIconSelector)) {
+
+		return;
+	}
+
+	var cell = event.target.matches(filterCellSelector) ? event.target : domUtil.findParentNode(event.target, filterCellSelector);
+
+	if (event.target.matches(filterClearIconSelector)) {
+		filterUtil.clearFilter(config, cell);
+
+		return;
+	}
+
+	filterUtil.startEditingFilter(config, cell);
 }
 
 function addEvents(config) {
@@ -126,6 +152,7 @@ function addEvents(config) {
 	instances.onClickCellEventHandler = function(event) { onClickCellEventHandler(event, config); };
 	instances.onClickSaveButtonEventHandler = function(event) { onClickSaveButtonEventHandler(event, config); };
 	instances.onClickSortHeader = function(event) { onClickSortHeader(event, config); };
+	instances.onClickFilterHeader = function(event) { onClickFilterHeader(event, config); };
 
 	if (container !== null) {
 		container.addEventListener('wheel', onWheelEventHandler, { passive: false, capture: true });
@@ -144,6 +171,10 @@ function addEvents(config) {
 
 	if (config.sort.enabled) {
 		document.addEventListener('click', instances.onClickSortHeader);
+	}
+
+	if (config.filter.enabled) {
+		document.addEventListener('click', instances.onClickFilterHeader);
 	}
 }
 
@@ -167,6 +198,10 @@ function removeEvents(config) {
 
 	if (config.sort.enabled) {
 		document.removeEventListener('click', instances.onClickSortHeader);
+	}
+
+	if (config.filter.enabled) {
+		document.removeEventListener('click', instances.onClickFilterHeader);
 	}
 }
 

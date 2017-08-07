@@ -73,7 +73,7 @@ function initTable(config) {
 			tdElement.innerHTML = domUtil.getHeaderCellHtml(config, tdElement, headerRow[j]);
 
 			if (config.sort.enabled && !headerRow[j].sortDisabled) {
-				tdElement.classList.add(config.inner.selectors.sortColumn);
+				tdElement.classList.add(config.inner.selectors.sortCell);
 			}
 
 			trHead.appendChild(tdElement);
@@ -86,6 +86,34 @@ function initTable(config) {
 
 		virtualThead.appendChild(trHead);
 	});
+
+	// Generate virtual filter row
+	if (config.filter.enabled) {
+		trHead = document.createElement('tr');
+		trHead.classList.add(config.inner.selectors.filterRow);
+		trHead.style.height = config.dimensions.cellHeight + 'px';
+
+		tdElement = document.createElement('td');
+		tdElement.classList.add(config.inner.selectors.bufferColumnLeft);
+
+		trHead.appendChild(tdElement);
+
+		for (j = 0; j < config.inner.visibleColumnNumber; j++) {
+			tdElement = document.createElement('td');
+			tdElement.classList.add(config.inner.selectors.filterCell);
+			tdElement.style.minWidth = config.dimensions.cellWidth + 'px';
+			tdElement.innerHTML = domUtil.getFilterCellHtml(config, tdElement, {});
+
+			trHead.appendChild(tdElement);
+		}
+
+		tdElement = document.createElement('td');
+		tdElement.classList.add(config.inner.selectors.bufferColumnRight);
+
+		trHead.appendChild(tdElement);
+
+		virtualThead.appendChild(trHead);
+	}
 
 	// Generate virtual body
 	for (i = 0; i < config.inner.visibleRowNumber; i++) {
@@ -155,6 +183,28 @@ function initTable(config) {
 		}
 
 		fixedThead.appendChild(trHead);
+	}
+
+	// Generate fixed filter row
+
+	if (config.filter.enabled &&
+		config.fixedHeaders.length > 0 &&
+		config.fixedHeaders[config.inner.indexOfCellKeyHeader].length > 0) {
+
+		trHead = document.createElement('tr');
+		trHead.classList.add(config.inner.selectors.filterRow);
+		trHead.style.height = config.dimensions.cellHeight + 'px';
+
+		for (j = 0; j < config.fixedHeaders[config.inner.indexOfCellKeyHeader].length; j++) {
+			tdElement = document.createElement('td');
+			tdElement.classList.add(config.inner.selectors.filterCell);
+			tdElement.style.minWidth = config.dimensions.cellWidth + 'px';
+			tdElement.innerHTML = domUtil.getFilterCellHtml(config, tdElement, {});
+
+			trHead.appendChild(tdElement);
+		}
+
+		virtualThead.appendChild(trHead);
 	}
 
 	// Generate fixed body

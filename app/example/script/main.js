@@ -49,6 +49,9 @@ window.addEventListener('load', function() {
 		},
 		sort: {
 			enabled: true
+		},
+		filter: {
+			enabled: true
 		}
 	});
 });

@@ -52,18 +52,28 @@ var STATIC_INNER_ATTRS = {
 		bufferColumnRight: 'buffer-column-right',
 		headerRow: 'header-row',
 		headerCell: 'header-cell',
+		sortCell: 'sort-cell',
+		sortIcon: 'sort-icon',
+		filterRow: 'filter-row',
+		filterCell: 'filter-cell',
+		filterContainer: 'filter-container',
+		filterSearchIcon: 'filter-search-icon',
+		filterClearIcon: 'filter-clear-icon',
 		dataRow: 'data-row',
-		dataCell: 'data-cell',
-		sortColumn: 'sort-column',
-		sortIcon: 'sort-icon'
+		dataCell: 'data-cell'
 	},
 	icons: {
 		sort: {
 			asc: 'fa fa-arrow-down',
 			desc: 'fa fa-arrow-up'
+		},
+		filter: {
+			search: 'fa fa-search',
+			clear: 'fa fa-times'
 		}
 	},
 	sort: { },
+	filters: { },
 	minBufferWidth: 2,
 	minBufferHeight: 2, // Azért van rá szükség, mert ha nincs megadva, akkor ugrik egyett a scroll ha a végére vagy az elejére értünk a táblázatban
 	leftCellOffset: 0,
@@ -131,6 +141,11 @@ function initInnerCalculatedValues(config) {
 	config.inner.visibleColumnNumber = configUtil.getVisibleColumnNumber(config);
 	config.tableWidth = configUtil.getTableWidth(config);
 	config.tableHeight = configUtil.getTableHeight(config);
+
+	// Csak akkor duplikáljunk le egy potenciálisan hatalmas objektumot, ha szükség is lesz rá. Egyelőre csak szűrésnél fog kelleni
+	if (config.filter.enabled) {
+		config.inner.originalDataSource = [].concat(config.dataSource);
+	}
 }
 
 function updateValue(config, options, key) {
