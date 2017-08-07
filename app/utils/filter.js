@@ -88,7 +88,9 @@ function clearFilter(config, cell) {
 		input.value = '';
 	}
 
-	filterObj.value = '';
+	if (typeof filterObj != 'undefined') {
+		filterObj.value = '';
+	}
 
 	finishEditingFilter(config, cell);
 }
