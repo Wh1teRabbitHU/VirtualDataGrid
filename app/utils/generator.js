@@ -34,8 +34,8 @@ function initTable(config) {
 		trHeadBuffer = document.createElement('tr'),
 		columnsNumber = config.headers[config.inner.indexOfCellKeyHeader].length,
 		rowsNumber = config.dataSource.length,
-		maxColumnNumber = config.inner.visibleColumnNumber >= columnsNumber ? columnsNumber - 1 : config.inner.visibleColumnNumber,
-		maxRowNumber = config.inner.visibleRowNumber >= rowsNumber ? rowsNumber - 1 : config.inner.visibleRowNumber;
+		maxColumnNumber = config.inner.visibleColumnNumber >= columnsNumber ? columnsNumber : config.inner.visibleColumnNumber,
+		maxRowNumber = config.inner.visibleRowNumber >= rowsNumber ? rowsNumber : config.inner.visibleRowNumber;
 
 	trHeadBuffer.classList.add(config.inner.selectors.bufferRowTop);
 
