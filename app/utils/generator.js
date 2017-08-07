@@ -31,7 +31,11 @@ function initTable(config) {
 	// Generate virtual table
 	var virtualThead = document.createElement('thead'),
 		virtualTbody = document.createElement('tbody'),
-		trHeadBuffer = document.createElement('tr');
+		trHeadBuffer = document.createElement('tr'),
+		columnsNumber = config.headers[config.inner.indexOfCellKeyHeader].length,
+		rowsNumber = config.dataSource.length,
+		maxColumnNumber = config.inner.visibleColumnNumber >= columnsNumber ? columnsNumber - 1 : config.inner.visibleColumnNumber,
+		maxRowNumber = config.inner.visibleRowNumber >= rowsNumber ? rowsNumber - 1 : config.inner.visibleRowNumber;
 
 	trHeadBuffer.classList.add(config.inner.selectors.bufferRowTop);
 
@@ -43,7 +47,7 @@ function initTable(config) {
 
 	trHeadBuffer.appendChild(bufferColumnLeft);
 
-	for (i = 0; i < config.inner.visibleColumnNumber; i++) {
+	for (i = 0; i < maxColumnNumber; i++) {
 		tdElement = document.createElement('td');
 		tdElement.style.minWidth = config.dimensions.cellWidth + 'px';
 		trHeadBuffer.appendChild(tdElement);
@@ -66,7 +70,7 @@ function initTable(config) {
 
 		trHead.appendChild(tdElement);
 
-		for (j = 0; j < config.inner.visibleColumnNumber; j++) {
+		for (j = 0; j < maxColumnNumber; j++) {
 			tdElement = document.createElement('td');
 			tdElement.classList.add(config.inner.selectors.headerCell);
 			tdElement.style.minWidth = config.dimensions.cellWidth + 'px';
@@ -99,7 +103,7 @@ function initTable(config) {
 
 		trHead.appendChild(tdElement);
 
-		for (j = 0; j < config.inner.visibleColumnNumber; j++) {
+		for (j = 0; j < maxColumnNumber; j++) {
 			tdElement = document.createElement('td');
 			tdElement.classList.add(config.inner.selectors.filterCell);
 			tdElement.style.minWidth = config.dimensions.cellWidth + 'px';
@@ -118,7 +122,7 @@ function initTable(config) {
 	}
 
 	// Generate virtual body
-	for (i = 0; i < config.inner.visibleRowNumber; i++) {
+	for (i = 0; i < maxRowNumber; i++) {
 		trBody = document.createElement('tr');
 		trBody.classList.add(config.inner.selectors.dataRow);
 		trBody.style.height = config.dimensions.cellHeight + 'px';
@@ -128,7 +132,7 @@ function initTable(config) {
 
 		trBody.appendChild(tdElement);
 
-		for (j = 0; j < config.inner.visibleColumnNumber; j++) {
+		for (j = 0; j < maxColumnNumber; j++) {
 			tdElement = document.createElement('td');
 			tdElement.classList.add(config.inner.selectors.dataCell);
 			tdElement.style.minWidth = config.dimensions.cellWidth + 'px';
@@ -213,7 +217,7 @@ function initTable(config) {
 
 	// Generate fixed body
 
-	for (i = 0; i < config.inner.visibleRowNumber; i++) {
+	for (i = 0; i < maxRowNumber; i++) {
 		trBody = document.createElement('tr');
 		trBody.classList.add(config.inner.selectors.dataRow);
 		trBody.style.height = config.dimensions.cellHeight + 'px';
@@ -238,15 +242,15 @@ function initBuffers(config) {
 	var virtualContainer = document.querySelector('.' + config.selectors.virtualContainer),
 		cellFullWidth = domUtil.getCellFullWidth(config),
 		left = virtualContainer.scrollLeft - virtualContainer.scrollLeft % cellFullWidth - config.inner.colspanOffset * cellFullWidth,
-		right = config.tableWidth - left,
+		right = config.inner.tableOffsetWidth - left,
 		top = virtualContainer.scrollTop,
-		bottom = config.tableHeight - top;
+		bottom = config.inner.tableOffsetHeight - top;
 
-	left = left > config.tableWidth ? config.tableWidth : left;
+	left = left > config.inner.tableOffsetWidth ? config.inner.tableOffsetWidth : left;
 	left = left < config.inner.minBufferWidth ? config.inner.minBufferWidth : left;
-	right = config.tableWidth - left;
-	top = top + config.inner.minBufferHeight > config.tableHeight ? config.tableHeight + config.inner.minBufferHeight : top + config.inner.minBufferHeight;
-	bottom = config.tableHeight - top;
+	right = config.inner.tableOffsetWidth - left;
+	top = top + config.inner.minBufferHeight > config.inner.tableOffsetHeight ? config.inner.tableOffsetHeight + config.inner.minBufferHeight : top + config.inner.minBufferHeight;
+	bottom = config.inner.tableOffsetHeight - top;
 
 	config.inner.leftCellOffset = Math.floor(left / cellFullWidth);
 	config.inner.topCellOffset = Math.floor((top - top % config.dimensions.cellHeight) / config.dimensions.cellHeight);

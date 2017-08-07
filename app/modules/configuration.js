@@ -65,6 +65,7 @@ var STATIC_INNER_ATTRS = {
 		dataRow: 'data-row',
 		dataCell: 'data-cell'
 	},
+	dimensions: {},
 	icons: {
 		sort: {
 			asc: 'fa fa-arrow-down',
@@ -145,8 +146,8 @@ function initInnerCalculatedValues(config) {
 	config.inner.colspanOffset = configUtil.getMaxColspan(config);
 	config.inner.visibleRowNumber = configUtil.getVisibleRowNumber(config);
 	config.inner.visibleColumnNumber = configUtil.getVisibleColumnNumber(config);
-	config.tableWidth = configUtil.getTableWidth(config);
-	config.tableHeight = configUtil.getTableHeight(config);
+	config.inner.tableOffsetWidth = configUtil.getTableOffsetWidth(config);
+	config.inner.tableOffsetHeight = configUtil.getTableOffsetHeight(config);
 
 	// Csak akkor duplikáljunk le egy potenciálisan hatalmas objektumot, ha szükség is lesz rá. Egyelőre csak szűrésnél fog kelleni
 	if (config.filter.enabled) {
