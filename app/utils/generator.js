@@ -33,7 +33,7 @@ function initTable(config) {
 		virtualTbody = document.createElement('tbody'),
 		trHeadBuffer = document.createElement('tr');
 
-	trHeadBuffer.classList.add(config.inner.selectors.bufferRowTopClass);
+	trHeadBuffer.classList.add(config.inner.selectors.bufferRowTop);
 
 	var i, j, trHead, trBody, bufferColumnLeft, bufferColumnRight, bufferRowBottom, tdElement;
 
@@ -70,6 +70,7 @@ function initTable(config) {
 			tdElement = document.createElement('td');
 			tdElement.classList.add(config.inner.selectors.headerCell);
 			tdElement.style.minWidth = config.dimensions.cellWidth + 'px';
+			tdElement.style.padding = config.dimensions.cellPaddingVertical + 'px ' + config.dimensions.cellPaddingHorizontal + 'px';
 			tdElement.innerHTML = domUtil.getHeaderCellHtml(config, tdElement, headerRow[j]);
 
 			if (config.sort.enabled && !headerRow[j].sortDisabled) {
@@ -102,6 +103,7 @@ function initTable(config) {
 			tdElement = document.createElement('td');
 			tdElement.classList.add(config.inner.selectors.filterCell);
 			tdElement.style.minWidth = config.dimensions.cellWidth + 'px';
+			tdElement.style.padding = config.dimensions.cellPaddingVertical + 'px ' + config.dimensions.cellPaddingHorizontal + 'px';
 			tdElement.innerHTML = domUtil.getFilterCellHtml(config, tdElement, {});
 
 			trHead.appendChild(tdElement);
@@ -130,6 +132,7 @@ function initTable(config) {
 			tdElement = document.createElement('td');
 			tdElement.classList.add(config.inner.selectors.dataCell);
 			tdElement.style.minWidth = config.dimensions.cellWidth + 'px';
+			tdElement.style.padding = config.dimensions.cellPaddingVertical + 'px ' + config.dimensions.cellPaddingHorizontal + 'px';
 
 			trBody.appendChild(tdElement);
 		}
@@ -152,7 +155,7 @@ function initTable(config) {
 
 	config.inner.bufferLeft = document.querySelectorAll('.' + config.inner.selectors.bufferColumnLeft);
 	config.inner.bufferRight = document.querySelectorAll('.' + config.inner.selectors.bufferColumnRight);
-	config.inner.bufferTop = document.querySelectorAll('.' + config.inner.selectors.bufferRowTopClass);
+	config.inner.bufferTop = document.querySelectorAll('.' + config.inner.selectors.bufferRowTop);
 	config.inner.bufferBottom = document.querySelectorAll('.' + config.inner.selectors.bufferRowBottom);
 
 	// Generate fixed table
@@ -199,6 +202,7 @@ function initTable(config) {
 			tdElement = document.createElement('td');
 			tdElement.classList.add(config.inner.selectors.filterCell);
 			tdElement.style.minWidth = config.dimensions.cellWidth + 'px';
+			tdElement.style.padding = config.dimensions.cellPaddingVertical + 'px ' + config.dimensions.cellPaddingHorizontal + 'px';
 			tdElement.innerHTML = domUtil.getFilterCellHtml(config, tdElement, {});
 
 			trHead.appendChild(tdElement);
@@ -217,6 +221,7 @@ function initTable(config) {
 		for (j = 0; j < config.fixedHeaders[config.inner.indexOfCellKeyHeader].length; j++) {
 			tdElement = document.createElement('td');
 			tdElement.classList.add(config.inner.selectors.dataCell);
+			tdElement.style.padding = config.dimensions.cellPaddingVertical + 'px ' + config.dimensions.cellPaddingHorizontal + 'px';
 			tdElement.style.minWidth = config.dimensions.cellWidth + 'px';
 
 			trBody.appendChild(tdElement);
@@ -230,9 +235,11 @@ function initTable(config) {
 }
 
 function initBuffers(config) {
-	var left = document.querySelector('.' + config.selectors.virtualContainer).scrollLeft - document.querySelector('.' + config.selectors.virtualContainer).scrollLeft % config.dimensions.cellWidth - config.inner.colspanOffset * config.dimensions.cellWidth,
+	var virtualContainer = document.querySelector('.' + config.selectors.virtualContainer),
+		cellFullWidth = domUtil.getCellFullWidth(config),
+		left = virtualContainer.scrollLeft - virtualContainer.scrollLeft % cellFullWidth - config.inner.colspanOffset * cellFullWidth,
 		right = config.tableWidth - left,
-		top = document.querySelector('.' + config.selectors.virtualContainer).scrollTop,
+		top = virtualContainer.scrollTop,
 		bottom = config.tableHeight - top;
 
 	left = left > config.tableWidth ? config.tableWidth : left;
@@ -241,7 +248,7 @@ function initBuffers(config) {
 	top = top + config.inner.minBufferHeight > config.tableHeight ? config.tableHeight + config.inner.minBufferHeight : top + config.inner.minBufferHeight;
 	bottom = config.tableHeight - top;
 
-	config.inner.leftCellOffset = Math.floor(left / config.dimensions.cellWidth);
+	config.inner.leftCellOffset = Math.floor(left / cellFullWidth);
 	config.inner.topCellOffset = Math.floor((top - top % config.dimensions.cellHeight) / config.dimensions.cellHeight);
 
 	config.inner.bufferLeft.forEach(function(el) {

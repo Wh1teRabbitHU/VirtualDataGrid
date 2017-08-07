@@ -1,5 +1,7 @@
 'use strict';
 
+var domUtil = require('./dom');
+
 function calculateVirtualContainerHeight(config, height) {
 	if (typeof height == 'undefined') {
 		return height;
@@ -44,12 +46,12 @@ function getVisibleRowNumber(config) {
 }
 
 function getVisibleColumnNumber(config) {
-	return Math.floor(document.querySelector('.' + config.selectors.virtualContainer).offsetWidth / config.dimensions.cellWidth +
+	return Math.floor(document.querySelector('.' + config.selectors.virtualContainer).offsetWidth / domUtil.getCellFullWidth(config) +
 		(config.inner.colspanOffset > 2 ? config.inner.colspanOffset : 2) + config.inner.colspanOffset);
 }
 
 function getTableWidth(config) {
-	return (config.headers[config.inner.indexOfCellKeyHeader].length - config.inner.visibleColumnNumber) * config.dimensions.cellWidth;
+	return (config.headers[config.inner.indexOfCellKeyHeader].length - config.inner.visibleColumnNumber) * domUtil.getCellFullWidth(config);
 }
 
 function getTableHeight(config) {

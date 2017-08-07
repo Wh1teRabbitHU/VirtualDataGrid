@@ -17,7 +17,10 @@ var DEFAULTS = {
 	dimensions: {
 		cellWidth: 150,
 		cellHeight: 50,
-		containerHeight: configUtil.getDefaultContainerHeight,
+		cellPaddingVertical: 4,
+		cellPaddingHorizontal: 8,
+		cellBorderWidth: 1,
+		containerHeight: configUtil.getDefaultContainerHeight
 	},
 	edit: {
 		enabled: false
@@ -94,6 +97,9 @@ function init(config, options) {
 	updateValue(config, options, 'selectors.saveButton');
 	updateValue(config, options, 'dimensions.cellWidth');
 	updateValue(config, options, 'dimensions.cellHeight');
+	updateValue(config, options, 'dimensions.cellPaddingVertical');
+	updateValue(config, options, 'dimensions.cellPaddingHorizontal');
+	updateValue(config, options, 'dimensions.cellBorderWidth');
 
 	calculateVirtualContainerHeight(config, options);
 

@@ -149,6 +149,10 @@ function findParentNode(child, selector) {
 	return findParentNode(child.parentNode, selector);
 }
 
+function getCellFullWidth(config) {
+	return config.dimensions.cellPaddingHorizontal * 2 + config.dimensions.cellWidth + config.dimensions.cellBorderWidth;
+}
+
 module.exports = {
 	updateCell: updateCell,
 	updateTable: updateTable,
@@ -159,5 +163,6 @@ module.exports = {
 	indexOfElement: indexOfElement,
 	getHeaderCellHtml: getHeaderCellHtml,
 	getFilterCellHtml: getFilterCellHtml,
-	findParentNode: findParentNode
+	findParentNode: findParentNode,
+	getCellFullWidth: getCellFullWidth
 };
