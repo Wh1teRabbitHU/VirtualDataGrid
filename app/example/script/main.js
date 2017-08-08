@@ -66,7 +66,7 @@ window.addEventListener('load', function() {
 			enabled: true
 		},
 		filter: {
-			enabled: false
+			enabled: true
 		}
 	});
 });

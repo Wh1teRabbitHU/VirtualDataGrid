@@ -61,6 +61,20 @@ function updateTable(config) {
 			cell.setAttribute('data-type', cellObj.type || 'text');
 			cell.innerHTML = getFilterCellHtml(config, cell, filterObj);
 		});
+
+		document.querySelectorAll('.' + config.selectors.fixedTable + ' td.' + config.inner.selectors.filterCell).forEach(function(cell, cellCount) {
+			var cellObj = config.fixedHeaders[config.inner.indexOfCellKeyHeader][cellCount],
+				filterObj = config.inner.filters[cellObj.key] || {},
+				currentFilterAttr = cell.getAttribute('data-attribute');
+
+			if (cellObj.key === currentFilterAttr) {
+				return;
+			}
+
+			cell.setAttribute('data-attribute', cellObj.key);
+			cell.setAttribute('data-type', cellObj.type || 'text');
+			cell.innerHTML = getFilterCellHtml(config, cell, filterObj);
+		});
 	}
 
 	document.querySelectorAll('.' + config.selectors.virtualTable + ' tr.' + config.inner.selectors.dataRow).forEach(function(row, rowNumber) {

@@ -34,10 +34,17 @@ function getFixedCell(config, rowNumber, columnNumber) {
 	var cellObj = null,
 		rowObj = config.fixedHeaders[config.inner.indexOfCellKeyHeader];
 
-	cellObj = new Cell({
-		key: rowObj[columnNumber].key,
-		value: config.dataSource[rowNumber][rowObj[columnNumber].key]
-	});
+	if (rowNumber >= config.dataSource.length) {
+		cellObj = new Cell({
+			key: rowObj[columnNumber].key,
+			value: ''
+		});
+	} else {
+		cellObj = new Cell({
+			key: rowObj[columnNumber].key,
+			value: config.dataSource[rowNumber][rowObj[columnNumber].key]
+		});
+	}
 
 	return cellObj;
 }

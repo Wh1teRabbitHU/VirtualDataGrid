@@ -212,7 +212,7 @@ function initTable(config) {
 			trHead.appendChild(tdElement);
 		}
 
-		virtualThead.appendChild(trHead);
+		fixedThead.appendChild(trHead);
 	}
 
 	// Generate fixed body
