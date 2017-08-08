@@ -206,6 +206,7 @@ function initTable(config) {
 			tdElement = document.createElement('td');
 			tdElement.classList.add(config.inner.selectors.filterCell);
 			tdElement.style.minWidth = config.dimensions.cellWidth + 'px';
+			tdElement.style.maxWidth = config.dimensions.cellWidth + 'px';
 			tdElement.style.padding = config.dimensions.cellPaddingVertical + 'px ' + config.dimensions.cellPaddingHorizontal + 'px';
 			tdElement.innerHTML = domUtil.getFilterCellHtml(config, tdElement, {});
 

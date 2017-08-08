@@ -66,6 +66,13 @@ function finishEditingFilter(config, cell) {
 		});
 	});
 
+	// TODO: Átírni toggle-ra
+	if (config.dataSource.length < config.inner.visibleRowNumber) {
+		document.querySelector('.' + config.selectors.virtualContainer).classList.add('no-vertical-scroll');
+	} else {
+		document.querySelector('.' + config.selectors.virtualContainer).classList.remove('no-vertical-scroll');
+	}
+
 	domUtil.recalculateDimensions(config);
 	domUtil.updateBuffers(config);
 	domUtil.updateTable(config);

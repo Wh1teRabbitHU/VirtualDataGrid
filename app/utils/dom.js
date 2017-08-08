@@ -101,8 +101,8 @@ function updateBuffers(config) {
 	left = left > config.inner.tableOffsetWidth ? config.inner.tableOffsetWidth : left;
 	left = left < config.inner.minBufferWidth ? config.inner.minBufferWidth : left;
 	right = config.inner.tableOffsetWidth - left;
-	top = top + config.inner.minBufferHeight > config.inner.tableOffsetHeight ? config.inner.tableOffsetHeight + config.inner.minBufferHeight : top + config.inner.minBufferHeight;
-	bottom = config.inner.tableOffsetHeight > top ? config.inner.tableOffsetHeight - top : top;
+	top = top + config.inner.minBufferHeight > config.inner.tableOffsetHeight ? config.inner.minBufferHeight : top + config.inner.minBufferHeight;
+	bottom = config.inner.tableOffsetHeight > top ? config.inner.tableOffsetHeight - top : config.inner.minBufferHeight;
 
 	config.inner.leftCellOffset = Math.floor(left / cellFullWidth);
 	config.inner.topCellOffset = Math.floor((top - top % config.dimensions.cellHeight) / config.dimensions.cellHeight);
@@ -122,6 +122,8 @@ function updateBuffers(config) {
 }
 
 function recalculateDimensions(config) {
+	document.querySelector('.' + config.selectors.virtualContainer).scrollTop = 0;
+
 	config.inner.tableOffsetWidth = configUtil.getTableOffsetWidth(config);
 	config.inner.tableOffsetHeight = configUtil.getTableOffsetHeight(config);
 }
