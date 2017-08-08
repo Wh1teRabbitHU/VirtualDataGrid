@@ -29,7 +29,7 @@ var DEFAULTS = {
 		enabled: false
 	},
 	sort: {
-		enabled: true,
+		enabled: false,
 		default: configUtil.getSortDefault,
 		comparator: null
 	},
