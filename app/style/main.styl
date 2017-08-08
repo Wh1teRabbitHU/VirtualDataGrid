@@ -11,6 +11,11 @@ $cTableRowBorder = #d3d3d3
 .fixed-container
 	overflow-anchor none
 
+	&.no-vertical-scroll
+
+		.buffer-row-bottom
+			display none
+
 	.hidden
 		display none
 
@@ -33,15 +38,15 @@ $cTableRowBorder = #d3d3d3
 			font-size 15px
 
 	.header-cell,
+	.filter-cell,
 	.data-cell
-		padding 4px 8px
 		border-right 1px solid $cTableRowBorder
 		border-bottom 1px solid $cTableRowBorder
+		background-color $dirtyWhite
 		font-size 13px
 
 		&.editing-cell
 			padding 0
-			background-color $dirtyWhite
 
 			input
 				color $darkGray
@@ -72,15 +77,36 @@ $cTableRowBorder = #d3d3d3
 	.buffer-column-right
 		border none
 
-	.sort-column
+	.sort-cell
 		cursor pointer
 
-	.sort-icon
-		margin-right 4px
-		margin-left -24px
+	.sort-icon,
+	.filter-search-icon,
+	.filter-clear-icon
 		padding 3px
 		border 1px solid rgba(0, 0, 0, 0)
 		border-radius 4px
 
 		&:hover
 			border-color $gray
+
+	.filter-clear-icon
+		float right
+		margin 0 2px
+
+	.sort-icon
+		margin-right 4px
+		margin-left -24px
+
+	.filter-cell
+		cursor pointer
+
+	.filter-container
+		display flex
+		align-items center
+
+		& > *
+			margin 0
+
+		input
+			width 90%

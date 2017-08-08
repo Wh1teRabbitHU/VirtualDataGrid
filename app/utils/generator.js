@@ -31,9 +31,13 @@ function initTable(config) {
 	// Generate virtual table
 	var virtualThead = document.createElement('thead'),
 		virtualTbody = document.createElement('tbody'),
-		trHeadBuffer = document.createElement('tr');
+		trHeadBuffer = document.createElement('tr'),
+		columnsNumber = config.headers[config.inner.indexOfCellKeyHeader].length,
+		rowsNumber = config.dataSource.length,
+		maxColumnNumber = config.inner.visibleColumnNumber >= columnsNumber ? columnsNumber : config.inner.visibleColumnNumber,
+		maxRowNumber = config.inner.visibleRowNumber >= rowsNumber ? rowsNumber : config.inner.visibleRowNumber;
 
-	trHeadBuffer.classList.add(config.inner.selectors.bufferRowTopClass);
+	trHeadBuffer.classList.add(config.inner.selectors.bufferRowTop);
 
 	var i, j, trHead, trBody, bufferColumnLeft, bufferColumnRight, bufferRowBottom, tdElement;
 
@@ -43,7 +47,7 @@ function initTable(config) {
 
 	trHeadBuffer.appendChild(bufferColumnLeft);
 
-	for (i = 0; i < config.inner.visibleColumnNumber; i++) {
+	for (i = 0; i < maxColumnNumber; i++) {
 		tdElement = document.createElement('td');
 		tdElement.style.minWidth = config.dimensions.cellWidth + 'px';
 		trHeadBuffer.appendChild(tdElement);
@@ -66,14 +70,15 @@ function initTable(config) {
 
 		trHead.appendChild(tdElement);
 
-		for (j = 0; j < config.inner.visibleColumnNumber; j++) {
+		for (j = 0; j < maxColumnNumber; j++) {
 			tdElement = document.createElement('td');
 			tdElement.classList.add(config.inner.selectors.headerCell);
 			tdElement.style.minWidth = config.dimensions.cellWidth + 'px';
+			tdElement.style.padding = config.dimensions.cellPaddingVertical + 'px ' + config.dimensions.cellPaddingHorizontal + 'px';
 			tdElement.innerHTML = domUtil.getHeaderCellHtml(config, tdElement, headerRow[j]);
 
 			if (config.sort.enabled && !headerRow[j].sortDisabled) {
-				tdElement.classList.add(config.inner.selectors.sortColumn);
+				tdElement.classList.add(config.inner.selectors.sortCell);
 			}
 
 			trHead.appendChild(tdElement);
@@ -87,8 +92,37 @@ function initTable(config) {
 		virtualThead.appendChild(trHead);
 	});
 
+	// Generate virtual filter row
+	if (config.filter.enabled) {
+		trHead = document.createElement('tr');
+		trHead.classList.add(config.inner.selectors.filterRow);
+		trHead.style.height = config.dimensions.cellHeight + 'px';
+
+		tdElement = document.createElement('td');
+		tdElement.classList.add(config.inner.selectors.bufferColumnLeft);
+
+		trHead.appendChild(tdElement);
+
+		for (j = 0; j < maxColumnNumber; j++) {
+			tdElement = document.createElement('td');
+			tdElement.classList.add(config.inner.selectors.filterCell);
+			tdElement.style.minWidth = config.dimensions.cellWidth + 'px';
+			tdElement.style.padding = config.dimensions.cellPaddingVertical + 'px ' + config.dimensions.cellPaddingHorizontal + 'px';
+			tdElement.innerHTML = domUtil.getFilterCellHtml(config, tdElement, {});
+
+			trHead.appendChild(tdElement);
+		}
+
+		tdElement = document.createElement('td');
+		tdElement.classList.add(config.inner.selectors.bufferColumnRight);
+
+		trHead.appendChild(tdElement);
+
+		virtualThead.appendChild(trHead);
+	}
+
 	// Generate virtual body
-	for (i = 0; i < config.inner.visibleRowNumber; i++) {
+	for (i = 0; i < maxRowNumber; i++) {
 		trBody = document.createElement('tr');
 		trBody.classList.add(config.inner.selectors.dataRow);
 		trBody.style.height = config.dimensions.cellHeight + 'px';
@@ -98,10 +132,11 @@ function initTable(config) {
 
 		trBody.appendChild(tdElement);
 
-		for (j = 0; j < config.inner.visibleColumnNumber; j++) {
+		for (j = 0; j < maxColumnNumber; j++) {
 			tdElement = document.createElement('td');
 			tdElement.classList.add(config.inner.selectors.dataCell);
 			tdElement.style.minWidth = config.dimensions.cellWidth + 'px';
+			tdElement.style.padding = config.dimensions.cellPaddingVertical + 'px ' + config.dimensions.cellPaddingHorizontal + 'px';
 
 			trBody.appendChild(tdElement);
 		}
@@ -124,7 +159,7 @@ function initTable(config) {
 
 	config.inner.bufferLeft = document.querySelectorAll('.' + config.inner.selectors.bufferColumnLeft);
 	config.inner.bufferRight = document.querySelectorAll('.' + config.inner.selectors.bufferColumnRight);
-	config.inner.bufferTop = document.querySelectorAll('.' + config.inner.selectors.bufferRowTopClass);
+	config.inner.bufferTop = document.querySelectorAll('.' + config.inner.selectors.bufferRowTop);
 	config.inner.bufferBottom = document.querySelectorAll('.' + config.inner.selectors.bufferRowBottom);
 
 	// Generate fixed table
@@ -157,9 +192,33 @@ function initTable(config) {
 		fixedThead.appendChild(trHead);
 	}
 
+	// Generate fixed filter row
+
+	if (config.filter.enabled &&
+		config.fixedHeaders.length > 0 &&
+		config.fixedHeaders[config.inner.indexOfCellKeyHeader].length > 0) {
+
+		trHead = document.createElement('tr');
+		trHead.classList.add(config.inner.selectors.filterRow);
+		trHead.style.height = config.dimensions.cellHeight + 'px';
+
+		for (j = 0; j < config.fixedHeaders[config.inner.indexOfCellKeyHeader].length; j++) {
+			tdElement = document.createElement('td');
+			tdElement.classList.add(config.inner.selectors.filterCell);
+			tdElement.style.minWidth = config.dimensions.cellWidth + 'px';
+			tdElement.style.maxWidth = config.dimensions.cellWidth + 'px';
+			tdElement.style.padding = config.dimensions.cellPaddingVertical + 'px ' + config.dimensions.cellPaddingHorizontal + 'px';
+			tdElement.innerHTML = domUtil.getFilterCellHtml(config, tdElement, {});
+
+			trHead.appendChild(tdElement);
+		}
+
+		fixedThead.appendChild(trHead);
+	}
+
 	// Generate fixed body
 
-	for (i = 0; i < config.inner.visibleRowNumber; i++) {
+	for (i = 0; i < maxRowNumber; i++) {
 		trBody = document.createElement('tr');
 		trBody.classList.add(config.inner.selectors.dataRow);
 		trBody.style.height = config.dimensions.cellHeight + 'px';
@@ -167,6 +226,7 @@ function initTable(config) {
 		for (j = 0; j < config.fixedHeaders[config.inner.indexOfCellKeyHeader].length; j++) {
 			tdElement = document.createElement('td');
 			tdElement.classList.add(config.inner.selectors.dataCell);
+			tdElement.style.padding = config.dimensions.cellPaddingVertical + 'px ' + config.dimensions.cellPaddingHorizontal + 'px';
 			tdElement.style.minWidth = config.dimensions.cellWidth + 'px';
 
 			trBody.appendChild(tdElement);
@@ -179,37 +239,7 @@ function initTable(config) {
 	document.querySelector('.' + config.selectors.fixedTable).appendChild(fixedTbody);
 }
 
-function initBuffers(config) {
-	var left = document.querySelector('.' + config.selectors.virtualContainer).scrollLeft - document.querySelector('.' + config.selectors.virtualContainer).scrollLeft % config.dimensions.cellWidth - config.inner.colspanOffset * config.dimensions.cellWidth,
-		right = config.tableWidth - left,
-		top = document.querySelector('.' + config.selectors.virtualContainer).scrollTop,
-		bottom = config.tableHeight - top;
-
-	left = left > config.tableWidth ? config.tableWidth : left;
-	left = left < config.inner.minBufferWidth ? config.inner.minBufferWidth : left;
-	right = config.tableWidth - left;
-	top = top + config.inner.minBufferHeight > config.tableHeight ? config.tableHeight + config.inner.minBufferHeight : top + config.inner.minBufferHeight;
-	bottom = config.tableHeight - top;
-
-	config.inner.leftCellOffset = Math.floor(left / config.dimensions.cellWidth);
-	config.inner.topCellOffset = Math.floor((top - top % config.dimensions.cellHeight) / config.dimensions.cellHeight);
-
-	config.inner.bufferLeft.forEach(function(el) {
-		el.style.minWidth = left + 'px';
-	});
-	config.inner.bufferRight.forEach(function(el) {
-		el.style.minWidth = right + 'px';
-	});
-	config.inner.bufferTop.forEach(function(el) {
-		el.style.height = top + 'px';
-	});
-	config.inner.bufferBottom.forEach(function(el) {
-		el.style.height = bottom + 'px';
-	});
-}
-
 module.exports = {
 	initTable: initTable,
-	initContainers: initContainers,
-	initBuffers: initBuffers
+	initContainers: initContainers
 };

@@ -17,7 +17,10 @@ var DEFAULTS = {
 	dimensions: {
 		cellWidth: 150,
 		cellHeight: 50,
-		containerHeight: configUtil.getDefaultContainerHeight,
+		cellPaddingVertical: 4,
+		cellPaddingHorizontal: 8,
+		cellBorderWidth: 1,
+		containerHeight: configUtil.getDefaultContainerHeight
 	},
 	edit: {
 		enabled: false
@@ -52,20 +55,31 @@ var STATIC_INNER_ATTRS = {
 		bufferColumnRight: 'buffer-column-right',
 		headerRow: 'header-row',
 		headerCell: 'header-cell',
+		sortCell: 'sort-cell',
+		sortIcon: 'sort-icon',
+		filterRow: 'filter-row',
+		filterCell: 'filter-cell',
+		filterContainer: 'filter-container',
+		filterSearchIcon: 'filter-search-icon',
+		filterClearIcon: 'filter-clear-icon',
 		dataRow: 'data-row',
-		dataCell: 'data-cell',
-		sortColumn: 'sort-column',
-		sortIcon: 'sort-icon'
+		dataCell: 'data-cell'
 	},
+	dimensions: {},
 	icons: {
 		sort: {
 			asc: 'fa fa-arrow-down',
 			desc: 'fa fa-arrow-up'
+		},
+		filter: {
+			search: 'fa fa-search',
+			clear: 'fa fa-times'
 		}
 	},
 	sort: { },
+	filters: { },
 	minBufferWidth: 2,
-	minBufferHeight: 2, // Azért van rá szükség, mert ha nincs megadva, akkor ugrik egyett a scroll ha a végére vagy az elejére értünk a táblázatban
+	minBufferHeight: 18, // Azért van rá szükség, mert ha nincs megadva, akkor ugrik egyett a scroll ha a végére vagy az elejére értünk a táblázatban
 	leftCellOffset: 0,
 	topCellOffset: 0,
 	editedCells: []
@@ -84,6 +98,9 @@ function init(config, options) {
 	updateValue(config, options, 'selectors.saveButton');
 	updateValue(config, options, 'dimensions.cellWidth');
 	updateValue(config, options, 'dimensions.cellHeight');
+	updateValue(config, options, 'dimensions.cellPaddingVertical');
+	updateValue(config, options, 'dimensions.cellPaddingHorizontal');
+	updateValue(config, options, 'dimensions.cellBorderWidth');
 
 	calculateVirtualContainerHeight(config, options);
 
@@ -129,8 +146,13 @@ function initInnerCalculatedValues(config) {
 	config.inner.colspanOffset = configUtil.getMaxColspan(config);
 	config.inner.visibleRowNumber = configUtil.getVisibleRowNumber(config);
 	config.inner.visibleColumnNumber = configUtil.getVisibleColumnNumber(config);
-	config.tableWidth = configUtil.getTableWidth(config);
-	config.tableHeight = configUtil.getTableHeight(config);
+	config.inner.tableOffsetWidth = configUtil.getTableOffsetWidth(config);
+	config.inner.tableOffsetHeight = configUtil.getTableOffsetHeight(config);
+
+	// Csak akkor duplikáljunk le egy potenciálisan hatalmas objektumot, ha szükség is lesz rá. Egyelőre csak szűrésnél fog kelleni
+	if (config.filter.enabled) {
+		config.inner.originalDataSource = [].concat(config.dataSource);
+	}
 }
 
 function updateValue(config, options, key) {

@@ -8,6 +8,13 @@ function getCell(config, rowNumber, columnNumber) {
 		}),
 		rowObj = config.headers[config.inner.indexOfCellKeyHeader];
 
+	if (rowNumber >= config.dataSource.length) {
+		cellObj = new Cell({
+			key: rowObj[columnNumber].key,
+			value: ''
+		});
+	}
+
 	if (typeof cellObj == 'undefined') {
 		cellObj = new Cell({
 			key: rowObj[columnNumber].key,
@@ -27,10 +34,17 @@ function getFixedCell(config, rowNumber, columnNumber) {
 	var cellObj = null,
 		rowObj = config.fixedHeaders[config.inner.indexOfCellKeyHeader];
 
-	cellObj = new Cell({
-		key: rowObj[columnNumber].key,
-		value: config.dataSource[rowNumber][rowObj[columnNumber].key]
-	});
+	if (rowNumber >= config.dataSource.length) {
+		cellObj = new Cell({
+			key: rowObj[columnNumber].key,
+			value: ''
+		});
+	} else {
+		cellObj = new Cell({
+			key: rowObj[columnNumber].key,
+			value: config.dataSource[rowNumber][rowObj[columnNumber].key]
+		});
+	}
 
 	return cellObj;
 }

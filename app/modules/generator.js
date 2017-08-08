@@ -9,8 +9,8 @@ function generateTable(config, options) {
 	configuration.init(config, options);
 
 	generatorUtil.initTable(config);
-	generatorUtil.initBuffers(config);
 
+	domUtil.updateBuffers(config);
 	domUtil.updateTable(config);
 
 	eventHandlerUtil.addEvents(config);

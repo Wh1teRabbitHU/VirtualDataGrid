@@ -44,16 +44,24 @@ function getVisibleRowNumber(config) {
 }
 
 function getVisibleColumnNumber(config) {
-	return Math.floor(document.querySelector('.' + config.selectors.virtualContainer).offsetWidth / config.dimensions.cellWidth +
+	return Math.floor(document.querySelector('.' + config.selectors.virtualContainer).offsetWidth / getCellFullWidth(config) +
 		(config.inner.colspanOffset > 2 ? config.inner.colspanOffset : 2) + config.inner.colspanOffset);
 }
 
-function getTableWidth(config) {
-	return (config.headers[config.inner.indexOfCellKeyHeader].length - config.inner.visibleColumnNumber) * config.dimensions.cellWidth;
+function getTableOffsetWidth(config) {
+	var tabbleOffsetColumns = config.headers[config.inner.indexOfCellKeyHeader].length < config.inner.visibleColumnNumber ? 0 : config.headers[config.inner.indexOfCellKeyHeader].length - config.inner.visibleColumnNumber;
+
+	return tabbleOffsetColumns * getCellFullWidth(config);
 }
 
-function getTableHeight(config) {
-	return (config.dataSource.length - config.inner.visibleRowNumber + 1) * config.dimensions.cellHeight;
+function getTableOffsetHeight(config) {
+	var tableOffsetRows = config.dataSource.length < config.inner.visibleRowNumber ? 0 : config.dataSource.length - config.inner.visibleRowNumber + 1;
+
+	return tableOffsetRows * config.dimensions.cellHeight;
+}
+
+function getCellFullWidth(config) {
+	return config.dimensions.cellPaddingHorizontal * 2 + config.dimensions.cellWidth + config.dimensions.cellBorderWidth;
 }
 
 function nil() {
@@ -68,7 +76,8 @@ module.exports = {
 	getMaxColspan: getMaxColspan,
 	getVisibleRowNumber: getVisibleRowNumber,
 	getVisibleColumnNumber: getVisibleColumnNumber,
-	getTableWidth: getTableWidth,
-	getTableHeight: getTableHeight,
+	getTableOffsetWidth: getTableOffsetWidth,
+	getTableOffsetHeight: getTableOffsetHeight,
+	getCellFullWidth: getCellFullWidth,
 	nil: nil
 };
