@@ -101,7 +101,7 @@ function updateBuffers(config) {
 	left = left > config.inner.tableOffsetWidth ? config.inner.tableOffsetWidth : left;
 	left = left < config.inner.minBufferWidth ? config.inner.minBufferWidth : left;
 	right = config.inner.tableOffsetWidth - left;
-	top = top + config.inner.minBufferHeight > config.inner.tableOffsetHeight ? config.inner.minBufferHeight : top + config.inner.minBufferHeight;
+	top = top + config.inner.minBufferHeight > config.inner.tableOffsetHeight ? config.inner.tableOffsetHeight - config.inner.minBufferHeight : top + config.inner.minBufferHeight;
 	bottom = config.inner.tableOffsetHeight > top ? config.inner.tableOffsetHeight - top : config.inner.minBufferHeight;
 
 	config.inner.leftCellOffset = Math.floor(left / cellFullWidth);

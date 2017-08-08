@@ -1,6 +1,6 @@
 {
   "name": "virtual-data-grid",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "description": "Virtual data grid written in javascript. Can be used to display and manipulate extensive amount of data.",
   "main": "index.js",
   "scripts": {

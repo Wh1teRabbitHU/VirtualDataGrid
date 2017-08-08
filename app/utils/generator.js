@@ -21,6 +21,7 @@ function initContainers(config) {
 	virtualContainer.appendChild(virtualTable);
 
 	virtualContainer.style.maxHeight = config.dimensions.containerHeight + 'px';
+	virtualContainer.style.height = config.dimensions.containerHeight + 'px';
 	virtualContainer.style.overflow = 'scroll';
 
 	fixedContainer.style.padding = config.inner.minBufferHeight + 'px 0';
