@@ -238,39 +238,7 @@ function initTable(config) {
 	document.querySelector('.' + config.selectors.fixedTable).appendChild(fixedTbody);
 }
 
-function initBuffers(config) {
-	var virtualContainer = document.querySelector('.' + config.selectors.virtualContainer),
-		cellFullWidth = domUtil.getCellFullWidth(config),
-		left = virtualContainer.scrollLeft - virtualContainer.scrollLeft % cellFullWidth - config.inner.colspanOffset * cellFullWidth,
-		right = config.inner.tableOffsetWidth - left,
-		top = virtualContainer.scrollTop,
-		bottom = config.inner.tableOffsetHeight - top;
-
-	left = left > config.inner.tableOffsetWidth ? config.inner.tableOffsetWidth : left;
-	left = left < config.inner.minBufferWidth ? config.inner.minBufferWidth : left;
-	right = config.inner.tableOffsetWidth - left;
-	top = top + config.inner.minBufferHeight > config.inner.tableOffsetHeight ? config.inner.tableOffsetHeight + config.inner.minBufferHeight : top + config.inner.minBufferHeight;
-	bottom = config.inner.tableOffsetHeight - top;
-
-	config.inner.leftCellOffset = Math.floor(left / cellFullWidth);
-	config.inner.topCellOffset = Math.floor((top - top % config.dimensions.cellHeight) / config.dimensions.cellHeight);
-
-	config.inner.bufferLeft.forEach(function(el) {
-		el.style.minWidth = left + 'px';
-	});
-	config.inner.bufferRight.forEach(function(el) {
-		el.style.minWidth = right + 'px';
-	});
-	config.inner.bufferTop.forEach(function(el) {
-		el.style.height = top + 'px';
-	});
-	config.inner.bufferBottom.forEach(function(el) {
-		el.style.height = bottom + 'px';
-	});
-}
-
 module.exports = {
 	initTable: initTable,
-	initContainers: initContainers,
-	initBuffers: initBuffers
+	initContainers: initContainers
 };

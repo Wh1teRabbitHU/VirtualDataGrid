@@ -5,7 +5,6 @@ var EventArguments = require('../models/event-arguments');
 var domUtil       = require('../utils/dom'),
 	tableUtil     = require('../utils/table'),
 	editUtil      = require('../utils/edit'),
-	generatorUtil = require('../utils/generator'),
 	sortUtil      = require('../utils/sort'),
 	filterUtil    = require('../utils/filter');
 
@@ -29,7 +28,7 @@ function onWheelEventHandler(event) {
 
 function onScrollEventHandler(event, config) {
 	domUtil.resetEditingCell(config, instances.onInputBlurEventHandler);
-	generatorUtil.initBuffers(config);
+	domUtil.updateBuffers(config);
 	domUtil.updateTable(config);
 }
 
@@ -72,8 +71,13 @@ function onClickCellEventHandler(event, config) {
 	}
 
 	var rowNumber = domUtil.indexOfElement(event.target.parentNode) + config.inner.topCellOffset,
-		columnNumber = domUtil.indexOfElement(event.target) - 1 + config.inner.leftCellOffset,
-		editedObj = tableUtil.getCell(config, rowNumber, columnNumber),
+		columnNumber = domUtil.indexOfElement(event.target) - 1 + config.inner.leftCellOffset;
+
+	if (rowNumber >= config.dataSource.length) {
+		return;
+	}
+
+	var editedObj = tableUtil.getCell(config, rowNumber, columnNumber),
 		input = document.createElement('input');
 
 	input.setAttribute('type', 'text');

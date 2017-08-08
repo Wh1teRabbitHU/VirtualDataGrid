@@ -66,6 +66,8 @@ function finishEditingFilter(config, cell) {
 		});
 	});
 
+	domUtil.recalculateDimensions(config);
+	domUtil.updateBuffers(config);
 	domUtil.updateTable(config);
 }
 

@@ -1,7 +1,5 @@
 'use strict';
 
-var domUtil = require('./dom');
-
 function calculateVirtualContainerHeight(config, height) {
 	if (typeof height == 'undefined') {
 		return height;
@@ -46,20 +44,24 @@ function getVisibleRowNumber(config) {
 }
 
 function getVisibleColumnNumber(config) {
-	return Math.floor(document.querySelector('.' + config.selectors.virtualContainer).offsetWidth / domUtil.getCellFullWidth(config) +
+	return Math.floor(document.querySelector('.' + config.selectors.virtualContainer).offsetWidth / getCellFullWidth(config) +
 		(config.inner.colspanOffset > 2 ? config.inner.colspanOffset : 2) + config.inner.colspanOffset);
 }
 
 function getTableOffsetWidth(config) {
 	var tabbleOffsetColumns = config.headers[config.inner.indexOfCellKeyHeader].length < config.inner.visibleColumnNumber ? 0 : config.headers[config.inner.indexOfCellKeyHeader].length - config.inner.visibleColumnNumber;
 
-	return tabbleOffsetColumns * domUtil.getCellFullWidth(config);
+	return tabbleOffsetColumns * getCellFullWidth(config);
 }
 
 function getTableOffsetHeight(config) {
 	var tableOffsetRows = config.dataSource.length < config.inner.visibleRowNumber ? 0 : config.dataSource.length - config.inner.visibleRowNumber + 1;
 
 	return tableOffsetRows * config.dimensions.cellHeight;
+}
+
+function getCellFullWidth(config) {
+	return config.dimensions.cellPaddingHorizontal * 2 + config.dimensions.cellWidth + config.dimensions.cellBorderWidth;
 }
 
 function nil() {
@@ -76,5 +78,6 @@ module.exports = {
 	getVisibleColumnNumber: getVisibleColumnNumber,
 	getTableOffsetWidth: getTableOffsetWidth,
 	getTableOffsetHeight: getTableOffsetHeight,
+	getCellFullWidth: getCellFullWidth,
 	nil: nil
 };

@@ -1,6 +1,7 @@
 'use strict';
 
-var tableUtil = require('./table');
+var tableUtil = require('./table'),
+	configUtil = require('./configuration');
 
 function indexOfElement(element) {
 	var collection = element.parentNode.childNodes;
@@ -20,10 +21,9 @@ function updateCell(config, cell, cellObj) {
 }
 
 function updateTable(config) {
-	var countRow = 0, // TODO: kiszedni, mivel a foreach függvény második paramétere egy counter
-		colspan = 1;
+	var colspan = 1;
 
-	document.querySelectorAll('.' + config.selectors.virtualTable + ' tr.' + config.inner.selectors.headerRow).forEach(function(row) {
+	document.querySelectorAll('.' + config.selectors.virtualTable + ' tr.' + config.inner.selectors.headerRow).forEach(function(row, countRow) {
 		row.querySelectorAll('td.' + config.inner.selectors.headerCell).forEach(function(cell, cellCount) {
 			var cellObj = config.headers[countRow][config.inner.leftCellOffset + cellCount];
 
@@ -44,7 +44,6 @@ function updateTable(config) {
 				colspan = calculatedColspan;
 			}
 		});
-		countRow++;
 		colspan = 1;
 	});
 
@@ -75,6 +74,42 @@ function updateTable(config) {
 			updateCell(config, cell, tableUtil.getFixedCell(config, config.inner.topCellOffset + rowNumber, cellNumber));
 		});
 	});
+}
+
+function updateBuffers(config) {
+	var virtualContainer = document.querySelector('.' + config.selectors.virtualContainer),
+		cellFullWidth = configUtil.getCellFullWidth(config),
+		left = virtualContainer.scrollLeft - virtualContainer.scrollLeft % cellFullWidth - config.inner.colspanOffset * cellFullWidth,
+		right = config.inner.tableOffsetWidth - left,
+		top = virtualContainer.scrollTop,
+		bottom = config.inner.tableOffsetHeight - top;
+
+	left = left > config.inner.tableOffsetWidth ? config.inner.tableOffsetWidth : left;
+	left = left < config.inner.minBufferWidth ? config.inner.minBufferWidth : left;
+	right = config.inner.tableOffsetWidth - left;
+	top = top + config.inner.minBufferHeight > config.inner.tableOffsetHeight ? config.inner.tableOffsetHeight + config.inner.minBufferHeight : top + config.inner.minBufferHeight;
+	bottom = config.inner.tableOffsetHeight > top ? config.inner.tableOffsetHeight - top : top;
+
+	config.inner.leftCellOffset = Math.floor(left / cellFullWidth);
+	config.inner.topCellOffset = Math.floor((top - top % config.dimensions.cellHeight) / config.dimensions.cellHeight);
+
+	config.inner.bufferLeft.forEach(function(el) {
+		el.style.minWidth = left + 'px';
+	});
+	config.inner.bufferRight.forEach(function(el) {
+		el.style.minWidth = right + 'px';
+	});
+	config.inner.bufferTop.forEach(function(el) {
+		el.style.height = top + 'px';
+	});
+	config.inner.bufferBottom.forEach(function(el) {
+		el.style.height = bottom + 'px';
+	});
+}
+
+function recalculateDimensions(config) {
+	config.inner.tableOffsetWidth = configUtil.getTableOffsetWidth(config);
+	config.inner.tableOffsetHeight = configUtil.getTableOffsetHeight(config);
 }
 
 function resetEditingCell(config, onInputBlurEventHandler) {
@@ -149,20 +184,18 @@ function findParentNode(child, selector) {
 	return findParentNode(child.parentNode, selector);
 }
 
-function getCellFullWidth(config) {
-	return config.dimensions.cellPaddingHorizontal * 2 + config.dimensions.cellWidth + config.dimensions.cellBorderWidth;
-}
-
 module.exports = {
 	updateCell: updateCell,
 	updateTable: updateTable,
+	updateBuffers: updateBuffers,
+	recalculateDimensions: recalculateDimensions,
 	resetEditingCell: resetEditingCell,
 	resetEditedCell: resetEditedCell,
 	destroyTable: destroyTable,
 
+	// TODO: Ezek mehetnek utilba, a többi meg modulesként
 	indexOfElement: indexOfElement,
 	getHeaderCellHtml: getHeaderCellHtml,
 	getFilterCellHtml: getFilterCellHtml,
-	findParentNode: findParentNode,
-	getCellFullWidth: getCellFullWidth
+	findParentNode: findParentNode
 };
