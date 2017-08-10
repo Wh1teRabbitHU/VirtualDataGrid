@@ -3,10 +3,30 @@
 function generateHeader() {
 	var headers = [];
 
+	var i;
+
 	headers.push([]);
 
-	for (var i = 2; i < 201; i++) {
+	for (i = 2; i < 52; i++) {
 		headers[0].push({
+			text: i + '. oszlop',
+			colspan: 4
+		}, {}, {}, {});
+	}
+
+	headers.push([]);
+
+	for (i = 2; i < 102; i++) {
+		headers[1].push({
+			text: i + '. oszlop',
+			colspan: 2
+		}, {});
+	}
+
+	headers.push([]);
+
+	for (i = 2; i < 202; i++) {
+		headers[2].push({
 			key: 'column_' + i,
 			text: i + '. oszlop'
 		});
@@ -20,6 +40,16 @@ function generateFixedHeader() {
 
 	fixedHeaders.push([]);
 	fixedHeaders[0].push({
+		text: ' '
+	});
+
+	fixedHeaders.push([]);
+	fixedHeaders[1].push({
+		text: ' '
+	});
+
+	fixedHeaders.push([]);
+	fixedHeaders[2].push({
 		key: 'column_1',
 		text: '1. oszlop'
 	});
@@ -35,8 +65,8 @@ function generateData(headers) {
 			column_1: i
 		};
 
-		for (var j = 1; j <= headers[0].length; j++) {
-			var cKey = headers[0][j - 1].key;
+		for (var j = 1; j <= headers[2].length; j++) {
+			var cKey = headers[2][j - 1].key;
 
 			row[cKey] = i * (j + 1);
 		}

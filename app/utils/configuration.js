@@ -49,13 +49,13 @@ function getVisibleColumnNumber(config) {
 }
 
 function getTableOffsetWidth(config) {
-	var tabbleOffsetColumns = config.headers[config.inner.indexOfCellKeyHeader].length < config.inner.visibleColumnNumber ? 0 : config.headers[config.inner.indexOfCellKeyHeader].length - config.inner.visibleColumnNumber;
+	var tabbleOffsetColumns = config.headers[config.inner.indexOfCellKeyHeader].length < config.inner.visibleColumnNumber ? config.inner.minBufferWidth : config.headers[config.inner.indexOfCellKeyHeader].length - config.inner.visibleColumnNumber;
 
 	return tabbleOffsetColumns * getCellFullWidth(config);
 }
 
 function getTableOffsetHeight(config) {
-	var tableOffsetRows = config.dataSource.length < config.inner.visibleRowNumber ? 0 : config.dataSource.length - config.inner.visibleRowNumber + 1;
+	var tableOffsetRows = config.dataSource.length < config.inner.visibleRowNumber ? config.inner.minBufferHeight : config.dataSource.length - config.inner.visibleRowNumber + 1;
 
 	return tableOffsetRows * config.dimensions.cellHeight;
 }
