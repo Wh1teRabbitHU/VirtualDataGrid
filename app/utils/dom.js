@@ -20,11 +20,12 @@ function updateCell(config, cell, cellObj) {
 	cell.className = config.inner.selectors.dataCell + ' ' + (cellObj.class || '');
 }
 
-function updateTable(config) {
+function updateTable(config, forceUpdate) {
 	var colspan = 1;
 
 	if (config.inner.previousLeftCellOffset === config.inner.leftCellOffset &&
-		config.inner.previousTopCellOffset === config.inner.topCellOffset) {
+		config.inner.previousTopCellOffset === config.inner.topCellOffset &&
+		forceUpdate === false) {
 
 		return;
 	}

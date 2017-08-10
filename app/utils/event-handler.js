@@ -29,7 +29,7 @@ function onWheelEventHandler(event) {
 function onScrollEventHandler(event, config) {
 	domUtil.resetEditingCell(config, instances.onInputBlurEventHandler);
 	domUtil.updateBuffers(config);
-	domUtil.updateTable(config);
+	domUtil.updateTable(config, false);
 }
 
 function onInputBlurEventHandler(event, config) {
