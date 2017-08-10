@@ -33,15 +33,16 @@ function updateTable(config, forceUpdate) {
 	config.inner.previousLeftCellOffset = config.inner.leftCellOffset;
 	config.inner.previousTopCellOffset = config.inner.topCellOffset;
 
-	document.querySelectorAll('.' + config.selectors.virtualTable + ' tr.' + config.inner.selectors.headerRow).forEach(function(row, countRow) {
+	document.querySelectorAll('.' + config.selectors.virtualTable + ' tr.' + config.inner.selectors.headerRow).forEach(function(row, rowCount) {
 		row.querySelectorAll('td.' + config.inner.selectors.headerCell).forEach(function(cell, cellCount) {
-			var cellObj = config.headers[countRow][config.inner.leftCellOffset + cellCount];
+			var cellObj = config.headers[rowCount][config.inner.leftCellOffset + cellCount],
+				isLastRow = config.inner.indexOfCellKeyHeader === rowCount;
 
 			if (colspan > 1) {
 				cell.style.display = 'none';
 				colspan--;
 			} else {
-				cell.innerHTML = getHeaderCellHtml(config, cell, cellObj);
+				cell.innerHTML = getHeaderCellHtml(config, cell, cellObj, isLastRow);
 				cell.style.display = 'table-cell';
 			}
 
@@ -161,13 +162,13 @@ function destroyTable(config) {
 	document.querySelector(config.selectors.mainContainer).innerHTML = '';
 }
 
-function getHeaderCellHtml(config, cell, cellObj) {
+function getHeaderCellHtml(config, cell, cellObj, isLastRow) {
 	var innerHTML = '',
 		columnText = cellObj.text || cellObj.key || '';
 
-	if (config.sort.enabled && !cellObj.sortDisabled) {
+	if (config.sort.enabled && !cellObj.sortDisabled && isLastRow) {
 		var attribute = cellObj.key,
-			direction = config.inner.sort.attribute === attribute ? config.inner.sort.direction : 'none',
+			direction = typeof attribute != 'undefined' && config.inner.sort.attribute === attribute ? config.inner.sort.direction : 'none',
 			isSorted = direction !== 'none',
 			iconClass = direction === 'down' ? config.inner.icons.sort.asc : config.inner.icons.sort.desc,
 			iconElementClass = config.inner.selectors.sortIcon + (isSorted ? ' ' + iconClass : 'hidden');

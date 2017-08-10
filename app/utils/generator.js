@@ -61,7 +61,9 @@ function initTable(config) {
 
 	virtualThead.appendChild(trHeadBuffer);
 
-	config.headers.forEach(function(headerRow) {
+	config.headers.forEach(function(headerRow, rowCount) {
+		var isLastRow = config.inner.indexOfCellKeyHeader === rowCount;
+
 		trHead = document.createElement('tr');
 		trHead.classList.add(config.inner.selectors.headerRow);
 		trHead.style.height = config.dimensions.cellHeight + 'px';
@@ -76,9 +78,9 @@ function initTable(config) {
 			tdElement.classList.add(config.inner.selectors.headerCell);
 			tdElement.style.minWidth = config.dimensions.cellWidth + 'px';
 			tdElement.style.padding = config.dimensions.cellPaddingVertical + 'px ' + config.dimensions.cellPaddingHorizontal + 'px';
-			tdElement.innerHTML = domUtil.getHeaderCellHtml(config, tdElement, headerRow[j]);
+			tdElement.innerHTML = domUtil.getHeaderCellHtml(config, tdElement, headerRow[j], isLastRow);
 
-			if (config.sort.enabled && !headerRow[j].sortDisabled) {
+			if (config.sort.enabled && !headerRow[j].sortDisabled && isLastRow) {
 				tdElement.classList.add(config.inner.selectors.sortCell);
 			}
 

@@ -9,7 +9,6 @@ function generateHeader() {
 
 	for (i = 2; i < 52; i++) {
 		headers[0].push({
-			key: 'column_main_main_' + i,
 			text: i + '. oszlop',
 			colspan: 4
 		}, {}, {}, {});
@@ -19,7 +18,6 @@ function generateHeader() {
 
 	for (i = 2; i < 102; i++) {
 		headers[1].push({
-			key: 'column_main_' + i,
 			text: i + '. oszlop',
 			colspan: 2
 		}, {});
@@ -42,13 +40,11 @@ function generateFixedHeader() {
 
 	fixedHeaders.push([]);
 	fixedHeaders[0].push({
-		key: 'column_main_main_1',
 		text: ' '
 	});
 
 	fixedHeaders.push([]);
 	fixedHeaders[1].push({
-		key: 'column_main_1',
 		text: ' '
 	});
 
