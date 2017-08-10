@@ -23,6 +23,15 @@ function updateCell(config, cell, cellObj) {
 function updateTable(config) {
 	var colspan = 1;
 
+	if (config.inner.previousLeftCellOffset === config.inner.leftCellOffset &&
+		config.inner.previousTopCellOffset === config.inner.topCellOffset) {
+
+		return;
+	}
+
+	config.inner.previousLeftCellOffset = config.inner.leftCellOffset;
+	config.inner.previousTopCellOffset = config.inner.topCellOffset;
+
 	document.querySelectorAll('.' + config.selectors.virtualTable + ' tr.' + config.inner.selectors.headerRow).forEach(function(row, countRow) {
 		row.querySelectorAll('td.' + config.inner.selectors.headerCell).forEach(function(cell, cellCount) {
 			var cellObj = config.headers[countRow][config.inner.leftCellOffset + cellCount];
