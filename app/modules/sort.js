@@ -1,6 +1,6 @@
 'use strict';
 
-var domUtil = require('./dom');
+var domModule = require('../modules/dom');
 
 function defaultComparator(a, b, attribute, isDown) {
 	var attrA = a[attribute],
@@ -18,26 +18,31 @@ function defaultComparator(a, b, attribute, isDown) {
 }
 
 function sortByColumn(config, column) {
-	var direction = column.getAttribute('data-direction'),
-		attribute = column.getAttribute('data-attribute');
-
-	if (direction === 'none' || direction === 'down') {
+	var attribute = column.getAttribute('data-attribute'),
 		direction = 'up';
-	} else {
+
+	if (config.inner.sort.attribute === attribute &&
+		config.inner.sort.direction === 'up') {
+
 		direction = 'down';
 	}
 
 	config.inner.sort.direction = direction;
 	config.inner.sort.attribute = attribute;
+
+	sort(config);
+}
+
+function sort(config) {
 	config.dataSource.sort(function(a, b) {
 		if (config.sort.comparator !== null) {
-			return config.sort.comparator(a, b, attribute, direction);
+			return config.sort.comparator(a, b, config.inner.sort.attribute, config.inner.sort.direction);
 		}
 
-		return defaultComparator(a, b, attribute, direction === 'down');
+		return defaultComparator(a, b, config.inner.sort.attribute, config.inner.sort.direction === 'down');
 	});
 
-	domUtil.updateTable(config);
+	domModule.updateTable(config);
 }
 
 function resetSort(config) {
@@ -51,10 +56,11 @@ function resetSort(config) {
 		return defaultComparator(a, b, config.sort.default, true);
 	});
 
-	domUtil.updateTable(config);
+	domModule.updateTable(config);
 }
 
 module.exports = {
 	sortByColumn: sortByColumn,
+	sort: sort,
 	resetSort: resetSort
 };

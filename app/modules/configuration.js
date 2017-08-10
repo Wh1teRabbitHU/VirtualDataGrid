@@ -1,7 +1,6 @@
 'use strict';
 
-var configUtil = require('../utils/configuration'),
-	generatorUtil = require('../utils/generator');
+var configUtil = require('../utils/configuration');
 
 var DEFAULTS = {
 	selectors: {
@@ -85,7 +84,7 @@ var STATIC_INNER_ATTRS = {
 	editedCells: []
 };
 
-function init(config, options) {
+function init(config, options, initContainers) {
 	initConfigObject(config);
 
 	updateValue(config, options, 'selectors.mainContainer');
@@ -104,7 +103,7 @@ function init(config, options) {
 
 	calculateVirtualContainerHeight(config, options);
 
-	generatorUtil.initContainers(config);
+	initContainers(config);
 
 	updateValue(config, options, 'dataSource');
 	updateValue(config, options, 'headers');

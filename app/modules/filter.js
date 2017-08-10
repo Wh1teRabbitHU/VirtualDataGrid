@@ -1,6 +1,7 @@
 'use strict';
 
-var domUtil = require('./dom');
+var domUtil   = require('../utils/dom'),
+	domModule = require('../modules/dom');
 
 function startEditingFilter(config, cell) {
 	if (cell.querySelector('.' + config.inner.selectors.filterContainer) !== null) {
@@ -39,6 +40,22 @@ function startEditingFilter(config, cell) {
 	});
 }
 
+function clearFilter(config, cell) {
+	var attribute = cell.getAttribute('data-attribute'),
+		filterObj = config.inner.filters[attribute],
+		input = cell.querySelector('input');
+
+	if (input !== null) {
+		input.value = '';
+	}
+
+	if (typeof filterObj != 'undefined') {
+		filterObj.value = '';
+	}
+
+	finishEditingFilter(config, cell);
+}
+
 function finishEditingFilter(config, cell) {
 	var attribute = cell.getAttribute('data-attribute'),
 		input = cell.querySelector('input'),
@@ -51,7 +68,7 @@ function finishEditingFilter(config, cell) {
 	}
 
 	filterObj.value = value;
-	cell.innerHTML = getFilterCellHtml(config, cell, filterObj);
+	cell.innerHTML = domUtil.getFilterCellHtml(config, cell, filterObj);
 	config.dataSource = config.inner.originalDataSource;
 
 	Object.keys(config.inner.filters).forEach(function(key) {
@@ -73,9 +90,9 @@ function finishEditingFilter(config, cell) {
 		document.querySelector('.' + config.selectors.virtualContainer).classList.remove('no-vertical-scroll');
 	}
 
-	domUtil.recalculateDimensions(config);
-	domUtil.updateBuffers(config);
-	domUtil.updateTable(config);
+	domModule.recalculateDimensions(config);
+	domModule.updateBuffers(config);
+	domModule.updateTable(config);
 }
 
 function cancelFiltering(config, cell) {
@@ -88,42 +105,7 @@ function cancelFiltering(config, cell) {
 	finishEditingFilter(config, cell);
 }
 
-function clearFilter(config, cell) {
-	var attribute = cell.getAttribute('data-attribute'),
-		filterObj = config.inner.filters[attribute],
-		input = cell.querySelector('input');
-
-	if (input !== null) {
-		input.value = '';
-	}
-
-	if (typeof filterObj != 'undefined') {
-		filterObj.value = '';
-	}
-
-	finishEditingFilter(config, cell);
-}
-
-// TODO: A duplikációt megszüntetni. Erre akkor lesz lehetőség, ha a modules és utils fájlok szét lesznek bontva a körkörös dependencia miatt
-function getFilterCellHtml(config, cell, filterObj) {
-	var innerHTML = '',
-		iconClass = config.inner.icons.filter.search,
-		iconElementClass = config.inner.selectors.filterSearchIcon + ' ' + iconClass,
-		clearIconClass = config.inner.icons.filter.clear,
-		clearIconElementClass = config.inner.selectors.filterClearIcon + ' ' + clearIconClass;
-
-	innerHTML += '<i class="' + iconElementClass + '" aria-hidden="true"></i>';
-	innerHTML += filterObj.value || '';
-
-	if (typeof filterObj.value != 'undefined' && filterObj.value !== '') {
-		innerHTML += '<i class="' + clearIconElementClass + '" aria-hidden="true"></i>';
-	}
-
-	return innerHTML;
-}
-
 module.exports = {
 	startEditingFilter: startEditingFilter,
-	finishEditingFilter: finishEditingFilter,
 	clearFilter: clearFilter
 };

@@ -1,8 +1,8 @@
 'use strict';
 
 var EventArguments = require('../models/event-arguments'),
-	tableUtil = require('./table'),
-	domUtil   = require('./dom');
+	tableUtil      = require('../utils/table'),
+	domModule      = require('../modules/dom');
 
 function saveCells(config) {
 	if (!config.edit.enabled) {
@@ -20,7 +20,7 @@ function saveCells(config) {
 		config.inner.editedCells.forEach(function(cell) {
 			tableUtil.setCellValue(config, cell.rowNumber, cell.columnNumber, cell.value);
 		});
-		domUtil.resetEditedCell(config);
+		domModule.resetEditedCell(config);
 
 		config.eventHandlers.onAfterSave(args);
 	}

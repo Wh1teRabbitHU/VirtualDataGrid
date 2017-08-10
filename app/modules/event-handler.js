@@ -2,11 +2,12 @@
 
 var EventArguments = require('../models/event-arguments');
 
-var domUtil       = require('../utils/dom'),
-	tableUtil     = require('../utils/table'),
-	editUtil      = require('../utils/edit'),
-	sortUtil      = require('../utils/sort'),
-	filterUtil    = require('../utils/filter');
+var domUtil      = require('../utils/dom'),
+	tableUtil    = require('../utils/table'),
+	sortModule   = require('../modules/sort'),
+	editModule   = require('../modules/edit'),
+	domModule    = require('../modules/dom'),
+	filterModule = require('../modules/filter');
 
 var container;
 
@@ -27,9 +28,9 @@ function onWheelEventHandler(event) {
 }
 
 function onScrollEventHandler(event, config) {
-	domUtil.resetEditingCell(config, instances.onInputBlurEventHandler);
-	domUtil.updateBuffers(config);
-	domUtil.updateTable(config, false);
+	domModule.resetEditingCell(config, instances.onInputBlurEventHandler);
+	domModule.updateBuffers(config);
+	domModule.updateTable(config, false);
 }
 
 function onInputBlurEventHandler(event, config) {
@@ -44,7 +45,7 @@ function onInputBlurEventHandler(event, config) {
 	});
 
 	if (!tableUtil.isCellChanged(config, editedObj)) {
-		domUtil.resetEditingCell(config, instances.onInputBlurEventHandler);
+		domModule.resetEditingCell(config, instances.onInputBlurEventHandler);
 
 		return;
 	}
@@ -59,7 +60,7 @@ function onInputBlurEventHandler(event, config) {
 
 	if (args.cancelEdit !== true) {
 		tableUtil.setUpdatedCellValue(config, args.cellObject);
-		domUtil.updateCell(config, args.cell, args.cellObject);
+		domModule.updateCell(config, args.cell, args.cellObject);
 
 		config.eventHandlers.onAfterEdit(args);
 	}
@@ -105,7 +106,7 @@ function onClickCellEventHandler(event, config) {
 }
 
 function onClickSaveButtonEventHandler(event, config) {
-	editUtil.saveCells(config);
+	editModule.saveCells(config);
 }
 
 function onClickSortHeader(event, config) {
@@ -118,11 +119,11 @@ function onClickSortHeader(event, config) {
 	}
 
 	if (event.target.matches(sortIconSelector)) {
-		sortUtil.resetSort(config);
+		sortModule.resetSort(config);
 	}
 
 	if (event.target.matches(sortCellSelector)) {
-		sortUtil.sortByColumn(config, event.target);
+		sortModule.sortByColumn(config, event.target);
 	}
 }
 
@@ -141,12 +142,13 @@ function onClickFilterHeader(event, config) {
 	var cell = event.target.matches(filterCellSelector) ? event.target : domUtil.findParentNode(event.target, filterCellSelector);
 
 	if (event.target.matches(filterClearIconSelector)) {
-		filterUtil.clearFilter(config, cell);
+		filterModule.clearFilter(config, cell);
+		sortModule.sort(config);
 
 		return;
 	}
 
-	filterUtil.startEditingFilter(config, cell);
+	filterModule.startEditingFilter(config, cell);
 }
 
 function addEvents(config) {
