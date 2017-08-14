@@ -1,24 +1,12 @@
 'use strict';
 
-var domModule = require('../modules/dom');
-
-function defaultComparator(a, b, attribute, isDown) {
-	var attrA = a[attribute],
-		attrB = b[attribute];
-
-	if (typeof attrA == 'undefined' && typeof attrB != 'undefined' || attrA < attrB) {
-		return isDown ? -1 : 1;
-	}
-
-	if (typeof attrA != 'undefined' && typeof attrB == 'undefined' || attrA > attrB) {
-		return isDown ? 1 : -1;
-	}
-
-	return 0;
-}
+var domModule  = require('../modules/dom'),
+	configUtil = require('../utils/configuration'),
+	dataUtil   = require('../utils/data');
 
 function sortByColumn(config, column) {
 	var attribute = column.getAttribute('data-attribute'),
+		columnObj = configUtil.getCellObject(config, attribute),
 		direction = 'up';
 
 	if (config.inner.sort.attribute === attribute &&
@@ -29,6 +17,7 @@ function sortByColumn(config, column) {
 
 	config.inner.sort.direction = direction;
 	config.inner.sort.attribute = attribute;
+	config.inner.sort.type = columnObj.type;
 
 	sort(config);
 }
@@ -36,10 +25,23 @@ function sortByColumn(config, column) {
 function sort(config) {
 	config.dataSource.sort(function(a, b) {
 		if (config.sort.comparator !== null) {
-			return config.sort.comparator(a, b, config.inner.sort.attribute, config.inner.sort.direction);
+			return config.sort.comparator(a, b, {
+				attribute: config.inner.sort.attribute,
+				direction: config.inner.sort.direction,
+				type: config.inner.sort.type
+			});
 		}
 
-		return defaultComparator(a, b, config.inner.sort.attribute, config.inner.sort.direction === 'down');
+		var attribute = config.inner.sort.attribute || config.sort.default,
+			direction = typeof config.inner.sort.direction == 'undefined' ? 'down' : config.inner.sort.direction,
+			type = getSortType(config, config.sort.default);
+
+		return dataUtil.defaultComparator(a, b, {
+			attribute: attribute,
+			direction: direction,
+			type: type,
+			name: config.locale.name
+		});
 	});
 
 	domModule.updateTable(config);
@@ -48,15 +50,25 @@ function sort(config) {
 function resetSort(config) {
 	config.inner.sort.direction = '';
 	config.inner.sort.attribute = '';
+	config.inner.sort.type = '';
 	config.dataSource.sort(function(a, b) {
 		if (config.sort.comparator !== null) {
 			return config.sort.comparator(a, b, config.sort.default, 'down');
 		}
 
-		return defaultComparator(a, b, config.sort.default, true);
+		return dataUtil.defaultComparator(a, b, {
+			attribute: config.sort.default,
+			direction: 'down',
+			type: getSortType(config, config.sort.default),
+			name: config.locale.name
+		});
 	});
 
 	domModule.updateTable(config);
+}
+
+function getSortType(config, attribute) {
+	return configUtil.getCellObject(config, attribute).type || 'string';
 }
 
 module.exports = {

@@ -49,7 +49,7 @@ function getVisibleColumnNumber(config) {
 }
 
 function getTableOffsetWidth(config) {
-	var tabbleOffsetColumns = config.headers[config.inner.indexOfCellKeyHeader].length < config.inner.visibleColumnNumber ? config.inner.minBufferWidth : config.headers[config.inner.indexOfCellKeyHeader].length - config.inner.visibleColumnNumber;
+	var tabbleOffsetColumns = getKeyHeader(config).length < config.inner.visibleColumnNumber ? config.inner.minBufferWidth : getKeyHeader(config).length - config.inner.visibleColumnNumber;
 
 	return tabbleOffsetColumns * getCellFullWidth(config);
 }
@@ -62,6 +62,22 @@ function getTableOffsetHeight(config) {
 
 function getCellFullWidth(config) {
 	return config.dimensions.cellPaddingHorizontal * 2 + config.dimensions.cellWidth + config.dimensions.cellBorderWidth;
+}
+
+function getKeyHeader(config) {
+	return config.headers[config.inner.indexOfCellKeyHeader];
+}
+
+function getKeyFixedHeader(config) {
+	return config.fixedHeaders[config.inner.indexOfCellKeyHeader];
+}
+
+function getCellObject(config, attribute) {
+	return getKeyHeader(config).find(function(column) {
+		return column.key === attribute;
+	}) || getKeyFixedHeader(config).find(function(column) {
+		return column.key === attribute;
+	});
 }
 
 function nil() {
@@ -79,5 +95,8 @@ module.exports = {
 	getTableOffsetWidth: getTableOffsetWidth,
 	getTableOffsetHeight: getTableOffsetHeight,
 	getCellFullWidth: getCellFullWidth,
+	getKeyHeader: getKeyHeader,
+	getKeyFixedHeader: getKeyFixedHeader,
+	getCellObject: getCellObject,
 	nil: nil
 };

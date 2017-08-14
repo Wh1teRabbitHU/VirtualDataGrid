@@ -1,12 +1,13 @@
 'use strict';
 
-var Cell = require('../models/cell');
+var Cell       = require('../models/cell'),
+	configUtil = require('../utils/configuration');
 
 function getCell(config, rowNumber, columnNumber) {
 	var cellObj = config.inner.editedCells.find(function(el) {
 			return el.rowNumber === rowNumber && el.columnNumber === columnNumber;
 		}),
-		rowObj = config.headers[config.inner.indexOfCellKeyHeader];
+		rowObj = configUtil.getKeyHeader(config);
 
 	if (rowNumber >= config.dataSource.length) {
 		cellObj = new Cell({
@@ -50,7 +51,7 @@ function getFixedCell(config, rowNumber, columnNumber) {
 }
 
 function setCellValue(config, rowNumber, columnNumber, value) {
-	var rowObj = config.headers[config.inner.indexOfCellKeyHeader];
+	var rowObj = configUtil.getKeyHeader(config);
 
 	config.dataSource[rowNumber][rowObj[columnNumber].key] = value;
 }

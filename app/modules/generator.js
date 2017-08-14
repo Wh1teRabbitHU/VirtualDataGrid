@@ -1,6 +1,7 @@
 'use strict';
 
 var configuration      = require('./configuration'),
+	configUtil         = require('../utils/configuration'),
 	eventHandlerModule = require('../modules/event-handler'),
 	domUtil            = require('../utils/dom'),
 	domModule          = require('../modules/dom');
@@ -52,7 +53,7 @@ function initTable(config) {
 	var virtualThead = document.createElement('thead'),
 		virtualTbody = document.createElement('tbody'),
 		trHeadBuffer = document.createElement('tr'),
-		columnsNumber = config.headers[config.inner.indexOfCellKeyHeader].length,
+		columnsNumber = configUtil.getKeyHeader(config).length,
 		rowsNumber = config.dataSource.length,
 		maxColumnNumber = config.inner.visibleColumnNumber >= columnsNumber ? columnsNumber : config.inner.visibleColumnNumber,
 		maxRowNumber = config.inner.visibleRowNumber >= rowsNumber ? rowsNumber : config.inner.visibleRowNumber;

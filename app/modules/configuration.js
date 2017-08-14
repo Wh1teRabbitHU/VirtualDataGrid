@@ -39,6 +39,9 @@ var DEFAULTS = {
 		onBeforeSave: configUtil.nil,
 		onAfterSave: configUtil.nil
 	},
+	locale: {
+		name: 'en'
+	},
 	dataSource: [ ],
 	headers: [ [ ] ],
 	fixedHeaders: [ [ ] ],
@@ -105,6 +108,7 @@ function init(config, options, initContainers) {
 
 	initContainers(config);
 
+	updateValue(config, options, 'locale.name');
 	updateValue(config, options, 'dataSource');
 	updateValue(config, options, 'headers');
 	updateValue(config, options, 'fixedHeaders');
@@ -126,6 +130,7 @@ function init(config, options, initContainers) {
 function initConfigObject(config) {
 	config.selectors = {};
 	config.eventHandlers = {};
+	config.locale = {};
 	config.inner = Object.assign({}, STATIC_INNER_ATTRS);
 }
 

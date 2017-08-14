@@ -9,7 +9,7 @@ function generateHeader() {
 
 	for (i = 2; i < 52; i++) {
 		headers[0].push({
-			text: i + '. oszlop',
+			text: i + '. column',
 			colspan: 4
 		}, {}, {}, {});
 	}
@@ -18,7 +18,7 @@ function generateHeader() {
 
 	for (i = 2; i < 102; i++) {
 		headers[1].push({
-			text: i + '. oszlop',
+			text: i + '. column',
 			colspan: 2
 		}, {});
 	}
@@ -28,7 +28,8 @@ function generateHeader() {
 	for (i = 2; i < 202; i++) {
 		headers[2].push({
 			key: 'column_' + i,
-			text: i + '. oszlop'
+			text: i + '. column',
+			type: 'number'
 		});
 	}
 
@@ -51,7 +52,8 @@ function generateFixedHeader() {
 	fixedHeaders.push([]);
 	fixedHeaders[2].push({
 		key: 'column_1',
-		text: '1. oszlop'
+		text: '1. column',
+		type: 'number'
 	});
 
 	return fixedHeaders;
