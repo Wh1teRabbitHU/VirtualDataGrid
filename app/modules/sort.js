@@ -17,49 +17,58 @@ function sortByColumn(config, column) {
 
 	config.inner.sort.direction = direction;
 	config.inner.sort.attribute = attribute;
-	config.inner.sort.type = columnObj.type;
+	config.inner.sort.dataType = columnObj.dataType;
 
 	sort(config);
 }
 
-function sort(config) {
+function sort(config, updateTable) {
+	updateTable = updateTable !== false;
+
 	config.dataSource.sort(function(a, b) {
-		if (config.sort.comparator !== null) {
-			return config.sort.comparator(a, b, {
+		if (config.sort.customSort !== null) {
+			return config.sort.customSort(a, b, {
 				attribute: config.inner.sort.attribute,
 				direction: config.inner.sort.direction,
-				type: config.inner.sort.type
+				dataType: config.inner.sort.dataType
 			});
 		}
 
 		var attribute = config.inner.sort.attribute || config.sort.default,
 			direction = typeof config.inner.sort.direction == 'undefined' ? 'down' : config.inner.sort.direction,
-			type = getSortType(config, config.sort.default);
+			dataType = getSortType(config, config.sort.default);
 
 		return dataUtil.defaultComparator(a, b, {
 			attribute: attribute,
 			direction: direction,
-			type: type,
+			dataType: dataType,
 			name: config.locale.name
 		});
 	});
 
-	domModule.updateTable(config);
+	if (updateTable) {
+		domModule.updateTable(config);
+	}
 }
 
 function resetSort(config) {
-	config.inner.sort.direction = '';
-	config.inner.sort.attribute = '';
-	config.inner.sort.type = '';
+	config.inner.sort.attribute =
+	config.inner.sort.direction =
+	config.inner.sort.dataType = undefined; // eslint-disable-line no-undefined
+
 	config.dataSource.sort(function(a, b) {
-		if (config.sort.comparator !== null) {
-			return config.sort.comparator(a, b, config.sort.default, 'down');
+		if (config.sort.customSort !== null) {
+			return config.sort.customSort(a, b, {
+				attribute: config.sort.default,
+				direction: 'down',
+				dataType: getSortType(config, config.sort.default)
+			});
 		}
 
 		return dataUtil.defaultComparator(a, b, {
 			attribute: config.sort.default,
 			direction: 'down',
-			type: getSortType(config, config.sort.default),
+			dataType: getSortType(config, config.sort.default),
 			name: config.locale.name
 		});
 	});
@@ -68,7 +77,7 @@ function resetSort(config) {
 }
 
 function getSortType(config, attribute) {
-	return configUtil.getCellObject(config, attribute).type || 'string';
+	return configUtil.getCellObject(config, attribute).dataType || 'string';
 }
 
 module.exports = {

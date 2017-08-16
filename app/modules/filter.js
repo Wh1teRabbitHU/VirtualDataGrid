@@ -2,6 +2,7 @@
 
 var domUtil    = require('../utils/dom'),
 	domModule  = require('../modules/dom'),
+	sortModule = require('../modules/sort'),
 	dataUtil   = require('../utils/data'),
 	configUtil = require('../utils/configuration');
 
@@ -16,9 +17,8 @@ function startEditingFilter(config, cell) {
 		clearIconClass = config.inner.icons.filter.clear,
 		clearIconElementClass = config.inner.selectors.filterClearIcon + ' ' + clearIconClass;
 
-	// TODO: Kiszedni a typenál az ellenőrzést ha már lesz default érték header celláknál
 	filterObj.attribute = attribute;
-	filterObj.type = typeof cellObj.filter == 'undefined' ? 'equals' : cellObj.filter.type || 'equals';
+	filterObj.filterType = cellObj.filterType;
 	filterObj.value = filterObj.value || '';
 
 	config.inner.filters[attribute] = filterObj;
@@ -33,12 +33,12 @@ function startEditingFilter(config, cell) {
 
 	var input = container.querySelector('input');
 
-	input.setAttribute('type', cellObj.type);
+	input.setAttribute('type', cellObj.dataType);
 	input.value = filterObj.value;
 	input.focus();
 	input.addEventListener('keyup', function(event) {
 		if ((event.keyCode || event.which) === 13) { // Enter key
-			filterObj.value = dataUtil.getValueByType(input.value, cellObj.type);
+			filterObj.value = dataUtil.getValueByType(input.value, cellObj.dataType);
 
 			finishEditingFilter(config, cell, filterObj);
 		} else if ((event.keyCode || event.which) === 27) { // Escape key
@@ -67,15 +67,20 @@ function finishEditingFilter(config, cell, filterObj) {
 			return;
 		}
 
-		config.dataSource = dataUtil.filterData(config.dataSource, filter.attribute, filter.type, filter.value, filter.valueTwo);
+		if (filter.filterType === 'custom') {
+			if (config.filter.customFilter !== null) {
+				config.dataSource = config.filter.customFilter(config.dataSource, filter.attribute, filter.value);
+			}
+		} else {
+			config.dataSource = dataUtil.filterData(config.dataSource, filter.attribute, filter.filterType, filter.value, filter.valueTwo);
+		}
 	});
 
-	// TODO: Átírni toggle-ra
-	if (config.dataSource.length < config.inner.visibleRowNumber) {
-		document.querySelector('.' + config.selectors.virtualContainer).classList.add('no-vertical-scroll');
-	} else {
-		document.querySelector('.' + config.selectors.virtualContainer).classList.remove('no-vertical-scroll');
-	}
+	var smallerTable = config.dataSource.length < config.inner.visibleRowNumber;
+
+	document.querySelector('.' + config.selectors.virtualContainer).classList.toggle('no-vertical-scroll', smallerTable);
+
+	sortModule.sort(config, false);
 
 	domModule.recalculateDimensions(config);
 	domModule.updateBuffers(config);

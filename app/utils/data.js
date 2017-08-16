@@ -8,11 +8,11 @@ function defaultComparator(a, b, options) {
 		attrB = b[options.attribute],
 		isDown = options.direction === 'down';
 
-	if (options.type === 'string') {
+	if (options.dataType === 'string') {
 		var compareResult = attrA.localeCompare(attrB, options.locale);
 
 		return isDown || compareResult === 0 ? compareResult : compareResult * -1;
-	} else if (options.type === 'number') {
+	} else if (options.dataType === 'number') {
 		attrA = parseFloat(attrA);
 		attrB = parseFloat(attrB);
 	}
@@ -28,14 +28,14 @@ function defaultComparator(a, b, options) {
 	return 0;
 }
 
-function filterData(data, attribute, type, valueOne, valueTwo) {
-	if (FILTER_TYPES.indexOf(type) === -1) {
-		window.console.error('Not a valid filter type! (' + type + ')');
+function filterData(data, attribute, filterType, valueOne, valueTwo) {
+	if (FILTER_TYPES.indexOf(filterType) === -1) {
+		window.console.error('Not a valid filter type! (' + filterType + ')');
 
 		return data;
 	}
 
-	switch (type) {
+	switch (filterType) {
 		case 'equals':
 			return equalsFilter(data, attribute, valueOne);
 		case 'equalsCaseInsensitive':
@@ -129,12 +129,12 @@ function containsFilter(data, attribute, array) {
 	});
 }
 
-function getValueByType(value, type) {
+function getValueByType(value, dataType) {
 	if (typeof value == 'undefined') {
 		return value;
 	}
 
-	switch (type) {
+	switch (dataType) {
 		case 'string':
 			return value.toString();
 		case 'number':

@@ -143,7 +143,6 @@ function onClickFilterHeader(event, config) {
 
 	if (event.target.matches(filterClearIconSelector)) {
 		filterModule.clearFilter(config, cell);
-		sortModule.sort(config);
 
 		return;
 	}
