@@ -33,18 +33,20 @@ function getHeaderCellHtml(config, cell, cellObj, isLastRow) {
 	return innerHTML;
 }
 
-function getFilterCellHtml(config, cell, filterObj) {
+function getFilterCellHtml(config, cell, cellObj, filterObj) {
 	var innerHTML = '',
 		iconClass = config.inner.icons.filter.search,
 		iconElementClass = config.inner.selectors.filterSearchIcon + ' ' + iconClass,
 		clearIconClass = config.inner.icons.filter.clear,
 		clearIconElementClass = config.inner.selectors.filterClearIcon + ' ' + clearIconClass;
 
-	innerHTML += '<i class="' + iconElementClass + '" aria-hidden="true"></i>';
-	innerHTML += filterObj.value || '';
+	if (!cellObj.filterDisabled) {
+		innerHTML += '<i class="' + iconElementClass + '" aria-hidden="true"></i>';
+		innerHTML += filterObj.value || '';
 
-	if (typeof filterObj.value != 'undefined' && filterObj.value !== '') {
-		innerHTML += '<i class="' + clearIconElementClass + '" aria-hidden="true"></i>';
+		if (typeof filterObj.value != 'undefined' && filterObj.value !== '') {
+			innerHTML += '<i class="' + clearIconElementClass + '" aria-hidden="true"></i>';
+		}
 	}
 
 	return innerHTML;

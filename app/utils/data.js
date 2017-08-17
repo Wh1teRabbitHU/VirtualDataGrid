@@ -15,6 +15,14 @@ function defaultComparator(a, b, options) {
 	} else if (options.dataType === 'number') {
 		attrA = parseFloat(attrA);
 		attrB = parseFloat(attrB);
+
+		if (isNaN(attrA)) {
+			return isDown ? -1 : 1;
+		}
+
+		if (isNaN(attrB)) {
+			return isDown ? 1 : -1;
+		}
 	}
 
 	if (typeof attrA == 'undefined' && typeof attrB != 'undefined' || attrA < attrB) {

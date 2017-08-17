@@ -60,7 +60,7 @@ function initTable(config) {
 
 	trHeadBuffer.classList.add(config.inner.selectors.bufferRowTop);
 
-	var i, j, trHead, trBody, bufferColumnLeft, bufferColumnRight, bufferRowBottom, tdElement;
+	var i, j, trHead, trBody, bufferColumnLeft, bufferColumnRight, bufferRowBottom, tdElement, cellObj;
 
 	// Generate virtual header
 	bufferColumnLeft = document.createElement('td');
@@ -127,11 +127,17 @@ function initTable(config) {
 		trHead.appendChild(tdElement);
 
 		for (j = 0; j < maxColumnNumber; j++) {
+			cellObj = configUtil.getKeyHeader(config)[j];
+
 			tdElement = document.createElement('td');
 			tdElement.classList.add(config.inner.selectors.filterCell);
 			tdElement.style.minWidth = config.dimensions.cellWidth + 'px';
 			tdElement.style.padding = config.dimensions.cellPaddingVertical + 'px ' + config.dimensions.cellPaddingHorizontal + 'px';
-			tdElement.innerHTML = domUtil.getFilterCellHtml(config, tdElement, {});
+			tdElement.innerHTML = domUtil.getFilterCellHtml(config, tdElement, cellObj, {});
+
+			if (cellObj.filterDisabled) {
+				tdElement.classList.add(config.inner.selectors.filterDisabled);
+			}
 
 			trHead.appendChild(tdElement);
 		}
@@ -232,12 +238,18 @@ function initTable(config) {
 		trHead.style.height = config.dimensions.cellHeight + 'px';
 
 		for (j = 0; j < config.fixedHeaders[config.inner.indexOfCellKeyHeader].length; j++) {
+			cellObj = configUtil.getKeyFixedHeader(config)[j];
+
 			tdElement = document.createElement('td');
 			tdElement.classList.add(config.inner.selectors.filterCell);
 			tdElement.style.minWidth = config.dimensions.cellWidth + 'px';
 			tdElement.style.maxWidth = config.dimensions.cellWidth + 'px';
 			tdElement.style.padding = config.dimensions.cellPaddingVertical + 'px ' + config.dimensions.cellPaddingHorizontal + 'px';
-			tdElement.innerHTML = domUtil.getFilterCellHtml(config, tdElement, {});
+			tdElement.innerHTML = domUtil.getFilterCellHtml(config, tdElement, cellObj, {});
+
+			if (cellObj.filterDisabled) {
+				tdElement.classList.add(config.inner.selectors.filterDisabled);
+			}
 
 			trHead.appendChild(tdElement);
 		}
