@@ -129,12 +129,14 @@ function onClickSortHeader(event, config) {
 
 function onClickFilterHeader(event, config) {
 	var filterCellSelector = '.' + config.inner.selectors.filterCell,
+		filterDisabledSelector = '.' + config.inner.selectors.filterDisabled,
 		filterSearchIconSelector = filterCellSelector + ' .' + config.inner.selectors.filterSearchIcon,
 		filterClearIconSelector = filterCellSelector + ' .' + config.inner.selectors.filterClearIcon;
 
 	if (!event.target.matches(filterCellSelector) &&
 		!event.target.matches(filterSearchIconSelector) &&
-		!event.target.matches(filterClearIconSelector)) {
+		!event.target.matches(filterClearIconSelector) ||
+		event.target.matches(filterDisabledSelector)) {
 
 		return;
 	}

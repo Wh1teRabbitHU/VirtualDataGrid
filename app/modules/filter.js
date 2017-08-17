@@ -40,24 +40,25 @@ function startEditingFilter(config, cell) {
 		if ((event.keyCode || event.which) === 13) { // Enter key
 			filterObj.value = dataUtil.getValueByType(input.value, cellObj.dataType);
 
-			finishEditingFilter(config, cell, filterObj);
+			finishEditingFilter(config, cell, cellObj, filterObj);
 		} else if ((event.keyCode || event.which) === 27) { // Escape key
-			finishEditingFilter(config, cell, filterObj);
+			finishEditingFilter(config, cell, cellObj, filterObj);
 		}
 	});
 }
 
 function clearFilter(config, cell) {
 	var attribute = cell.getAttribute('data-attribute'),
+		cellObj = configUtil.getCellObject(config, attribute),
 		filterObj = config.inner.filters[attribute];
 
 	filterObj.value = '';
 
-	finishEditingFilter(config, cell, filterObj);
+	finishEditingFilter(config, cell, cellObj, filterObj);
 }
 
-function finishEditingFilter(config, cell, filterObj) {
-	cell.innerHTML = domUtil.getFilterCellHtml(config, cell, filterObj);
+function finishEditingFilter(config, cell, cellObj, filterObj) {
+	cell.innerHTML = domUtil.getFilterCellHtml(config, cell, cellObj, filterObj);
 	config.dataSource = config.inner.originalDataSource;
 
 	Object.keys(config.inner.filters).forEach(function(key) {

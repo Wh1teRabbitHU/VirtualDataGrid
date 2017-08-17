@@ -28,7 +28,9 @@ function generateHeader() {
 		key: 'column_2',
 		text: '2. column',
 		dataType: 'number',
-		filterType: 'custom'
+		filterType: 'custom',
+		filterDisabled: true,
+		sortDisabled: true
 	});
 
 	for (i = 3; i < 202; i++) {

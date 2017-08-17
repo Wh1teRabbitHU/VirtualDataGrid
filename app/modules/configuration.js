@@ -52,7 +52,9 @@ var DEFAULTS = {
 
 var HEADER_DEFAULTS = {
 	dataType: 'text',
-	filterType: 'equals'
+	filterType: 'equals',
+	filterDisabled: false,
+	sortDisabled: false
 };
 
 var STATIC_INNER_ATTRS = {
@@ -67,6 +69,7 @@ var STATIC_INNER_ATTRS = {
 		sortIcon: 'sort-icon',
 		filterRow: 'filter-row',
 		filterCell: 'filter-cell',
+		filterDisabled: 'filter-disabled',
 		filterContainer: 'filter-container',
 		filterSearchIcon: 'filter-search-icon',
 		filterClearIcon: 'filter-clear-icon',
@@ -183,6 +186,14 @@ function initHeaderData(config) {
 				headerCell.filterType = HEADER_DEFAULTS.filterType;
 			}
 
+			if (typeof headerCell.filterDisabled == 'undefined') {
+				headerCell.filterDisabled = HEADER_DEFAULTS.filterDisabled;
+			}
+
+			if (typeof headerCell.sortDisabled == 'undefined') {
+				headerCell.sortDisabled = HEADER_DEFAULTS.sortDisabled;
+			}
+
 			hRow.push(headerCell);
 
 			if (typeof headerCell.colspan != 'undefined') {
@@ -207,6 +218,14 @@ function initHeaderData(config) {
 				headerCell.filterType = HEADER_DEFAULTS.filterType;
 			}
 
+			if (typeof headerCell.filterDisabled == 'undefined') {
+				headerCell.filterDisabled = HEADER_DEFAULTS.filterDisabled;
+			}
+
+			if (typeof headerCell.sortDisabled == 'undefined') {
+				headerCell.sortDisabled = HEADER_DEFAULTS.sortDisabled;
+			}
+
 			hRow.push(headerCell);
 
 			if (typeof headerCell.colspan != 'undefined') {
@@ -220,6 +239,7 @@ function initHeaderData(config) {
 	});
 
 	config.headers = processedHeaders;
+	config.fixedHeaders = processedFixedHeaders;
 }
 
 function updateValue(config, options, key) {

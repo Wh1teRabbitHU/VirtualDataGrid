@@ -70,7 +70,8 @@ function updateTable(config, forceUpdate) {
 			}
 
 			cell.setAttribute('data-attribute', cellObj.key);
-			cell.innerHTML = domUtil.getFilterCellHtml(config, cell, filterObj);
+			cell.classList.toggle(config.inner.selectors.filterDisabled, cellObj.filterDisabled);
+			cell.innerHTML = domUtil.getFilterCellHtml(config, cell, cellObj, filterObj);
 		});
 
 		document.querySelectorAll('.' + config.selectors.fixedTable + ' td.' + config.inner.selectors.filterCell).forEach(function(cell, cellCount) {
@@ -83,7 +84,8 @@ function updateTable(config, forceUpdate) {
 			}
 
 			cell.setAttribute('data-attribute', cellObj.key);
-			cell.innerHTML = domUtil.getFilterCellHtml(config, cell, filterObj);
+			cell.classList.toggle(config.inner.selectors.filterDisabled, cellObj.filterDisabled);
+			cell.innerHTML = domUtil.getFilterCellHtml(config, cell, cellObj, filterObj);
 		});
 	}
 
