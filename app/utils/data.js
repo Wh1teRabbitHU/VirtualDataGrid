@@ -13,15 +13,15 @@ function defaultComparator(a, b, options) {
 
 		return isDown || compareResult === 0 ? compareResult : compareResult * -1;
 	} else if (options.dataType === 'number') {
-		var attrANumb = parseFloat(attrA),
-			attrBNumb = parseFloat(attrB);
+		attrA = parseFloat(attrA);
+		attrB = parseFloat(attrB);
 
-		if (!isNaN(attrANumb)) {
-			attrA = attrANumb;
+		if (isNaN(attrA)) {
+			return isDown ? -1 : 1;
 		}
 
-		if (!isNaN(attrBNumb)) {
-			attrB = attrBNumb;
+		if (isNaN(attrB)) {
+			return isDown ? 1 : -1;
 		}
 	}
 
