@@ -168,7 +168,8 @@ function initInnerCalculatedValues(config) {
 }
 
 function initHeaderData(config) {
-	var processedHeaders = [];
+	var processedHeaders = [],
+		processedFixedHeaders = [];
 
 	config.headers.forEach(function(headerRow) {
 		var hRow = [];
@@ -192,6 +193,30 @@ function initHeaderData(config) {
 		});
 
 		processedHeaders.push(hRow);
+	});
+
+	config.fixedHeaders.forEach(function(headerRow) {
+		var hRow = [];
+
+		headerRow.forEach(function(headerCell) {
+			if (typeof headerCell.dataType == 'undefined') {
+				headerCell.dataType = HEADER_DEFAULTS.dataType;
+			}
+
+			if (typeof headerCell.filterType == 'undefined') {
+				headerCell.filterType = HEADER_DEFAULTS.filterType;
+			}
+
+			hRow.push(headerCell);
+
+			if (typeof headerCell.colspan != 'undefined') {
+				for (var i = 1; i < headerCell.colspan; i++) {
+					hRow.push({});
+				}
+			}
+		});
+
+		processedFixedHeaders.push(hRow);
 	});
 
 	config.headers = processedHeaders;
