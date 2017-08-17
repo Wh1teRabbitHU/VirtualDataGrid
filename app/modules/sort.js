@@ -35,8 +35,8 @@ function sort(config, updateTable) {
 		}
 
 		var attribute = config.inner.sort.attribute || config.sort.default,
-			direction = typeof config.inner.sort.direction == 'undefined' ? 'down' : config.inner.sort.direction,
-			dataType = getSortType(config, config.sort.default);
+			direction = config.inner.sort.direction || 'down',
+			dataType = config.inner.sort.dataType || getSortType(config, config.sort.default);
 
 		return dataUtil.defaultComparator(a, b, {
 			attribute: attribute,

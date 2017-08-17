@@ -13,8 +13,16 @@ function defaultComparator(a, b, options) {
 
 		return isDown || compareResult === 0 ? compareResult : compareResult * -1;
 	} else if (options.dataType === 'number') {
-		attrA = parseFloat(attrA);
-		attrB = parseFloat(attrB);
+		var attrANumb = parseFloat(attrA),
+			attrBNumb = parseFloat(attrB);
+
+		if (!isNaN(attrANumb)) {
+			attrA = attrANumb;
+		}
+
+		if (!isNaN(attrBNumb)) {
+			attrB = attrBNumb;
+		}
 	}
 
 	if (typeof attrA == 'undefined' && typeof attrB != 'undefined' || attrA < attrB) {

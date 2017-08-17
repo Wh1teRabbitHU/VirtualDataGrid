@@ -28,12 +28,17 @@ function generateHeader() {
 		key: 'column_2',
 		text: '2. column',
 		dataType: 'number',
-		filterType: 'custom',
 		filterDisabled: true,
 		sortDisabled: true
 	});
+	headers[2].push({
+		key: 'column_3',
+		text: '3. column',
+		dataType: 'number',
+		filterType: 'custom',
+	});
 
-	for (i = 3; i < 202; i++) {
+	for (i = 4; i < 202; i++) {
 		headers[2].push({
 			key: 'column_' + i,
 			text: i + '. column',
