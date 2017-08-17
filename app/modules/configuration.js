@@ -25,12 +25,13 @@ var DEFAULTS = {
 		enabled: false
 	},
 	filter: {
-		enabled: false
+		enabled: false,
+		customFilter: null
 	},
 	sort: {
 		enabled: false,
 		default: configUtil.getSortDefault,
-		comparator: null
+		customSort: null
 	},
 	eventHandlers: {
 		onBeforeEdit: configUtil.nil,
@@ -39,11 +40,19 @@ var DEFAULTS = {
 		onBeforeSave: configUtil.nil,
 		onAfterSave: configUtil.nil
 	},
+	locale: {
+		name: 'en'
+	},
 	dataSource: [ ],
 	headers: [ [ ] ],
 	fixedHeaders: [ [ ] ],
 	debug: false,
 	inner: {}
+};
+
+var HEADER_DEFAULTS = {
+	dataType: 'text',
+	filterType: 'equals'
 };
 
 var STATIC_INNER_ATTRS = {
@@ -105,14 +114,16 @@ function init(config, options, initContainers) {
 
 	initContainers(config);
 
+	updateValue(config, options, 'locale.name');
 	updateValue(config, options, 'dataSource');
 	updateValue(config, options, 'headers');
 	updateValue(config, options, 'fixedHeaders');
 	updateValue(config, options, 'edit.enabled');
 	updateValue(config, options, 'filter.enabled');
+	updateValue(config, options, 'filter.customFilter');
 	updateValue(config, options, 'sort.enabled');
 	updateValue(config, options, 'sort.default');
-	updateValue(config, options, 'sort.comparator');
+	updateValue(config, options, 'sort.customSort');
 	updateValue(config, options, 'debug');
 	updateValue(config, options, 'eventHandlers.onBeforeEdit');
 	updateValue(config, options, 'eventHandlers.onValidation');
@@ -120,12 +131,14 @@ function init(config, options, initContainers) {
 	updateValue(config, options, 'eventHandlers.onBeforeSave');
 	updateValue(config, options, 'eventHandlers.onAfterSave');
 
+	initHeaderData(config);
 	initInnerCalculatedValues(config);
 }
 
 function initConfigObject(config) {
 	config.selectors = {};
 	config.eventHandlers = {};
+	config.locale = {};
 	config.inner = Object.assign({}, STATIC_INNER_ATTRS);
 }
 
@@ -152,6 +165,61 @@ function initInnerCalculatedValues(config) {
 	if (config.filter.enabled) {
 		config.inner.originalDataSource = [].concat(config.dataSource);
 	}
+}
+
+function initHeaderData(config) {
+	var processedHeaders = [],
+		processedFixedHeaders = [];
+
+	config.headers.forEach(function(headerRow) {
+		var hRow = [];
+
+		headerRow.forEach(function(headerCell) {
+			if (typeof headerCell.dataType == 'undefined') {
+				headerCell.dataType = HEADER_DEFAULTS.dataType;
+			}
+
+			if (typeof headerCell.filterType == 'undefined') {
+				headerCell.filterType = HEADER_DEFAULTS.filterType;
+			}
+
+			hRow.push(headerCell);
+
+			if (typeof headerCell.colspan != 'undefined') {
+				for (var i = 1; i < headerCell.colspan; i++) {
+					hRow.push({});
+				}
+			}
+		});
+
+		processedHeaders.push(hRow);
+	});
+
+	config.fixedHeaders.forEach(function(headerRow) {
+		var hRow = [];
+
+		headerRow.forEach(function(headerCell) {
+			if (typeof headerCell.dataType == 'undefined') {
+				headerCell.dataType = HEADER_DEFAULTS.dataType;
+			}
+
+			if (typeof headerCell.filterType == 'undefined') {
+				headerCell.filterType = HEADER_DEFAULTS.filterType;
+			}
+
+			hRow.push(headerCell);
+
+			if (typeof headerCell.colspan != 'undefined') {
+				for (var i = 1; i < headerCell.colspan; i++) {
+					hRow.push({});
+				}
+			}
+		});
+
+		processedFixedHeaders.push(hRow);
+	});
+
+	config.headers = processedHeaders;
 }
 
 function updateValue(config, options, key) {

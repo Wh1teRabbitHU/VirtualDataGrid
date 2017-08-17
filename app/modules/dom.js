@@ -61,7 +61,7 @@ function updateTable(config, forceUpdate) {
 	// Filter row update
 	if (config.filter.enabled) {
 		document.querySelectorAll('.' + config.selectors.virtualTable + ' td.' + config.inner.selectors.filterCell).forEach(function(cell, cellCount) {
-			var cellObj = config.headers[config.inner.indexOfCellKeyHeader][config.inner.leftCellOffset + cellCount],
+			var cellObj = configUtil.getKeyHeader(config)[config.inner.leftCellOffset + cellCount],
 				filterObj = config.inner.filters[cellObj.key] || {},
 				currentFilterAttr = cell.getAttribute('data-attribute');
 
@@ -70,7 +70,6 @@ function updateTable(config, forceUpdate) {
 			}
 
 			cell.setAttribute('data-attribute', cellObj.key);
-			cell.setAttribute('data-type', cellObj.type || 'text');
 			cell.innerHTML = domUtil.getFilterCellHtml(config, cell, filterObj);
 		});
 
@@ -84,7 +83,6 @@ function updateTable(config, forceUpdate) {
 			}
 
 			cell.setAttribute('data-attribute', cellObj.key);
-			cell.setAttribute('data-type', cellObj.type || 'text');
 			cell.innerHTML = domUtil.getFilterCellHtml(config, cell, filterObj);
 		});
 	}

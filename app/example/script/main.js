@@ -9,26 +9,33 @@ function generateHeader() {
 
 	for (i = 2; i < 52; i++) {
 		headers[0].push({
-			text: i + '. oszlop',
+			text: i + '. column',
 			colspan: 4
-		}, {}, {}, {});
+		});
 	}
 
 	headers.push([]);
 
 	for (i = 2; i < 102; i++) {
 		headers[1].push({
-			text: i + '. oszlop',
+			text: i + '. column',
 			colspan: 2
-		}, {});
+		});
 	}
 
 	headers.push([]);
+	headers[2].push({
+		key: 'column_2',
+		text: '2. column',
+		dataType: 'number',
+		filterType: 'custom'
+	});
 
-	for (i = 2; i < 202; i++) {
+	for (i = 3; i < 202; i++) {
 		headers[2].push({
 			key: 'column_' + i,
-			text: i + '. oszlop'
+			text: i + '. column',
+			dataType: 'number'
 		});
 	}
 
@@ -51,7 +58,8 @@ function generateFixedHeader() {
 	fixedHeaders.push([]);
 	fixedHeaders[2].push({
 		key: 'column_1',
-		text: '1. oszlop'
+		text: '1. column',
+		dataType: 'number'
 	});
 
 	return fixedHeaders;
@@ -96,7 +104,12 @@ window.addEventListener('load', function() {
 			enabled: true
 		},
 		filter: {
-			enabled: true
+			enabled: true,
+			customFilter: function(ds, attr, val) {
+				return ds.filter(function(row) {
+					return row[attr] < val;
+				});
+			}
 		}
 	});
 });

@@ -1,24 +1,12 @@
 'use strict';
 
-var domModule = require('../modules/dom');
-
-function defaultComparator(a, b, attribute, isDown) {
-	var attrA = a[attribute],
-		attrB = b[attribute];
-
-	if (typeof attrA == 'undefined' && typeof attrB != 'undefined' || attrA < attrB) {
-		return isDown ? -1 : 1;
-	}
-
-	if (typeof attrA != 'undefined' && typeof attrB == 'undefined' || attrA > attrB) {
-		return isDown ? 1 : -1;
-	}
-
-	return 0;
-}
+var domModule  = require('../modules/dom'),
+	configUtil = require('../utils/configuration'),
+	dataUtil   = require('../utils/data');
 
 function sortByColumn(config, column) {
 	var attribute = column.getAttribute('data-attribute'),
+		columnObj = configUtil.getCellObject(config, attribute),
 		direction = 'up';
 
 	if (config.inner.sort.attribute === attribute &&
@@ -29,34 +17,67 @@ function sortByColumn(config, column) {
 
 	config.inner.sort.direction = direction;
 	config.inner.sort.attribute = attribute;
+	config.inner.sort.dataType = columnObj.dataType;
 
 	sort(config);
 }
 
-function sort(config) {
+function sort(config, updateTable) {
+	updateTable = updateTable !== false;
+
 	config.dataSource.sort(function(a, b) {
-		if (config.sort.comparator !== null) {
-			return config.sort.comparator(a, b, config.inner.sort.attribute, config.inner.sort.direction);
+		if (config.sort.customSort !== null) {
+			return config.sort.customSort(a, b, {
+				attribute: config.inner.sort.attribute,
+				direction: config.inner.sort.direction,
+				dataType: config.inner.sort.dataType
+			});
 		}
 
-		return defaultComparator(a, b, config.inner.sort.attribute, config.inner.sort.direction === 'down');
+		var attribute = config.inner.sort.attribute || config.sort.default,
+			direction = typeof config.inner.sort.direction == 'undefined' ? 'down' : config.inner.sort.direction,
+			dataType = getSortType(config, config.sort.default);
+
+		return dataUtil.defaultComparator(a, b, {
+			attribute: attribute,
+			direction: direction,
+			dataType: dataType,
+			name: config.locale.name
+		});
+	});
+
+	if (updateTable) {
+		domModule.updateTable(config);
+	}
+}
+
+function resetSort(config) {
+	config.inner.sort.attribute =
+	config.inner.sort.direction =
+	config.inner.sort.dataType = undefined; // eslint-disable-line no-undefined
+
+	config.dataSource.sort(function(a, b) {
+		if (config.sort.customSort !== null) {
+			return config.sort.customSort(a, b, {
+				attribute: config.sort.default,
+				direction: 'down',
+				dataType: getSortType(config, config.sort.default)
+			});
+		}
+
+		return dataUtil.defaultComparator(a, b, {
+			attribute: config.sort.default,
+			direction: 'down',
+			dataType: getSortType(config, config.sort.default),
+			name: config.locale.name
+		});
 	});
 
 	domModule.updateTable(config);
 }
 
-function resetSort(config) {
-	config.inner.sort.direction = '';
-	config.inner.sort.attribute = '';
-	config.dataSource.sort(function(a, b) {
-		if (config.sort.comparator !== null) {
-			return config.sort.comparator(a, b, config.sort.default, 'down');
-		}
-
-		return defaultComparator(a, b, config.sort.default, true);
-	});
-
-	domModule.updateTable(config);
+function getSortType(config, attribute) {
+	return configUtil.getCellObject(config, attribute).dataType || 'string';
 }
 
 module.exports = {
