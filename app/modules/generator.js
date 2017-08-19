@@ -29,6 +29,7 @@ function initContainers(config) {
 		fixedContainer = document.createElement('div'),
 		fixedTable = document.createElement('table');
 
+	container.setAttribute('id', config.inner.selectors.uniqueId);
 	virtualContainer.classList.add(config.selectors.virtualContainer);
 	virtualTable.classList.add(config.selectors.virtualTable);
 	fixedContainer.classList.add(config.selectors.fixedContainer);
@@ -100,8 +101,12 @@ function initTable(config) {
 			tdElement.style.padding = config.dimensions.cellPaddingVertical + 'px ' + config.dimensions.cellPaddingHorizontal + 'px';
 			tdElement.innerHTML = domUtil.getHeaderCellHtml(config, tdElement, headerRow[j], isLastRow);
 
-			if (config.sort.enabled && !headerRow[j].sortDisabled && isLastRow) {
+			if (isLastRow) {
 				tdElement.classList.add(config.inner.selectors.sortCell);
+
+				if (!config.sort.enabled || headerRow[j].sortDisabled) {
+					tdElement.classList.add(config.inner.selectors.sortDisabled);
+				}
 			}
 
 			trHead.appendChild(tdElement);
@@ -217,8 +222,12 @@ function initTable(config) {
 			tdElement.style.minWidth = config.dimensions.cellWidth + 'px';
 			tdElement.innerHTML = domUtil.getHeaderCellHtml(config, tdElement, config.fixedHeaders[i][j], isLastRow);
 
-			if (config.sort.enabled && !config.fixedHeaders[i][j].sortDisabled && isLastRow) {
+			if (isLastRow) {
 				tdElement.classList.add(config.inner.selectors.sortCell);
+
+				if (!config.sort.enabled || config.fixedHeaders[i][j].sortDisabled) {
+					tdElement.classList.add(config.inner.selectors.sortDisabled);
+				}
 			}
 
 			trHead.appendChild(tdElement);

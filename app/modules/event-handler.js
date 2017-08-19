@@ -111,10 +111,12 @@ function onClickSaveButtonEventHandler(event, config) {
 
 function onClickSortHeader(event, config) {
 	var sortCellSelector = '.' + config.inner.selectors.sortCell,
+		sortDisabledSelector = '.' + config.inner.selectors.sortDisabled,
 		sortIconSelector = sortCellSelector + ' .' + config.inner.selectors.sortIcon;
 
 	if (!event.target.matches(sortCellSelector) &&
-		!event.target.matches(sortIconSelector)) {
+		!event.target.matches(sortIconSelector) ||
+		event.target.matches(sortDisabledSelector)) {
 		return;
 	}
 
@@ -177,11 +179,15 @@ function addEvents(config) {
 	}
 
 	if (config.sort.enabled) {
-		document.addEventListener('click', instances.onClickSortHeader);
+		document.querySelectorAll('#' + config.inner.selectors.uniqueId + ' td.' + config.inner.selectors.sortCell).forEach(function(el) {
+			el.addEventListener('click', instances.onClickSortHeader);
+		});
 	}
 
 	if (config.filter.enabled) {
-		document.addEventListener('click', instances.onClickFilterHeader);
+		document.querySelectorAll('#' + config.inner.selectors.uniqueId + ' td.' + config.inner.selectors.filterCell).forEach(function(el) {
+			el.addEventListener('click', instances.onClickFilterHeader);
+		});
 	}
 }
 
@@ -204,11 +210,15 @@ function removeEvents(config) {
 	}
 
 	if (config.sort.enabled) {
-		document.removeEventListener('click', instances.onClickSortHeader);
+		document.querySelectorAll('#' + config.inner.selectors.uniqueId + ' td.' + config.inner.selectors.sortCell).forEach(function(el) {
+			el.removeEventListener('click', instances.onClickSortHeader);
+		});
 	}
 
 	if (config.filter.enabled) {
-		document.removeEventListener('click', instances.onClickFilterHeader);
+		document.querySelectorAll('#' + config.inner.selectors.uniqueId + ' td.' + config.inner.selectors.filterCell).forEach(function(el) {
+			el.removeEventListener('click', instances.onClickFilterHeader);
+		});
 	}
 }
 

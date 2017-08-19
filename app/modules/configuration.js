@@ -47,6 +47,7 @@ var DEFAULTS = {
 	headers: [ [ ] ],
 	fixedHeaders: [ [ ] ],
 	debug: false,
+	uniqueId: 0,
 	inner: {}
 };
 
@@ -59,6 +60,7 @@ var HEADER_DEFAULTS = {
 
 var STATIC_INNER_ATTRS = {
 	selectors: {
+		uniqueIdPrefix: 'virtual-data-grid-',
 		bufferRowTop: 'buffer-row-top',
 		bufferRowBottom: 'buffer-row-bottom',
 		bufferColumnLeft: 'buffer-column-left',
@@ -67,6 +69,7 @@ var STATIC_INNER_ATTRS = {
 		headerCell: 'header-cell',
 		sortCell: 'sort-cell',
 		sortIcon: 'sort-icon',
+		sortDisabled: 'sort-disabled',
 		filterRow: 'filter-row',
 		filterCell: 'filter-cell',
 		filterDisabled: 'filter-disabled',
@@ -112,7 +115,9 @@ function init(config, options, initContainers) {
 	updateValue(config, options, 'dimensions.cellPaddingVertical');
 	updateValue(config, options, 'dimensions.cellPaddingHorizontal');
 	updateValue(config, options, 'dimensions.cellBorderWidth');
+	updateValue(config, options, 'uniqueId');
 
+	calculateUniqueIdSelector(config);
 	calculateVirtualContainerHeight(config, options);
 
 	initContainers(config);
@@ -143,6 +148,10 @@ function initConfigObject(config) {
 	config.eventHandlers = {};
 	config.locale = {};
 	config.inner = Object.assign({}, STATIC_INNER_ATTRS);
+}
+
+function calculateUniqueIdSelector(config) {
+	config.inner.selectors.uniqueId = config.inner.selectors.uniqueIdPrefix + config.uniqueId;
 }
 
 function calculateVirtualContainerHeight(config, options) {
