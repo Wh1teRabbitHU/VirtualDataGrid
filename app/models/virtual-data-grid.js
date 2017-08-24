@@ -10,6 +10,8 @@ function VirtualDataGrid() {
 	self.configuration = {};
 	self.uniqueId = uniqueIdSequence++;
 	self.generateTable = function(options) {
+		options.uniqueId = self.uniqueId;
+
 		generator.generateTable(self.configuration, options);
 	};
 	self.destroyTable = function() {

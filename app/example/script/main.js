@@ -1,5 +1,7 @@
 'use strict';
 
+var virtualDG;
+
 function generateHeader() {
 	var headers = [];
 
@@ -92,12 +94,12 @@ function generateData(headers) {
 	return ds;
 }
 
-window.addEventListener('load', function() {
+function generateTable() {
 	var headers = generateHeader(),
-		data = generateData(headers),
-		generator = new window.VirtualDataGrid();
+		data = generateData(headers);
 
-	generator.generateTable({
+	virtualDG = new window.VirtualDataGrid();
+	virtualDG.generateTable({
 		dataSource: data,
 		headers: headers,
 		fixedHeaders: generateFixedHeader(),
@@ -118,5 +120,17 @@ window.addEventListener('load', function() {
 				});
 			}
 		}
+	});
+}
+
+window.addEventListener('load', function() {
+	generateTable();
+
+	document.querySelector('.overwrite-data-grid').addEventListener('click', function() {
+		document.querySelector('.data-container').innerHTML = '';
+
+		// virtualDG.destroyTable();
+
+		generateTable();
 	});
 });
