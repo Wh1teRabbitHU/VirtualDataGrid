@@ -69,6 +69,11 @@ function redrawTable(config) {
 		}
 	}
 
+	config.inner.bufferLeft = document.querySelectorAll('.' + config.inner.selectors.bufferColumnLeft);
+	config.inner.bufferRight = document.querySelectorAll('.' + config.inner.selectors.bufferColumnRight);
+	config.inner.bufferTop = document.querySelectorAll('.' + config.inner.selectors.bufferRowTop);
+	config.inner.bufferBottom = document.querySelectorAll('.' + config.inner.selectors.bufferRowBottom);
+
 	domModule.updateBuffers(config);
 	domModule.updateTable(config);
 }
