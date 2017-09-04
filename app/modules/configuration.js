@@ -1,6 +1,7 @@
 'use strict';
 
-var configUtil = require('../utils/configuration');
+var configUtil = require('../utils/configuration'),
+	dataUtil   = require('../utils/data');
 
 var DEFAULTS = {
 	selectors: {
@@ -46,6 +47,7 @@ var DEFAULTS = {
 	dataSource: [ ],
 	headers: [ [ ] ],
 	fixedHeaders: [ [ ] ],
+	autoResize: true,
 	debug: false,
 	uniqueId: 0,
 	inner: {}
@@ -126,6 +128,7 @@ function init(config, options, initContainers) {
 	updateValue(config, options, 'dataSource');
 	updateValue(config, options, 'headers');
 	updateValue(config, options, 'fixedHeaders');
+	updateValue(config, options, 'autoResize');
 	updateValue(config, options, 'edit.enabled');
 	updateValue(config, options, 'filter.enabled');
 	updateValue(config, options, 'filter.customFilter');
@@ -147,7 +150,7 @@ function initConfigObject(config) {
 	config.selectors = {};
 	config.eventHandlers = {};
 	config.locale = {};
-	config.inner = Object.assign({}, STATIC_INNER_ATTRS);
+	config.inner = dataUtil.cloneObject(STATIC_INNER_ATTRS);
 }
 
 function calculateUniqueIdSelector(config) {

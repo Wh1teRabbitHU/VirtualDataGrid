@@ -152,8 +152,13 @@ function getValueByType(value, dataType) {
 	}
 }
 
+function cloneObject(obj) {
+	return JSON.parse(JSON.stringify(obj));
+}
+
 module.exports = {
 	defaultComparator: defaultComparator,
 	filterData: filterData,
-	getValueByType: getValueByType
+	getValueByType: getValueByType,
+	cloneObject: cloneObject
 };

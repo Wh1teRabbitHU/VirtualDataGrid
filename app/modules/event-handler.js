@@ -7,7 +7,8 @@ var domUtil      = require('../utils/dom'),
 	sortModule   = require('../modules/sort'),
 	editModule   = require('../modules/edit'),
 	domModule    = require('../modules/dom'),
-	filterModule = require('../modules/filter');
+	filterModule = require('../modules/filter'),
+	resizeModule = require('../modules/resize');
 
 var container;
 
@@ -17,7 +18,8 @@ var instances = {
 	onClickCellEventHandler: function() {},
 	onClickSaveButtonEventHandler: function() {},
 	onClickSortHeader: function() {},
-	onClickFilterHeader: function() {}
+	onClickFilterHeader: function() {},
+	onWindowResize: function() {}
 };
 
 function onWheelEventHandler(event) {
@@ -154,6 +156,14 @@ function onClickFilterHeader(event, config) {
 	filterModule.startEditingFilter(config, cell);
 }
 
+function onWindowResize(event, config) {
+	if (document.querySelector('#' + config.inner.selectors.uniqueId) === null) {
+		return;
+	}
+
+	resizeModule.resizeEventHandler(config);
+}
+
 function addEvents(config) {
 	container = document.querySelector('.' + config.selectors.virtualContainer);
 
@@ -162,6 +172,7 @@ function addEvents(config) {
 	instances.onClickSaveButtonEventHandler = function(event) { onClickSaveButtonEventHandler(event, config); };
 	instances.onClickSortHeader = function(event) { onClickSortHeader(event, config); };
 	instances.onClickFilterHeader = function(event) { onClickFilterHeader(event, config); };
+	instances.onWindowResize = function(event) { onWindowResize(event, config); };
 
 	if (container !== null) {
 		container.addEventListener('wheel', onWheelEventHandler, { passive: false, capture: true });
@@ -188,6 +199,10 @@ function addEvents(config) {
 		document.querySelectorAll('#' + config.inner.selectors.uniqueId + ' td.' + config.inner.selectors.filterCell).forEach(function(el) {
 			el.addEventListener('click', instances.onClickFilterHeader);
 		});
+	}
+
+	if (config.autoResize) {
+		window.addEventListener('resize', instances.onWindowResize);
 	}
 }
 
@@ -219,6 +234,10 @@ function removeEvents(config) {
 		document.querySelectorAll('#' + config.inner.selectors.uniqueId + ' td.' + config.inner.selectors.filterCell).forEach(function(el) {
 			el.removeEventListener('click', instances.onClickFilterHeader);
 		});
+	}
+
+	if (config.autoResize) {
+		window.removeEventListener('resize', instances.onWindowResize);
 	}
 }
 
