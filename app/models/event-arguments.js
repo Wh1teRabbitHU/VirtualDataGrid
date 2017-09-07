@@ -3,8 +3,9 @@
 function EventArguments(p) {
 	var self = this;
 
-	initAttr('cell');
-	initAttr('cellObject');
+	initAttr('cellElement');
+	initAttr('cellData');
+	initAttr('updatedDataList');
 	initAttr('cancelEvent');
 
 	function initAttr(name) {

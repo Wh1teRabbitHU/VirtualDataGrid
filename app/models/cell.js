@@ -5,6 +5,7 @@ function CellObject(p) {
 
 	initAttr('key');
 	initAttr('value');
+	initAttr('editedValue');
 	initAttr('class');
 	initAttr('rowNumber');
 	initAttr('columnNumber');
@@ -19,6 +20,28 @@ function CellObject(p) {
 				self[k] = attrs[k];
 			}
 		});
+	};
+
+	this.getValue = function() {
+		return self.cellChanged ? self.editedValue : self.value;
+	};
+
+	this.updateValue = function(value) {
+		if (self.value === value || self.value === null && typeof value == 'undefined') {
+			self.editedValue = null;
+			self.cellChanged = false;
+		} else {
+			self.editedValue = value;
+			self.cellChanged = true;
+		}
+	};
+
+	this.discardChangedValue = function() {
+		self.editedValue = null;
+	};
+
+	this.isCellChanged = function() {
+		return self.cellChanged;
 	};
 }
 

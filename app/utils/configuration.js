@@ -68,14 +68,14 @@ function getKeyHeader(config) {
 	return config.headers[config.inner.indexOfCellKeyHeader];
 }
 
-function getKeyFixedHeader(config) {
+function getFixedKeyHeader(config) {
 	return config.fixedHeaders[config.inner.indexOfCellKeyHeader];
 }
 
-function getCellObject(config, attribute) {
+function getHeaderObject(config, attribute) {
 	return getKeyHeader(config).find(function(column) {
 		return column.key === attribute;
-	}) || getKeyFixedHeader(config).find(function(column) {
+	}) || getFixedKeyHeader(config).find(function(column) {
 		return column.key === attribute;
 	});
 }
@@ -96,7 +96,7 @@ module.exports = {
 	getTableOffsetHeight: getTableOffsetHeight,
 	getCellFullWidth: getCellFullWidth,
 	getKeyHeader: getKeyHeader,
-	getKeyFixedHeader: getKeyFixedHeader,
-	getCellObject: getCellObject,
+	getFixedKeyHeader: getFixedKeyHeader,
+	getHeaderObject: getHeaderObject,
 	nil: nil
 };

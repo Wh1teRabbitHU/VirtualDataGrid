@@ -97,8 +97,7 @@ var STATIC_INNER_ATTRS = {
 	minBufferWidth: 2,
 	minBufferHeight: 18, // Azért van rá szükség, mert ha nincs megadva, akkor ugrik egyett a scroll ha a végére vagy az elejére értünk a táblázatban
 	leftCellOffset: 0,
-	topCellOffset: 0,
-	editedCells: []
+	topCellOffset: 0
 };
 
 function init(config, options, initContainers) {

@@ -62,9 +62,19 @@ function findParentNode(child, selector) {
 	return findParentNode(child.parentNode, selector);
 }
 
+function getRowNumber(config, cell) {
+	return indexOfElement(cell.parentNode) + config.inner.topCellOffset;
+}
+
+function getColumnNumber(config, cell) {
+	return indexOfElement(cell) - 1 + config.inner.leftCellOffset;
+}
+
 module.exports = {
 	indexOfElement: indexOfElement,
 	getHeaderCellHtml: getHeaderCellHtml,
 	getFilterCellHtml: getFilterCellHtml,
-	findParentNode: findParentNode
+	findParentNode: findParentNode,
+	getRowNumber: getRowNumber,
+	getColumnNumber: getColumnNumber
 };

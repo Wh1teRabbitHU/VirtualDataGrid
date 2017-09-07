@@ -3,85 +3,112 @@
 var Cell       = require('../models/cell'),
 	configUtil = require('../utils/configuration');
 
-function getCell(config, rowNumber, columnNumber) {
-	var cellObj = config.inner.editedCells.find(function(el) {
-			return el.rowNumber === rowNumber && el.columnNumber === columnNumber;
-		}),
-		rowObj = configUtil.getKeyHeader(config);
+function getCellData(config, rowNumber, columnNumber) {
+	var cellData = null,
+		rowObj = configUtil.getKeyHeader(config),
+		columnKey = rowObj[columnNumber].key;
 
+	// If the index is higher than the available rows number
 	if (rowNumber >= config.dataSource.length) {
-		cellObj = new Cell({
-			key: rowObj[columnNumber].key,
+		cellData = new Cell({
+			key: columnKey,
 			value: ''
 		});
-	}
-
-	if (typeof cellObj == 'undefined') {
-		cellObj = new Cell({
-			key: rowObj[columnNumber].key,
-			value: config.dataSource[rowNumber][rowObj[columnNumber].key]
+	} else {
+		cellData = new Cell({
+			key: columnKey,
+			value: config.dataSource[rowNumber][columnKey],
+			rowNumber: rowNumber,
+			columnNumber: columnNumber
 		});
 
-		cellObj.updateAttributes({
+		if (typeof config.dataSource[rowNumber].__editedValues != 'undefined' &&
+			typeof config.dataSource[rowNumber].__editedValues[columnKey] != 'undefined') {
+
+			cellData.class = config.selectors.editedCell;
+			cellData.updateValue(config.dataSource[rowNumber].__editedValues[columnKey]);
+		}
+	}
+
+	return cellData;
+}
+
+function getFixedCellData(config, rowNumber, columnNumber) {
+	var cellData = null,
+		rowObj = configUtil.getFixedKeyHeader(config),
+		columnKey = rowObj[columnNumber].key;
+
+	// If the index is higher than the available rows number
+	if (rowNumber >= config.dataSource.length) {
+		cellData = new Cell({
+			key: columnKey,
+			value: ''
+		});
+	} else {
+		cellData = new Cell({
+			key: columnKey,
+			value: config.dataSource[rowNumber][columnKey],
 			rowNumber: rowNumber,
 			columnNumber: columnNumber
 		});
 	}
 
-	return cellObj;
+	return cellData;
 }
 
-function getFixedCell(config, rowNumber, columnNumber) {
-	var cellObj = null,
-		rowObj = config.fixedHeaders[config.inner.indexOfCellKeyHeader];
+function mergeEditedValuesInRow(row) {
+	var mergedRowData = {};
 
-	if (rowNumber >= config.dataSource.length) {
-		cellObj = new Cell({
-			key: rowObj[columnNumber].key,
-			value: ''
-		});
-	} else {
-		cellObj = new Cell({
-			key: rowObj[columnNumber].key,
-			value: config.dataSource[rowNumber][rowObj[columnNumber].key]
-		});
+	if (typeof row.__editedValues == 'undefined' || row.__editedValues === null) {
+		return row;
 	}
 
-	return cellObj;
-}
-
-function setCellValue(config, rowNumber, columnNumber, value) {
-	var rowObj = configUtil.getKeyHeader(config);
-
-	config.dataSource[rowNumber][rowObj[columnNumber].key] = value;
-}
-
-function isCellChanged(config, cellObj) {
-	var originalObj = getCell(config, cellObj.rowNumber, cellObj.columnNumber),
-		editedObj = config.inner.editedCells.find(function(el) {
-			return el.rowNumber === cellObj.rowNumber && el.columnNumber === cellObj.columnNumber;
-		}),
-		originalVal = originalObj.value || '';
-
-	return originalVal !== cellObj.value || typeof editedObj != 'undefined';
-}
-
-function setUpdatedCellValue(config, cellObj) {
-	var prev = config.inner.editedCells.find(function(el) {
-		return el.rowNumber === cellObj.rowNumber && el.columnNumber === cellObj.columnNumber;
+	Object.keys(row).forEach(function(key) {
+		if (key !== '__editedValues') {
+			mergedRowData[key] = row.__editedValues[key] || row[key];
+		}
 	});
 
-	if (typeof prev == 'undefined') {
-		config.inner.editedCells.push(cellObj);
-	} else {
-		prev.value = cellObj.value;
+	return mergedRowData;
+}
+
+function getUpdatedDataList(config) {
+	var editedData = [];
+
+	config.dataSource.forEach(function(row) {
+		if (typeof row.__editedValues != 'undefined' && row.__editedValues !== null) {
+			editedData.push(mergeEditedValuesInRow(row));
+		}
+	});
+
+	return editedData;
+}
+
+function storeUpdatedCellValue(config, cellData) {
+	if (typeof config.dataSource[cellData.rowNumber].__editedValues == 'undefined') {
+		config.dataSource[cellData.rowNumber].__editedValues = {};
 	}
+
+	config.dataSource[cellData.rowNumber].__editedValues[cellData.key] = cellData.editedValue;
+}
+
+function persistCellValue(config) {
+	config.dataSource.forEach(function(row) {
+		if (typeof row.__editedValues != 'undefined' && row.__editedValues !== null) {
+			Object.keys(row.__editedValues).forEach(function(key) {
+				row[key] = row.__editedValues[key];
+			});
+
+			row.__editedValues = null;
+		}
+	});
 }
 
 module.exports = {
-	getCell: getCell,
-	getFixedCell: getFixedCell,
-	setCellValue: setCellValue,
-	isCellChanged: isCellChanged,
-	setUpdatedCellValue: setUpdatedCellValue
+	getCellData: getCellData,
+	getFixedCellData: getFixedCellData,
+	mergeEditedValuesInRow: mergeEditedValuesInRow,
+	getUpdatedDataList: getUpdatedDataList,
+	storeUpdatedCellValue: storeUpdatedCellValue,
+	persistCellValue: persistCellValue
 };

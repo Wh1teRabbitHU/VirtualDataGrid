@@ -247,7 +247,7 @@ function initTable(config) {
 		trHead.style.height = config.dimensions.cellHeight + 'px';
 
 		for (j = 0; j < config.fixedHeaders[config.inner.indexOfCellKeyHeader].length; j++) {
-			cellObj = configUtil.getKeyFixedHeader(config)[j];
+			cellObj = configUtil.getFixedKeyHeader(config)[j];
 
 			tdElement = document.createElement('td');
 			tdElement.classList.add(config.inner.selectors.filterCell);

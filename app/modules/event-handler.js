@@ -1,9 +1,6 @@
 'use strict';
 
-var EventArguments = require('../models/event-arguments');
-
 var domUtil      = require('../utils/dom'),
-	tableUtil    = require('../utils/table'),
 	sortModule   = require('../modules/sort'),
 	editModule   = require('../modules/edit'),
 	domModule    = require('../modules/dom'),
@@ -35,76 +32,12 @@ function onScrollEventHandler(event, config) {
 	domModule.updateTable(config, false);
 }
 
-function onInputBlurEventHandler(event, config) {
-	var cell = event.target.parentNode,
-		rowNumber = domUtil.indexOfElement(cell.parentNode) + config.inner.topCellOffset,
-		columnNumber = domUtil.indexOfElement(cell) - 1 + config.inner.leftCellOffset,
-		editedObj = tableUtil.getCell(config, rowNumber, columnNumber);
-
-	editedObj.updateAttributes({
-		value: event.target.value,
-		class: config.selectors.editedCell
-	});
-
-	if (!tableUtil.isCellChanged(config, editedObj)) {
-		domModule.resetEditingCell(config, instances.onInputBlurEventHandler);
-
-		return;
-	}
-
-	var args = new EventArguments({
-		cell: cell,
-		cellObject: editedObj,
-		cancelEvent: false
-	});
-
-	config.eventHandlers.onValidation(args);
-
-	if (args.cancelEdit !== true) {
-		tableUtil.setUpdatedCellValue(config, args.cellObject);
-		domModule.updateCell(config, args.cell, args.cellObject);
-
-		config.eventHandlers.onAfterEdit(args);
-	}
+function onClickCellEventHandler(event, config) {
+	editModule.startEditingCell(config, event.target, instances, onInputBlurEventHandler);
 }
 
-function onClickCellEventHandler(event, config) {
-	if (!config.edit.enabled) {
-		return;
-	}
-
-	var rowNumber = domUtil.indexOfElement(event.target.parentNode) + config.inner.topCellOffset,
-		columnNumber = domUtil.indexOfElement(event.target) - 1 + config.inner.leftCellOffset;
-
-	if (rowNumber >= config.dataSource.length) {
-		return;
-	}
-
-	var editedObj = tableUtil.getCell(config, rowNumber, columnNumber),
-		input = document.createElement('input');
-
-	input.setAttribute('type', 'text');
-
-	var args = new EventArguments({
-		cell: event.target,
-		cellObject: editedObj,
-		cancelEvent: false
-	});
-
-	config.eventHandlers.onBeforeEdit(args);
-
-	if (!args.cancelEvent) {
-		event.target.classList.add(config.selectors.editingCell);
-		event.target.classList.remove(config.selectors.editedCell);
-		event.target.innerHTML = '';
-		event.target.appendChild(input);
-
-		instances.onInputBlurEventHandler = function(ev) { onInputBlurEventHandler(ev, config); };
-
-		input.focus();
-		input.value = editedObj.value;
-		input.addEventListener('blur', instances.onInputBlurEventHandler);
-	}
+function onInputBlurEventHandler(event, config) {
+	editModule.finishEditingCell(config, event.target, instances.onInputBlurEventHandler);
 }
 
 function onClickSaveButtonEventHandler(event, config) {

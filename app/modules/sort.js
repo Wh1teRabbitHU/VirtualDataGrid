@@ -2,11 +2,12 @@
 
 var domModule  = require('../modules/dom'),
 	configUtil = require('../utils/configuration'),
+	tableUtil  = require('../utils/table'),
 	dataUtil   = require('../utils/data');
 
 function sortByColumn(config, column) {
 	var attribute = column.getAttribute('data-attribute'),
-		columnObj = configUtil.getCellObject(config, attribute),
+		headerObj = configUtil.getHeaderObject(config, attribute),
 		direction = 'up';
 
 	if (config.inner.sort.attribute === attribute &&
@@ -17,7 +18,7 @@ function sortByColumn(config, column) {
 
 	config.inner.sort.direction = direction;
 	config.inner.sort.attribute = attribute;
-	config.inner.sort.dataType = columnObj.dataType;
+	config.inner.sort.dataType = headerObj.dataType;
 
 	sort(config);
 }
@@ -26,6 +27,9 @@ function sort(config, updateTable) {
 	updateTable = updateTable !== false;
 
 	config.dataSource.sort(function(a, b) {
+		a = tableUtil.mergeEditedValuesInRow(a);
+		b = tableUtil.mergeEditedValuesInRow(b);
+
 		if (config.sort.customSort !== null) {
 			return config.sort.customSort(a, b, {
 				attribute: config.inner.sort.attribute,
@@ -77,7 +81,7 @@ function resetSort(config) {
 }
 
 function getSortType(config, attribute) {
-	return configUtil.getCellObject(config, attribute).dataType || 'string';
+	return configUtil.getHeaderObject(config, attribute).dataType || 'string';
 }
 
 module.exports = {
