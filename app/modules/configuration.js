@@ -47,6 +47,7 @@ var DEFAULTS = {
 	dataSource: [ ],
 	headers: [ [ ] ],
 	fixedHeaders: [ [ ] ],
+	uniqueRowKey: '__uniqueRowKey',
 	autoResize: true,
 	debug: false,
 	uniqueId: 0,
@@ -92,6 +93,7 @@ var STATIC_INNER_ATTRS = {
 			clear: 'fa fa-times'
 		}
 	},
+	editedValues: {},
 	sort: { },
 	filters: { },
 	minBufferWidth: 2,
@@ -127,6 +129,7 @@ function init(config, options, initContainers) {
 	updateValue(config, options, 'dataSource');
 	updateValue(config, options, 'headers');
 	updateValue(config, options, 'fixedHeaders');
+	updateValue(config, options, 'uniqueRowKey');
 	updateValue(config, options, 'autoResize');
 	updateValue(config, options, 'edit.enabled');
 	updateValue(config, options, 'filter.enabled');
@@ -142,6 +145,7 @@ function init(config, options, initContainers) {
 	updateValue(config, options, 'eventHandlers.onAfterSave');
 
 	initHeaderData(config);
+	initDataSource(config, options.uniqueRowKey);
 	initInnerCalculatedValues(config);
 }
 
@@ -251,6 +255,14 @@ function initHeaderData(config) {
 
 	config.headers = processedHeaders;
 	config.fixedHeaders = processedFixedHeaders;
+}
+
+function initDataSource(config, uniqueRowKey) {
+	if (typeof uniqueRowKey == 'undefined') {
+		for (var i = 0; i < config.dataSource.length; i++) {
+			config.dataSource[i][config.uniqueRowKey] = i;
+		}
+	}
 }
 
 function updateValue(config, options, key) {

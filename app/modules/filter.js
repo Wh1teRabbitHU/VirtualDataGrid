@@ -1,7 +1,6 @@
 'use strict';
 
 var domUtil    = require('../utils/dom'),
-	tableUtil  = require('../utils/table'),
 	domModule  = require('../modules/dom'),
 	sortModule = require('../modules/sort'),
 	dataUtil   = require('../utils/data'),
@@ -50,6 +49,7 @@ function startEditingFilter(config, cell) {
 
 function filter(config, sortTable) {
 	sortTable = sortTable !== false;
+
 	config.dataSource = config.inner.originalDataSource;
 
 	Object.keys(config.inner.filters).forEach(function(key) {
@@ -61,10 +61,24 @@ function filter(config, sortTable) {
 
 		if (filterObj.filterType === 'custom') {
 			if (config.filter.customFilter !== null) {
-				config.dataSource = config.filter.customFilter(config.dataSource, filterObj.attribute, filterObj.value);
+				config.dataSource = config.filter.customFilter({
+					dataSource: config.dataSource,
+					attribute: filterObj.attribute,
+					value: filterObj.value,
+					editedValues: config.inner.editedValues,
+					uniqueRowKey: config.uniqueRowKey
+				});
 			}
 		} else {
-			config.dataSource = dataUtil.filterData(config.dataSource, filterObj.attribute, filterObj.filterType, filterObj.value, filterObj.valueTwo);
+			config.dataSource = dataUtil.filterData({
+				dataSource: config.dataSource,
+				attribute: filterObj.attribute,
+				filterType: filterObj.filterType,
+				valueOne: filterObj.value,
+				valueTwo: filterObj.valueTwo,
+				editedValues: config.editedValues,
+				uniqueRowKey: config.inner.uniqueRowKey
+			});
 		}
 	});
 
@@ -87,6 +101,16 @@ function clearFilter(config, cell) {
 		filterObj = config.inner.filters[attribute];
 
 	filterObj.value = '';
+
+	var newFilters = {};
+
+	Object.keys(config.inner.filters).forEach(function(key) {
+		if (key !== attribute) {
+			newFilters[key] = config.inner.filters[key];
+		}
+	});
+
+	config.inner.filters = newFilters;
 
 	finishEditingFilter(config, cell, cellObj, filterObj);
 }

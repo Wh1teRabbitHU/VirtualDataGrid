@@ -4,8 +4,8 @@ var FILTER_TYPES = [ 'equals', 'equalsCaseInsensitive', 'like', 'likeCaseInsensi
 	'lessThan', 'lessOrEqual', 'between', 'betweenInclusive', 'contains' ];
 
 function defaultComparator(a, b, options) {
-	var attrA = a[options.attribute],
-		attrB = b[options.attribute],
+	var attrA = getMergedValue(a, options.attribute, options.editedValues, options.uniqueRowKey),
+		attrB = getMergedValue(b, options.attribute, options.editedValues, options.uniqueRowKey),
 		isDown = options.direction === 'down';
 
 	if (options.dataType === 'string') {
@@ -36,104 +36,104 @@ function defaultComparator(a, b, options) {
 	return 0;
 }
 
-function filterData(data, attribute, filterType, valueOne, valueTwo) {
-	if (FILTER_TYPES.indexOf(filterType) === -1) {
-		window.console.error('Not a valid filter type! (' + filterType + ')');
+function filterData(options) {
+	if (FILTER_TYPES.indexOf(options.filterType) === -1) {
+		window.console.error('Not a valid filter type! (' + options.filterType + ')');
 
-		return data;
+		return options.dataSource;
 	}
 
-	switch (filterType) {
+	switch (options.filterType) {
 		case 'equals':
-			return equalsFilter(data, attribute, valueOne);
+			return equalsFilter(options);
 		case 'equalsCaseInsensitive':
-			return equalsCaseInsensitiveFilter(data, attribute, valueOne);
+			return equalsCaseInsensitiveFilter(options);
 		case 'like':
-			return likeFilter(data, attribute, valueOne);
+			return likeFilter(options);
 		case 'likeCaseInsensitive':
-			return likeCaseInsensitiveFilter(data, attribute, valueOne);
+			return likeCaseInsensitiveFilter(options);
 		case 'greaterThan':
-			return greaterThanFilter(data, attribute, valueOne);
+			return greaterThanFilter(options);
 		case 'greaterOrEqual':
-			return greaterOrEqualFilter(data, attribute, valueOne);
+			return greaterOrEqualFilter(options);
 		case 'lessThan':
-			return lessThanFilter(data, attribute, valueOne);
+			return lessThanFilter(options);
 		case 'lessOrEqual':
-			return lessOrEqualFilter(data, attribute, valueOne);
+			return lessOrEqualFilter(options);
 		case 'between':
-			return betweenFilter(data, attribute, valueOne, valueTwo);
+			return betweenFilter(options);
 		case 'betweenInclusive':
-			return betweenInclusiveFilter(data, attribute, valueOne, valueTwo);
+			return betweenInclusiveFilter(options);
 		case 'contains':
-			return containsFilter(data, attribute, valueOne);
+			return containsFilter(options);
 		default:
-			return data;
+			return options.dataSource;
 	}
 }
 
-function equalsFilter(data, attribute, value) {
-	return data.filter(function(obj) {
-		return obj[attribute] === value;
+function equalsFilter(options) {
+	return options.dataSource.filter(function(obj) {
+		return getMergedValue(obj, options.attribute, options.editedValues, options.uniqueRowKey) === options.valueOne;
 	});
 }
 
-function equalsCaseInsensitiveFilter(data, attribute, value) {
-	return data.filter(function(obj) {
-		return obj[attribute].toUpperCase() === value.toUpperCase();
+function equalsCaseInsensitiveFilter(options) {
+	return options.dataSource.filter(function(obj) {
+		return getMergedValue(obj, options.attribute, options.editedValues, options.uniqueRowKey).toUpperCase() === options.valueOne.toUpperCase();
 	});
 }
 
-function likeFilter(data, attribute, value) {
-	return data.filter(function(obj) {
-		return obj[attribute].indexOf(value) !== -1;
+function likeFilter(options) {
+	return options.dataSource.filter(function(obj) {
+		return getMergedValue(obj, options.attribute, options.editedValues, options.uniqueRowKey).indexOf(options.valueOne) !== -1;
 	});
 }
 
-function likeCaseInsensitiveFilter(data, attribute, value) {
-	return data.filter(function(obj) {
-		return obj[attribute].toUpperCase().indexOf(value.toUpperCase()) !== -1;
+function likeCaseInsensitiveFilter(options) {
+	return options.dataSource.filter(function(obj) {
+		return getMergedValue(obj, options.attribute, options.editedValues, options.uniqueRowKey).toUpperCase().indexOf(options.valueOne.toUpperCase()) !== -1;
 	});
 }
 
-function greaterThanFilter(data, attribute, value) {
-	return data.filter(function(obj) {
-		return obj[attribute] > value;
+function greaterThanFilter(options) {
+	return options.dataSource.filter(function(obj) {
+		return getMergedValue(obj, options.attribute, options.editedValues, options.uniqueRowKey) > options.valueOne;
 	});
 }
 
-function greaterOrEqualFilter(data, attribute, value) {
-	return data.filter(function(obj) {
-		return obj[attribute] >= value;
+function greaterOrEqualFilter(options) {
+	return options.dataSource.filter(function(obj) {
+		return getMergedValue(obj, options.attribute, options.editedValues, options.uniqueRowKey) >= options.valueOne;
 	});
 }
 
-function lessThanFilter(data, attribute, value) {
-	return data.filter(function(obj) {
-		return obj[attribute] < value;
+function lessThanFilter(options) {
+	return options.dataSource.filter(function(obj) {
+		return getMergedValue(obj, options.attribute, options.editedValues, options.uniqueRowKey) < options.valueOne;
 	});
 }
 
-function lessOrEqualFilter(data, attribute, value) {
-	return data.filter(function(obj) {
-		return obj[attribute] <= value;
+function lessOrEqualFilter(options) {
+	return options.dataSource.filter(function(obj) {
+		return getMergedValue(obj, options.attribute, options.editedValues, options.uniqueRowKey) <= options.valueOne;
 	});
 }
 
-function betweenFilter(data, attribute, valueOne, valueTwo) {
-	return data.filter(function(obj) {
-		return obj[attribute] > valueOne && obj[attribute] < valueTwo;
+function betweenFilter(options) {
+	return options.dataSource.filter(function(obj) {
+		return getMergedValue(obj, options.attribute, options.editedValues, options.uniqueRowKey) > options.valueOne && obj[options.attribute] < options.valueTwo;
 	});
 }
 
-function betweenInclusiveFilter(data, attribute, valueOne, valueTwo) {
-	return data.filter(function(obj) {
-		return obj[attribute] >= valueOne && obj[attribute] <= valueTwo;
+function betweenInclusiveFilter(options) {
+	return options.dataSource.filter(function(obj) {
+		return getMergedValue(obj, options.attribute, options.editedValues, options.uniqueRowKey) >= options.valueOne && obj[options.attribute] <= options.valueTwo;
 	});
 }
 
-function containsFilter(data, attribute, array) {
-	return data.filter(function(obj) {
-		return array.indexOf(obj[attribute]) !== -1;
+function containsFilter(options) {
+	return options.dataSource.filter(function(obj) {
+		return options.valueOne.indexOf(getMergedValue(obj, options.attribute, options.editedValues, options.uniqueRowKey)) !== -1;
 	});
 }
 
@@ -150,6 +150,12 @@ function getValueByType(value, dataType) {
 		default:
 			return value;
 	}
+}
+
+function getMergedValue(row, attribute, editedValues, uniqueRowKey) {
+	var editedRow = editedValues[row[uniqueRowKey]];
+
+	return typeof editedRow == 'undefined' || typeof editedRow[attribute] == 'undefined' ? row[attribute] : editedRow[attribute];
 }
 
 function cloneObject(obj) {

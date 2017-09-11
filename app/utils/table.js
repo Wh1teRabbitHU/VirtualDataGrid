@@ -6,7 +6,8 @@ var Cell       = require('../models/cell'),
 function getCellData(config, rowNumber, columnNumber) {
 	var cellData = null,
 		rowObj = configUtil.getKeyHeader(config),
-		columnKey = rowObj[columnNumber].key;
+		columnKey = rowObj[columnNumber].key,
+		uniqueRowKey = null;
 
 	// If the index is higher than the available rows number
 	if (rowNumber >= config.dataSource.length) {
@@ -15,6 +16,7 @@ function getCellData(config, rowNumber, columnNumber) {
 			value: ''
 		});
 	} else {
+		uniqueRowKey = config.dataSource[rowNumber][config.uniqueRowKey];
 		cellData = new Cell({
 			key: columnKey,
 			value: config.dataSource[rowNumber][columnKey],
@@ -22,11 +24,11 @@ function getCellData(config, rowNumber, columnNumber) {
 			columnNumber: columnNumber
 		});
 
-		if (typeof config.dataSource[rowNumber].__editedValues != 'undefined' &&
-			typeof config.dataSource[rowNumber].__editedValues[columnKey] != 'undefined') {
+		if (typeof config.inner.editedValues[uniqueRowKey] != 'undefined' &&
+			typeof config.inner.editedValues[uniqueRowKey][columnKey] != 'undefined') {
 
 			cellData.class = config.selectors.editedCell;
-			cellData.updateValue(config.dataSource[rowNumber].__editedValues[columnKey]);
+			cellData.updateValue(config.inner.editedValues[uniqueRowKey][columnKey]);
 		}
 	}
 
@@ -56,50 +58,67 @@ function getFixedCellData(config, rowNumber, columnNumber) {
 	return cellData;
 }
 
-function mergeEditedValuesInRow(row) {
-	var mergedRowData = {};
+function mergeEditedValuesInRow(config, row) {
+	var mergedRowData = {},
+		uniqueRowKey = row[config.uniqueRowKey];
 
-	if (typeof row.__editedValues == 'undefined' || row.__editedValues === null) {
+	if (typeof config.inner.editedValues[uniqueRowKey] == 'undefined') {
 		return row;
 	}
 
 	Object.keys(row).forEach(function(key) {
-		if (key !== '__editedValues') {
-			mergedRowData[key] = row.__editedValues[key] || row[key];
-		}
+		mergedRowData[key] = config.inner.editedValues[uniqueRowKey][key] || row[key];
 	});
 
 	return mergedRowData;
 }
 
-function getUpdatedDataList(config) {
-	var editedData = [];
+function mergeEditedValuesInDataSource(config, ds) {
+	var mergedDs = [];
 
-	config.dataSource.forEach(function(row) {
-		if (typeof row.__editedValues != 'undefined' && row.__editedValues !== null) {
-			editedData.push(mergeEditedValuesInRow(row));
+	ds.forEach(function(row) {
+		mergedDs.push(mergeEditedValuesInRow(config, row));
+	});
+
+	return mergedDs;
+}
+
+function separateValuesInDataSource(config, mergedDs) {
+	var separatedDs = [];
+
+	mergedDs.forEach(function(mergedRow) {
+		var originalRow = config.inner.originalDataSource.find(function(row) {
+			return row[config.uniqueRowKey] === mergedRow[config.uniqueRowKey];
+		});
+
+		if (typeof originalRow != 'undefined') {
+			separatedDs.push(originalRow);
 		}
 	});
 
-	return editedData;
+	return separatedDs;
 }
 
 function storeUpdatedCellValue(config, cellData) {
-	if (typeof config.dataSource[cellData.rowNumber].__editedValues == 'undefined') {
-		config.dataSource[cellData.rowNumber].__editedValues = {};
+	var uniqueRowKey = config.dataSource[cellData.rowNumber][config.uniqueRowKey];
+
+	if (typeof config.inner.editedValues[uniqueRowKey] == 'undefined') {
+		config.inner.editedValues[uniqueRowKey] = {};
 	}
 
-	config.dataSource[cellData.rowNumber].__editedValues[cellData.key] = cellData.editedValue;
+	config.inner.editedValues[uniqueRowKey][cellData.key] = cellData.editedValue;
 }
 
 function persistCellValue(config) {
 	config.dataSource.forEach(function(row) {
-		if (typeof row.__editedValues != 'undefined' && row.__editedValues !== null) {
-			Object.keys(row.__editedValues).forEach(function(key) {
-				row[key] = row.__editedValues[key];
+		var uniqueRowKey = row[config.uniqueRowKey];
+
+		if (typeof config.inner.editedValues[uniqueRowKey] != 'undefined') {
+			Object.keys(config.inner.editedValues[uniqueRowKey]).forEach(function(key) {
+				row[key] = config.inner.editedValues[uniqueRowKey][key];
 			});
 
-			row.__editedValues = null;
+			config.inner.editedValues[uniqueRowKey] = {};
 		}
 	});
 }
@@ -108,7 +127,8 @@ module.exports = {
 	getCellData: getCellData,
 	getFixedCellData: getFixedCellData,
 	mergeEditedValuesInRow: mergeEditedValuesInRow,
-	getUpdatedDataList: getUpdatedDataList,
+	mergeEditedValuesInDataSource: mergeEditedValuesInDataSource,
+	separateValuesInDataSource: separateValuesInDataSource,
 	storeUpdatedCellValue: storeUpdatedCellValue,
 	persistCellValue: persistCellValue
 };

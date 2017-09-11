@@ -84,7 +84,7 @@ function saveCells(config) {
 	}
 
 	var args = new EventArguments({
-		updatedDataList: tableUtil.getUpdatedDataList(config),
+		updatedDataList: config.inner.editedValues,
 		cancelEvent: false
 	});
 

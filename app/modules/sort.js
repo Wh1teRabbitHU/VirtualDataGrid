@@ -2,7 +2,6 @@
 
 var domModule  = require('../modules/dom'),
 	configUtil = require('../utils/configuration'),
-	tableUtil  = require('../utils/table'),
 	dataUtil   = require('../utils/data');
 
 function sortByColumn(config, column) {
@@ -27,14 +26,13 @@ function sort(config, updateTable) {
 	updateTable = updateTable !== false;
 
 	config.dataSource.sort(function(a, b) {
-		a = tableUtil.mergeEditedValuesInRow(a);
-		b = tableUtil.mergeEditedValuesInRow(b);
-
 		if (config.sort.customSort !== null) {
 			return config.sort.customSort(a, b, {
 				attribute: config.inner.sort.attribute,
 				direction: config.inner.sort.direction,
-				dataType: config.inner.sort.dataType
+				dataType: config.inner.sort.dataType,
+				editedValues: config.inner.editedValues,
+				uniqueRowKey: config.uniqueRowKey
 			});
 		}
 
@@ -46,6 +44,8 @@ function sort(config, updateTable) {
 			attribute: attribute,
 			direction: direction,
 			dataType: dataType,
+			editedValues: config.inner.editedValues,
+			uniqueRowKey: config.uniqueRowKey,
 			name: config.locale.name
 		});
 	});
@@ -65,7 +65,9 @@ function resetSort(config) {
 			return config.sort.customSort(a, b, {
 				attribute: config.sort.default,
 				direction: 'down',
-				dataType: getSortType(config, config.sort.default)
+				dataType: getSortType(config, config.sort.default),
+				editedValues: config.inner.editedValues,
+				uniqueRowKey: config.uniqueRowKey
 			});
 		}
 
@@ -73,6 +75,8 @@ function resetSort(config) {
 			attribute: config.sort.default,
 			direction: 'down',
 			dataType: getSortType(config, config.sort.default),
+			editedValues: config.inner.editedValues,
+			uniqueRowKey: config.uniqueRowKey,
 			name: config.locale.name
 		});
 	});

@@ -114,9 +114,15 @@ function generateTable() {
 		},
 		filter: {
 			enabled: true,
-			customFilter: function(ds, attr, val) {
-				return ds.filter(function(row) {
-					return row[attr] < val;
+			customFilter: function(options) {
+				function getMergedValue(row, attribute) {
+					var editedRow = options.editedValues[row[options.uniqueRowKey]];
+
+					return typeof editedRow == 'undefined' || typeof editedRow[attribute] == 'undefined' ? row[attribute] : editedRow[attribute];
+				}
+
+				return options.dataSource.filter(function(row) {
+					return getMergedValue(row, options.attribute) < options.value;
 				});
 			}
 		}
@@ -128,8 +134,6 @@ window.addEventListener('load', function() {
 
 	document.querySelector('.overwrite-data-grid').addEventListener('click', function() {
 		document.querySelector('.data-container').innerHTML = '';
-
-		// virtualDG.destroyTable();
 
 		generateTable();
 	});
