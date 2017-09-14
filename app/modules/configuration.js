@@ -23,7 +23,8 @@ var DEFAULTS = {
 		containerHeight: configUtil.getDefaultContainerHeight
 	},
 	edit: {
-		enabled: false
+		enabled: false,
+		mode: 'batch'
 	},
 	filter: {
 		enabled: false,
@@ -39,6 +40,8 @@ var DEFAULTS = {
 		onValidation: configUtil.nil,
 		onAfterEdit: configUtil.nil,
 		onBeforeSave: configUtil.nil,
+		onSaveRow: configUtil.nil,
+		onSaveBatch: configUtil.nil,
 		onAfterSave: configUtil.nil
 	},
 	locale: {
@@ -132,6 +135,7 @@ function init(config, options, initContainers) {
 	updateValue(config, options, 'uniqueRowKey');
 	updateValue(config, options, 'autoResize');
 	updateValue(config, options, 'edit.enabled');
+	updateValue(config, options, 'edit.mode');
 	updateValue(config, options, 'filter.enabled');
 	updateValue(config, options, 'filter.customFilter');
 	updateValue(config, options, 'sort.enabled');
@@ -142,6 +146,8 @@ function init(config, options, initContainers) {
 	updateValue(config, options, 'eventHandlers.onValidation');
 	updateValue(config, options, 'eventHandlers.onAfterEdit');
 	updateValue(config, options, 'eventHandlers.onBeforeSave');
+	updateValue(config, options, 'eventHandlers.onSaveRow');
+	updateValue(config, options, 'eventHandlers.onSaveBatch');
 	updateValue(config, options, 'eventHandlers.onAfterSave');
 
 	initHeaderData(config);

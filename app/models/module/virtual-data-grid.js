@@ -1,6 +1,6 @@
 'use strict';
 
-var generator = require('../modules/generator');
+var generator = require('../../modules/generator');
 
 var uniqueIdSequence = 1;
 

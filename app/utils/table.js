@@ -1,6 +1,6 @@
 'use strict';
 
-var Cell       = require('../models/cell'),
+var Cell       = require('../models/table/cell'),
 	configUtil = require('../utils/configuration');
 
 function getCellData(config, rowNumber, columnNumber) {
@@ -109,17 +109,21 @@ function storeUpdatedCellValue(config, cellData) {
 	config.inner.editedValues[uniqueRowKey][cellData.key] = cellData.editedValue;
 }
 
-function persistCellValue(config) {
+function persistRowValues(config, row) {
+	var uniqueRowKey = row[config.uniqueRowKey];
+
+	if (typeof config.inner.editedValues[uniqueRowKey] != 'undefined') {
+		Object.keys(config.inner.editedValues[uniqueRowKey]).forEach(function(key) {
+			row[key] = config.inner.editedValues[uniqueRowKey][key];
+		});
+
+		config.inner.editedValues[uniqueRowKey] = {};
+	}
+}
+
+function persistBatchValues(config) {
 	config.dataSource.forEach(function(row) {
-		var uniqueRowKey = row[config.uniqueRowKey];
-
-		if (typeof config.inner.editedValues[uniqueRowKey] != 'undefined') {
-			Object.keys(config.inner.editedValues[uniqueRowKey]).forEach(function(key) {
-				row[key] = config.inner.editedValues[uniqueRowKey][key];
-			});
-
-			config.inner.editedValues[uniqueRowKey] = {};
-		}
+		persistRowValues(config, row);
 	});
 }
 
@@ -130,5 +134,6 @@ module.exports = {
 	mergeEditedValuesInDataSource: mergeEditedValuesInDataSource,
 	separateValuesInDataSource: separateValuesInDataSource,
 	storeUpdatedCellValue: storeUpdatedCellValue,
-	persistCellValue: persistCellValue
+	persistRowValues: persistRowValues,
+	persistBatchValues: persistBatchValues
 };

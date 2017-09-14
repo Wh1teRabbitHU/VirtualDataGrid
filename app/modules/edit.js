@@ -1,6 +1,12 @@
 'use strict';
 
-var EventArguments = require('../models/event-arguments'),
+var BeforeEditArgs = require('../models/event-arguments/before-edit'),
+	BeforeSaveArgs = require('../models/event-arguments/before-save'),
+	ValidationArgs = require('../models/event-arguments/validation'),
+	SaveRowArgs    = require('../models/event-arguments/save-row'),
+	SaveBatchArgs  = require('../models/event-arguments/save-batch'),
+	AfterEditArgs  = require('../models/event-arguments/after-edit'),
+	AfterSaveArgs  = require('../models/event-arguments/after-save'),
 	tableUtil      = require('../utils/table'),
 	domUtil        = require('../utils/dom'),
 	domModule      = require('../modules/dom'),
@@ -23,15 +29,15 @@ function startEditingCell(config, cellElement, instances, onInputBlurEventHandle
 
 	inputElement.setAttribute('type', 'text');
 
-	var args = new EventArguments({
+	var beforeEditArgs = new BeforeEditArgs({
 		cellElement: cellElement,
 		cellData: cellData,
 		cancelEvent: false
 	});
 
-	config.eventHandlers.onBeforeEdit(args);
+	config.eventHandlers.onBeforeEdit(beforeEditArgs);
 
-	if (!args.cancelEvent) {
+	if (!beforeEditArgs.cancelEvent) {
 		cellElement.classList.add(config.selectors.editingCell);
 		cellElement.classList.remove(config.selectors.editedCell);
 		cellElement.innerHTML = '';
@@ -60,19 +66,24 @@ function finishEditingCell(config, inputElement, onInputBlurEventHandler) {
 		return;
 	}
 
-	var args = new EventArguments({
+	var validationArgs = new ValidationArgs({
 		cellElement: cellElement,
 		cellData: cellData,
 		cancelEvent: false
 	});
 
-	config.eventHandlers.onValidation(args);
+	config.eventHandlers.onValidation(validationArgs);
 
-	if (args.cancelEdit !== true) {
-		tableUtil.storeUpdatedCellValue(config, args.cellData);
-		domModule.updateCell(config, args.cellElement, args.cellData);
+	if (validationArgs.cancelEdit !== true) {
+		tableUtil.storeUpdatedCellValue(config, cellData);
+		domModule.updateCell(config, cellElement, cellData);
 
-		config.eventHandlers.onAfterEdit(args);
+		var afterEditArgs = new AfterEditArgs({
+			cellElement: cellElement,
+			cellData: cellData
+		});
+
+		config.eventHandlers.onAfterEdit(afterEditArgs);
 
 		filterModule.filter(config);
 	}
@@ -83,20 +94,60 @@ function saveCells(config) {
 		return;
 	}
 
-	var args = new EventArguments({
-		updatedDataList: config.inner.editedValues,
+	var beforeSaveArgs = new BeforeSaveArgs({
+		editedRows: config.inner.editedValues,
 		cancelEvent: false
 	});
 
-	config.eventHandlers.onBeforeSave(args);
+	config.eventHandlers.onBeforeSave(beforeSaveArgs);
 
-	if (!args.cancelEvent) {
-		tableUtil.persistCellValue(config);
-
-		domModule.resetEditedCells(config);
-
-		config.eventHandlers.onAfterSave(args);
+	if (beforeSaveArgs.cancelEvent) {
+		return;
 	}
+
+	if (config.edit.mode === 'row') { // Row mode
+		var saveRowArgs = new SaveRowArgs({ cancelEvent: false });
+
+		config.dataSource.forEach(function(row) {
+			saveRowArgs = new SaveRowArgs({
+				editedRow: config.inner.editedValues,
+				cancelEvent: false
+			});
+
+			if (!saveRowArgs.cancelEvent) {
+				config.eventHandlers.onSavingRow(saveRowArgs);
+			}
+
+			if (!saveRowArgs.cancelEvent) {
+				tableUtil.persistRowValues(config, row);
+			}
+		});
+
+		if (!saveRowArgs.cancelEvent) {
+			return;
+		}
+	} else if (config.edit.mode === 'batch') { // Batch mode
+		var saveBatchArgs = new SaveBatchArgs({
+			editedRows: config.inner.editedValues,
+			cancelEvent: false
+		});
+
+		config.eventHandlers.onSavingBatch(saveBatchArgs);
+
+		if (saveBatchArgs.cancelEvent) {
+			return;
+		}
+
+		tableUtil.persistBatchValues(config);
+	}
+
+	var afterSaveArgs = new AfterSaveArgs({
+		savedRows: config.inner.editedValues
+	});
+
+	domModule.resetEditedCells(config);
+
+	config.eventHandlers.onAfterSave(afterSaveArgs);
 }
 
 module.exports = {
