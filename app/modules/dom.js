@@ -140,7 +140,14 @@ function updateBuffers(config) {
 }
 
 function recalculateDimensions(config) {
-	document.querySelector('.' + config.selectors.virtualContainer).scrollTop = 0;
+	var smallerTable = config.dataSource.length < config.inner.visibleRowNumber,
+		virtualContainer = document.querySelector('.' + config.selectors.virtualContainer);
+
+	virtualContainer.classList.toggle('no-vertical-scroll', smallerTable);
+
+	if (smallerTable) {
+		virtualContainer.scrollTop = 0;
+	}
 
 	config.inner.tableOffsetWidth = configUtil.getTableOffsetWidth(config);
 	config.inner.tableOffsetHeight = configUtil.getTableOffsetHeight(config);

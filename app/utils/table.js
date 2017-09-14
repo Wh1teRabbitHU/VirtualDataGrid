@@ -5,30 +5,31 @@ var Cell       = require('../models/table/cell'),
 
 function getCellData(config, rowNumber, columnNumber) {
 	var cellData = null,
-		rowObj = configUtil.getKeyHeader(config),
-		columnKey = rowObj[columnNumber].key,
+		headerObj = configUtil.getKeyHeader(config)[columnNumber],
 		uniqueRowKey = null;
 
 	// If the index is higher than the available rows number
 	if (rowNumber >= config.dataSource.length) {
 		cellData = new Cell({
-			key: columnKey,
-			value: ''
+			key: headerObj.key,
+			value: '',
+			dataType: headerObj.dataType
 		});
 	} else {
 		uniqueRowKey = config.dataSource[rowNumber][config.uniqueRowKey];
 		cellData = new Cell({
-			key: columnKey,
-			value: config.dataSource[rowNumber][columnKey],
+			key: headerObj.key,
+			value: config.dataSource[rowNumber][headerObj.key],
+			dataType: headerObj.dataType,
 			rowNumber: rowNumber,
 			columnNumber: columnNumber
 		});
 
 		if (typeof config.inner.editedValues[uniqueRowKey] != 'undefined' &&
-			typeof config.inner.editedValues[uniqueRowKey][columnKey] != 'undefined') {
+			typeof config.inner.editedValues[uniqueRowKey][headerObj.key] != 'undefined') {
 
 			cellData.class = config.selectors.editedCell;
-			cellData.updateValue(config.inner.editedValues[uniqueRowKey][columnKey]);
+			cellData.updateValue(config.inner.editedValues[uniqueRowKey][headerObj.key]);
 		}
 	}
 
@@ -37,19 +38,20 @@ function getCellData(config, rowNumber, columnNumber) {
 
 function getFixedCellData(config, rowNumber, columnNumber) {
 	var cellData = null,
-		rowObj = configUtil.getFixedKeyHeader(config),
-		columnKey = rowObj[columnNumber].key;
+		headerObj = configUtil.getFixedKeyHeader(config)[columnNumber];
 
 	// If the index is higher than the available rows number
 	if (rowNumber >= config.dataSource.length) {
 		cellData = new Cell({
-			key: columnKey,
-			value: ''
+			key: headerObj.key,
+			value: '',
+			dataType: headerObj.dataType
 		});
 	} else {
 		cellData = new Cell({
-			key: columnKey,
-			value: config.dataSource[rowNumber][columnKey],
+			key: headerObj.key,
+			value: config.dataSource[rowNumber][headerObj.key],
+			dataType: headerObj.dataType,
 			rowNumber: rowNumber,
 			columnNumber: columnNumber
 		});

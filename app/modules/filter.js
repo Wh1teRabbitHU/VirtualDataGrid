@@ -82,10 +82,6 @@ function filter(config, sortTable) {
 		}
 	});
 
-	var smallerTable = config.dataSource.length < config.inner.visibleRowNumber;
-
-	document.querySelector('.' + config.selectors.virtualContainer).classList.toggle('no-vertical-scroll', smallerTable);
-
 	if (sortTable) {
 		sortModule.sort(config, false);
 	}

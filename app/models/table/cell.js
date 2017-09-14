@@ -5,6 +5,7 @@ function CellObject(p) {
 
 	initAttr('key');
 	initAttr('value');
+	initAttr('dataType');
 	initAttr('editedValue');
 	initAttr('class');
 	initAttr('rowNumber');
@@ -27,6 +28,10 @@ function CellObject(p) {
 	};
 
 	this.updateValue = function(value) {
+		if (self.dataType === 'number') {
+			value = isNaN(parseFloat(value)) ? 0 : parseFloat(value);
+		}
+
 		if (self.value === value || self.value === null && typeof value == 'undefined') {
 			self.editedValue = null;
 			self.cellChanged = false;

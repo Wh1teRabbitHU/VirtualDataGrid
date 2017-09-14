@@ -27,7 +27,7 @@ function startEditingCell(config, cellElement, instances, onInputBlurEventHandle
 	var cellData = tableUtil.getCellData(config, rowNumber, columnNumber),
 		inputElement = document.createElement('input');
 
-	inputElement.setAttribute('type', 'text');
+	inputElement.setAttribute('type', cellData.dataType);
 
 	var beforeEditArgs = new BeforeEditArgs({
 		cellElement: cellElement,
@@ -55,10 +55,11 @@ function finishEditingCell(config, inputElement, onInputBlurEventHandler) {
 	var cellElement = inputElement.parentNode,
 		rowNumber = domUtil.getRowNumber(config, cellElement),
 		columnNumber = domUtil.getColumnNumber(config, cellElement),
-		cellData = tableUtil.getCellData(config, rowNumber, columnNumber);
+		cellData = tableUtil.getCellData(config, rowNumber, columnNumber),
+		updatedValue = inputElement.value;
 
 	cellData.updateAttributes({ class: config.selectors.editedCell });
-	cellData.updateValue(inputElement.value);
+	cellData.updateValue(updatedValue);
 
 	if (!cellData.isCellChanged()) {
 		domModule.resetEditingCell(config, onInputBlurEventHandler);

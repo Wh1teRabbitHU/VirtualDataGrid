@@ -33,6 +33,10 @@ function onScrollEventHandler(event, config) {
 }
 
 function onClickCellEventHandler(event, config) {
+	if (event.target.matches('input')) {
+		return;
+	}
+
 	editModule.startEditingCell(config, event.target, instances, onInputBlurEventHandler);
 }
 
