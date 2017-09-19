@@ -132,7 +132,7 @@ function generateTable() {
 window.addEventListener('load', function() {
 	generateTable();
 
-	document.querySelector('.overwrite-data-grid').addEventListener('click', function() {
+	document.querySelector('#reload-table').addEventListener('click', function() {
 		document.querySelector('.data-container').innerHTML = '';
 
 		generateTable();

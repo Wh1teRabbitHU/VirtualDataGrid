@@ -2,6 +2,7 @@
 <html>
 	<head>
 		<meta charset="utf-8">
+		<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro" rel="stylesheet">
 		<link rel="stylesheet" type="text/css" href="assets/virtual-data-grid.min.css" />
 		<link rel="stylesheet" type="text/css" href="assets/example-vendor.min.css" />
 		<link rel="stylesheet" type="text/css" href="assets/example.min.css" />
@@ -10,10 +11,77 @@
 		<title>Virtual Data Grid</title>
 	</head>
 	<body>
-		<h2>Virtual Data Grid</h2>
+		<h1>Virtual Data Grid</h1>
 
-		<button type="button" class="overwrite-data-grid">Overwrite test</button>
+		<div class="main-container">
+			<div class="data-container"></div>
+			<div class="generator-container">
+				<div class="option-container">
+					<h3 class="group-header">Selectors</h3>
+					<div class="form-group">
+						<label class="label">Main container</label>
+						<input class="input" type="text" name="selectors.mainContainer">
+					</div>
+					<div class="form-group">
+						<label class="label">Fixed container</label>
+						<input class="input" type="text" name="selectors.fixedContainer">
+					</div>
+					<div class="form-group">
+						<label class="label">Fixed table</label>
+						<input class="input" type="text" name="selectors.fixedTable">
+					</div>
+					<div class="form-group">
+						<label class="label">Virtual container</label>
+						<input class="input" type="text" name="selectors.virtualContainer">
+					</div>
+					<div class="form-group">
+						<label class="label">Virtual table</label>
+						<input class="input" type="text" name="selectors.virtualTable">
+					</div>
+					<div class="form-group">
+						<label class="label">Editing cell</label>
+						<input class="input" type="text" name="selectors.editingCell">
+					</div>
+					<div class="form-group">
+						<label class="label">Edited cell</label>
+						<input class="input" type="text" name="selectors.editedCell">
+					</div>
+					<div class="form-group">
+						<label class="label">Save button</label>
+						<input class="input" type="text" name="selectors.saveButton">
+					</div>
 
-		<div class="data-container"></div>
+					<h3 class="group-header">Dimensions</h3>
+					<div class="form-group">
+						<label class="label">Cell width</label>
+						<input class="input" type="text" name="dimensions.cellWidth">
+					</div>
+					<div class="form-group">
+						<label class="label">Cell height</label>
+						<input class="input" type="text" name="dimensions.cellHeight">
+					</div>
+					<div class="form-group">
+						<label class="label">Cell padding vertical</label>
+						<input class="input" type="text" name="dimensions.cellPaddingVertical">
+					</div>
+					<div class="form-group">
+						<label class="label">Cell padding horizontal</label>
+						<input class="input" type="text" name="dimensions.cellPaddingHorizontal">
+					</div>
+					<div class="form-group">
+						<label class="label">Cell border width</label>
+						<input class="input" type="text" name="dimensions.cellBorderWidth">
+					</div>
+					<div class="form-group">
+						<label class="label">Container height</label>
+						<input class="input" type="text" name="dimensions.containerHeight">
+					</div>
+				</div>
+				<div class="button-container">
+					<button class="btn primary" type="button" id="reload-table">Reload table</button>
+					<button class="btn danger" type="button" id="reset-to-default">Reset to default</button>
+				</div>
+			</div>
+		</div>
 	</body>
 </html>

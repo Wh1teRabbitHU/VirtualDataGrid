@@ -1,0 +1,142 @@
+// Logical part
+
+box-shadow attrs
+	-webkit-box-shadow attrs
+	-moz-box-shadow attrs
+	box-shadow attrs
+
+$elementShadowColor = rgba(192, 192, 192, 1)
+$elementBorderColor = rgba(192, 192, 192, 1)
+$elementActiveBorderColor = rgba(168, 168, 168, 1)
+
+$btnPrimaryBgColor = #337ab7
+$btnPrimaryBorderColor = #2e6da4
+$btnSuccessBgColor = #5cb85c
+$btnSuccessBorderColor = #4cae4c
+$btnInfoBgColor = #5bc0de
+$btnInfoBorderColor = #46b8da
+$btnWarningBgColor = #f0ad4e
+$btnWarningBorderColor = #eea236
+$btnDangerBgColor = #d9534f
+$btnDangerBorderColor = #d43f3a
+
+// Styling
+
+body
+	font-family 'Source Sans Pro', sans-serif
+
+.main-container
+	display flex
+	border 1px solid lighten(grey, 60%)
+	border-radius 4px
+	padding 0 14px
+	box-shadow 0 1px 5px 0 $elementShadowColor
+
+.data-container
+	flex-basis 75%
+	overflow hidden
+
+.generator-container
+	display flex
+	overflow hidden
+	flex-direction column
+	flex-basis 25%
+
+	textarea
+		resize vertical
+
+.option-container,
+.button-container
+	border 1px solid lighten(grey, 60%)
+	border-radius 4px
+	padding 8px 12px
+
+.option-container
+	overflow scroll
+	max-height 100%
+	margin 18px 0 6px 14px
+
+.button-container
+	margin 0 0 18px 14px
+
+.group-header
+	padding 4px 6px
+	margin-top 24px
+	border-bottom solid 1px lighten(grey, 60%)
+
+	&:first-child
+		margin-top 6px
+
+.form-group
+	display flex
+	flex-direction column
+	margin-bottom 12px
+
+	.label,
+	.input
+		flex-basis 100%
+		display block
+
+.input
+	transition 0.1s
+	border 1px solid $elementBorderColor
+	border-radius 4px
+	box-shadow 0 1px 5px 0 $elementShadowColor
+	padding 4px 6px
+
+	&:focus
+		outline none
+		border-color $elementActiveBorderColor
+		box-shadow 0 0 0 0 $elementShadowColor
+
+.btn
+	position relative
+	top 0
+	padding 6px 12px
+	transition 0.1s
+	background-color white
+	border 1px solid $elementBorderColor
+	border-radius 4px
+	box-shadow 0 1px 5px 0 $elementShadowColor
+
+	&:focus,
+	&:hover
+		cursor pointer
+		outline none
+		top 2px
+		box-shadow 0 0 2px 0 $elementShadowColor
+
+	&.primary,
+	&.success,
+	&.info,
+	&.warning,
+	&.danger
+		color white
+
+	&.primary
+		background-color $btnPrimaryBgColor
+		border-color $btnPrimaryBorderColor
+
+	&.success
+		background-color $btnSuccessBgColor
+		border-color $btnSuccessBorderColor
+
+	&.info
+		background-color $btnInfoBgColor
+		border-color $btnInfoBorderColor
+
+	&.warning
+		background-color $btnWarningBgColor
+		border-color $btnWarningBorderColor
+
+	&.danger
+		background-color $btnDangerBgColor
+		border-color $btnDangerBorderColor
+
+h1
+	font-size 1.8rem
+	margin 18px 14px
+
+h3
+	font-size 1.4rem
+	margin 6px 0
