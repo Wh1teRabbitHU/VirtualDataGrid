@@ -20,6 +20,9 @@ $btnWarningBorderColor = #eea236
 $btnDangerBgColor = #d9534f
 $btnDangerBorderColor = #d43f3a
 
+$sourceCodeFontSize = 0.7rem
+$sourceCodeFontFamily = Consolas, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New
+
 // Styling
 
 body
@@ -41,6 +44,7 @@ body
 	overflow hidden
 	flex-direction column
 	flex-basis 25%
+	min-width 380px
 
 	textarea
 		resize vertical
@@ -72,10 +76,13 @@ body
 	flex-direction column
 	margin-bottom 12px
 
-	.label,
-	.input
-		flex-basis 100%
-		display block
+.label
+	padding-bottom 4px
+
+.label,
+.input
+	flex-basis 100%
+	display block
 
 .input
 	transition 0.1s
@@ -83,11 +90,78 @@ body
 	border-radius 4px
 	box-shadow 0 1px 5px 0 $elementShadowColor
 	padding 4px 6px
+	min-width 30px
+
+	textarea&
+		min-height 64px
+
+	&:not(textarea)
+		height 18px
 
 	&:focus
 		outline none
 		border-color $elementActiveBorderColor
 		box-shadow 0 0 0 0 $elementShadowColor
+
+.input-group
+	display flex
+	align-items center
+	margin 4px 0
+
+	& > *
+		margin 4px
+
+		&:first-child
+			margin-left 0
+
+		&:last-child
+			margin-right 0
+
+	.input
+		flex-basis auto
+
+.label:after
+	content ':'
+
+.function-container
+	flex-basis 100%
+	flex-direction column
+	display flex
+	margin-top 6px
+	font-size $sourceCodeFontSize
+	font-family $sourceCodeFontFamily
+
+	&:before,
+	&:after
+		flex-basis 100%
+
+	&:before
+		content attr(data-before)
+		margin-bottom 4px
+
+	&:after
+		content attr(data-after)
+		margin-top 4px
+
+	textarea
+		font-size $sourceCodeFontSize
+		font-family $sourceCodeFontFamily
+		margin-left 16px
+
+.radio-options
+	display flex
+	margin 4px 0
+
+.radio-input
+	transition 0.1s
+
+	&:focus
+		outline none
+
+.radio-label
+	vertical-align middle
+	margin 0 4px
+	min-width 60px
 
 .btn
 	position relative

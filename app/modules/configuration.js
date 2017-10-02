@@ -316,5 +316,6 @@ function getInnerValue(object, key) {
 }
 
 module.exports = {
-	init: init
+	init: init,
+	DEFAULTS: DEFAULTS
 };

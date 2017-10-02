@@ -4,6 +4,7 @@ var configuration      = require('./configuration'),
 	configUtil         = require('../utils/configuration'),
 	eventHandlerModule = require('../modules/event-handler'),
 	domUtil            = require('../utils/dom'),
+	dataUtil           = require('../utils/data'),
 	domModule          = require('../modules/dom');
 
 function generateTable(config, options) {
@@ -289,7 +290,12 @@ function initTable(config) {
 	document.querySelector('.' + config.selectors.fixedTable).appendChild(fixedTbody);
 }
 
+function getDefaultOptions() {
+	return dataUtil.cloneObject(configuration.DEFAULTS);
+}
+
 module.exports = {
 	generateTable: generateTable,
-	destroyTable: destroyTable
+	destroyTable: destroyTable,
+	getDefaultOptions: getDefaultOptions
 };
