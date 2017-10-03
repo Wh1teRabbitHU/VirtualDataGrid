@@ -33,11 +33,24 @@
 					<div class="form-group">
 						<label class="label">Datasource</label>
 						<textarea class="input json" name="dataSource"></textarea>
-						<div class="input-group">
-							<label for="datasource-generator-rows">Columns:</label>
-							<input class="input" type="number" id="datasource-generator-rows">
-							<label for="datasource-generator-columns">Rows:</label>
-							<input class="input" type="number" id="datasource-generator-columns">
+						<div class="inner-title">Generator</div>
+						<div class="inner-group">
+							<label for="data-generator-header-size">Header size:</label>
+							<input class="input" type="number" id="data-generator-header-size" value="20" min="1">
+						</div>
+						<div class="inner-group">
+							<label for="data-generator-fixed-header-size">Fixed header size:</label>
+							<input class="input" type="number" id="data-generator-fixed-header-size" value="0" min="0" max="5">
+						</div>
+						<div class="inner-group">
+							<label for="data-generator-headers-row-size">Header's row size:</label>
+							<input class="input" type="number" id="data-generator-headers-row-size" value="1" min="1" max="5">
+						</div>
+						<div class="inner-group">
+							<label for="data-generator-data-size">Data size:</label>
+							<input class="input" type="number" id="data-generator-data-size" value="100" min="0">
+						</div>
+						<div class="inner-group">
 							<button class="btn primary" type="button" id="generate-data">Generate&nbsp;data</button>
 						</div>
 					</div>

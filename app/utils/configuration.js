@@ -21,7 +21,7 @@ function getSortDefault(config) {
 }
 
 function getMaxColspan(config) {
-	var maxVal = 0;
+	var maxVal = 1;
 
 	config.headers.forEach(function(element) {
 		element.forEach(function(subElement) {

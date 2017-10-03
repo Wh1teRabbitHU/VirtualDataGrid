@@ -103,22 +103,19 @@ body
 		border-color $elementActiveBorderColor
 		box-shadow 0 0 0 0 $elementShadowColor
 
-.input-group
-	display flex
-	align-items center
-	margin 4px 0
+.inner-title
+	font-size 1.1rem
+	font-weight bold
+	margin 6px 16px
+	padding 4px 0
+	border-bottom 1px solid $elementBorderColor
 
-	& > *
-		margin 4px
-
-		&:first-child
-			margin-left 0
-
-		&:last-child
-			margin-right 0
+.inner-group
+	margin 4px 16px
 
 	.input
-		flex-basis auto
+		margin 2px 0
+		width calc(100% - 16px)
 
 .label:after
 	content ':'
