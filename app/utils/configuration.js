@@ -17,7 +17,7 @@ function getIndexOfCellKeyHeader(config) {
 }
 
 function getSortDefault(config) {
-	return config.headers[config.headers.length - 1][0].key;
+	return config.uniqueRowKey;
 }
 
 function getMaxColspan(config) {
