@@ -1,6 +1,6 @@
 {
   "name": "virtual-data-grid",
-  "version": "0.2.11",
+  "version": "0.3.0",
   "description": "Virtual data grid written in javascript. Can be used to display and manipulate extensive amount of data.",
   "main": "index.js",
   "scripts": {
@@ -41,5 +41,8 @@
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0",
     "webdriverio": "^4.8.0"
+  },
+  "dependencies": {
+    "class-256.js": "^1.0.12"
   }
 }

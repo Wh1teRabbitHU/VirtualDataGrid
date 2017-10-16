@@ -4,6 +4,7 @@ var configuration      = require('./configuration'),
 	configUtil         = require('../utils/configuration'),
 	eventHandlerModule = require('../modules/event-handler'),
 	domUtil            = require('../utils/dom'),
+	dataUtil           = require('../utils/data'),
 	domModule          = require('../modules/dom');
 
 function generateTable(config, options) {
@@ -247,7 +248,7 @@ function initTable(config) {
 		trHead.style.height = config.dimensions.cellHeight + 'px';
 
 		for (j = 0; j < config.fixedHeaders[config.inner.indexOfCellKeyHeader].length; j++) {
-			cellObj = configUtil.getKeyFixedHeader(config)[j];
+			cellObj = configUtil.getFixedKeyHeader(config)[j];
 
 			tdElement = document.createElement('td');
 			tdElement.classList.add(config.inner.selectors.filterCell);
@@ -289,7 +290,12 @@ function initTable(config) {
 	document.querySelector('.' + config.selectors.fixedTable).appendChild(fixedTbody);
 }
 
+function getDefaultOptions() {
+	return dataUtil.cloneObject(configuration.DEFAULTS);
+}
+
 module.exports = {
 	generateTable: generateTable,
-	destroyTable: destroyTable
+	destroyTable: destroyTable,
+	getDefaultOptions: getDefaultOptions
 };

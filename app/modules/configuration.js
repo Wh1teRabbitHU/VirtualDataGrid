@@ -23,7 +23,8 @@ var DEFAULTS = {
 		containerHeight: configUtil.getDefaultContainerHeight
 	},
 	edit: {
-		enabled: false
+		enabled: false,
+		mode: 'batch'
 	},
 	filter: {
 		enabled: false,
@@ -39,6 +40,8 @@ var DEFAULTS = {
 		onValidation: configUtil.nil,
 		onAfterEdit: configUtil.nil,
 		onBeforeSave: configUtil.nil,
+		onSaveRow: configUtil.nil,
+		onSaveBatch: configUtil.nil,
 		onAfterSave: configUtil.nil
 	},
 	locale: {
@@ -47,6 +50,7 @@ var DEFAULTS = {
 	dataSource: [ ],
 	headers: [ [ ] ],
 	fixedHeaders: [ [ ] ],
+	uniqueRowKey: '__uniqueRowKey',
 	autoResize: true,
 	debug: false,
 	uniqueId: 0,
@@ -92,13 +96,13 @@ var STATIC_INNER_ATTRS = {
 			clear: 'fa fa-times'
 		}
 	},
+	editedValues: {},
 	sort: { },
 	filters: { },
 	minBufferWidth: 2,
 	minBufferHeight: 18, // Azért van rá szükség, mert ha nincs megadva, akkor ugrik egyett a scroll ha a végére vagy az elejére értünk a táblázatban
 	leftCellOffset: 0,
-	topCellOffset: 0,
-	editedCells: []
+	topCellOffset: 0
 };
 
 function init(config, options, initContainers) {
@@ -128,8 +132,10 @@ function init(config, options, initContainers) {
 	updateValue(config, options, 'dataSource');
 	updateValue(config, options, 'headers');
 	updateValue(config, options, 'fixedHeaders');
+	updateValue(config, options, 'uniqueRowKey');
 	updateValue(config, options, 'autoResize');
 	updateValue(config, options, 'edit.enabled');
+	updateValue(config, options, 'edit.mode');
 	updateValue(config, options, 'filter.enabled');
 	updateValue(config, options, 'filter.customFilter');
 	updateValue(config, options, 'sort.enabled');
@@ -140,9 +146,12 @@ function init(config, options, initContainers) {
 	updateValue(config, options, 'eventHandlers.onValidation');
 	updateValue(config, options, 'eventHandlers.onAfterEdit');
 	updateValue(config, options, 'eventHandlers.onBeforeSave');
+	updateValue(config, options, 'eventHandlers.onSaveRow');
+	updateValue(config, options, 'eventHandlers.onSaveBatch');
 	updateValue(config, options, 'eventHandlers.onAfterSave');
 
 	initHeaderData(config);
+	initDataSource(config, options.uniqueRowKey);
 	initInnerCalculatedValues(config);
 }
 
@@ -175,11 +184,7 @@ function initInnerCalculatedValues(config) {
 	config.inner.visibleColumnNumber = configUtil.getVisibleColumnNumber(config);
 	config.inner.tableOffsetWidth = configUtil.getTableOffsetWidth(config);
 	config.inner.tableOffsetHeight = configUtil.getTableOffsetHeight(config);
-
-	// Csak akkor duplikáljunk le egy potenciálisan hatalmas objektumot, ha szükség is lesz rá. Egyelőre csak szűrésnél fog kelleni
-	if (config.filter.enabled) {
-		config.inner.originalDataSource = [].concat(config.dataSource);
-	}
+	config.inner.originalDataSource = [].concat(config.dataSource);
 }
 
 function initHeaderData(config) {
@@ -254,6 +259,14 @@ function initHeaderData(config) {
 	config.fixedHeaders = processedFixedHeaders;
 }
 
+function initDataSource(config, uniqueRowKey) {
+	if (typeof uniqueRowKey == 'undefined') {
+		for (var i = 0; i < config.dataSource.length; i++) {
+			config.dataSource[i][config.uniqueRowKey] = i;
+		}
+	}
+}
+
 function updateValue(config, options, key) {
 	var target = getInnerObject(config, key), // eslint-disable-line no-unused-vars
 		value = getInnerValue(options, key),
@@ -299,5 +312,6 @@ function getInnerValue(object, key) {
 }
 
 module.exports = {
-	init: init
+	init: init,
+	DEFAULTS: DEFAULTS
 };

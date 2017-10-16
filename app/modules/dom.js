@@ -4,9 +4,9 @@ var tableUtil  = require('../utils/table'),
 	configUtil = require('../utils/configuration'),
 	domUtil    = require('../utils/dom');
 
-function updateCell(config, cell, cellObj) {
-	cell.innerHTML = cellObj.value;
-	cell.className = config.inner.selectors.dataCell + ' ' + (cellObj.class || '');
+function updateCell(config, cellElement, cellData) {
+	cellElement.innerHTML = cellData.getValue();
+	cellElement.className = config.inner.selectors.dataCell + ' ' + (cellData.class || '');
 }
 
 function updateTable(config, forceUpdate) {
@@ -92,14 +92,18 @@ function updateTable(config, forceUpdate) {
 	// Cell data row update
 	document.querySelectorAll('.' + config.selectors.virtualTable + ' tr.' + config.inner.selectors.dataRow).forEach(function(row, rowNumber) {
 		row.querySelectorAll('td.' + config.inner.selectors.dataCell).forEach(function(cell, cellNumber) {
-			updateCell(config, cell, tableUtil.getCell(config, config.inner.topCellOffset + rowNumber, config.inner.leftCellOffset + cellNumber));
+			var cellData = tableUtil.getCellData(config, config.inner.topCellOffset + rowNumber, config.inner.leftCellOffset + cellNumber);
+
+			updateCell(config, cell, cellData);
 		});
 	});
 
 	// Fixed cell data row update
 	document.querySelectorAll('.' + config.selectors.fixedTable + ' tr.' + config.inner.selectors.dataRow).forEach(function(row, rowNumber) {
 		row.querySelectorAll('td.' + config.inner.selectors.dataCell).forEach(function(cell, cellNumber) {
-			updateCell(config, cell, tableUtil.getFixedCell(config, config.inner.topCellOffset + rowNumber, cellNumber));
+			var fixedCellData = tableUtil.getFixedCellData(config, config.inner.topCellOffset + rowNumber, cellNumber);
+
+			updateCell(config, cell, fixedCellData);
 		});
 	});
 }
@@ -136,29 +140,36 @@ function updateBuffers(config) {
 }
 
 function recalculateDimensions(config) {
-	document.querySelector('.' + config.selectors.virtualContainer).scrollTop = 0;
+	var smallerTable = config.dataSource.length < config.inner.visibleRowNumber,
+		virtualContainer = document.querySelector('.' + config.selectors.virtualContainer);
+
+	virtualContainer.classList.toggle('no-vertical-scroll', smallerTable);
+
+	if (smallerTable) {
+		virtualContainer.scrollTop = 0;
+	}
 
 	config.inner.tableOffsetWidth = configUtil.getTableOffsetWidth(config);
 	config.inner.tableOffsetHeight = configUtil.getTableOffsetHeight(config);
 }
 
-function resetEditingCell(config, onInputBlurEventHandler) {
+function resetEditingCell(config, eventHandlers) {
 	document.querySelectorAll('.' + config.selectors.virtualTable + ' td.' + config.selectors.editingCell).forEach(function(editingCell) {
 		var input = editingCell.querySelector('input');
 
-		input.removeEventListener('blur', onInputBlurEventHandler);
+		input.removeEventListener('blur', eventHandlers.onInputBlurEventHandler);
+		input.removeEventListener('keyup', eventHandlers.onInputKeyUpEventHandler);
 
 		editingCell.innerHTML = input.value;
 		editingCell.classList.remove(config.selectors.editingCell);
 	});
 }
 
-function resetEditedCell(config) {
+function resetEditedCells(config) {
 	document.querySelectorAll('.' + config.selectors.virtualTable + ' td.' + config.selectors.editingCell).forEach(function(editedCell) {
 		editedCell.classList.remove(config.selectors.editedCell);
 	});
 
-	config.inner.editedCells = [];
 	updateTable(config);
 }
 
@@ -172,6 +183,6 @@ module.exports = {
 	updateBuffers: updateBuffers,
 	recalculateDimensions: recalculateDimensions,
 	resetEditingCell: resetEditingCell,
-	resetEditedCell: resetEditedCell,
+	resetEditedCells: resetEditedCells,
 	destroyTable: destroyTable
 };

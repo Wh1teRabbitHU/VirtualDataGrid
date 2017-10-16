@@ -6,7 +6,7 @@ var domModule  = require('../modules/dom'),
 
 function sortByColumn(config, column) {
 	var attribute = column.getAttribute('data-attribute'),
-		columnObj = configUtil.getCellObject(config, attribute),
+		headerObj = configUtil.getHeaderObject(config, attribute),
 		direction = 'up';
 
 	if (config.inner.sort.attribute === attribute &&
@@ -17,7 +17,7 @@ function sortByColumn(config, column) {
 
 	config.inner.sort.direction = direction;
 	config.inner.sort.attribute = attribute;
-	config.inner.sort.dataType = columnObj.dataType;
+	config.inner.sort.dataType = headerObj.dataType;
 
 	sort(config);
 }
@@ -30,7 +30,9 @@ function sort(config, updateTable) {
 			return config.sort.customSort(a, b, {
 				attribute: config.inner.sort.attribute,
 				direction: config.inner.sort.direction,
-				dataType: config.inner.sort.dataType
+				dataType: config.inner.sort.dataType,
+				editedValues: config.inner.editedValues,
+				uniqueRowKey: config.uniqueRowKey
 			});
 		}
 
@@ -42,6 +44,8 @@ function sort(config, updateTable) {
 			attribute: attribute,
 			direction: direction,
 			dataType: dataType,
+			editedValues: config.inner.editedValues,
+			uniqueRowKey: config.uniqueRowKey,
 			name: config.locale.name
 		});
 	});
@@ -61,7 +65,9 @@ function resetSort(config) {
 			return config.sort.customSort(a, b, {
 				attribute: config.sort.default,
 				direction: 'down',
-				dataType: getSortType(config, config.sort.default)
+				dataType: getSortType(config, config.sort.default),
+				editedValues: config.inner.editedValues,
+				uniqueRowKey: config.uniqueRowKey
 			});
 		}
 
@@ -69,6 +75,8 @@ function resetSort(config) {
 			attribute: config.sort.default,
 			direction: 'down',
 			dataType: getSortType(config, config.sort.default),
+			editedValues: config.inner.editedValues,
+			uniqueRowKey: config.uniqueRowKey,
 			name: config.locale.name
 		});
 	});
@@ -77,7 +85,9 @@ function resetSort(config) {
 }
 
 function getSortType(config, attribute) {
-	return configUtil.getCellObject(config, attribute).dataType || 'string';
+	var headerObj = configUtil.getHeaderObject(config, attribute);
+
+	return typeof headerObj == 'undefined' || typeof headerObj.dataType == 'undefined' ? 'string' : headerObj.dataType;
 }
 
 module.exports = {

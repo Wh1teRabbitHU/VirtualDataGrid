@@ -2,6 +2,7 @@
 <html>
 	<head>
 		<meta charset="utf-8">
+		<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro" rel="stylesheet">
 		<link rel="stylesheet" type="text/css" href="assets/virtual-data-grid.min.css" />
 		<link rel="stylesheet" type="text/css" href="assets/example-vendor.min.css" />
 		<link rel="stylesheet" type="text/css" href="assets/example.min.css" />
@@ -10,10 +11,244 @@
 		<title>Virtual Data Grid</title>
 	</head>
 	<body>
-		<h2>Virtual Data Grid</h2>
+		<h1>Virtual Data Grid</h1>
 
-		<button type="button" class="overwrite-data-grid">Overwrite test</button>
+		<div class="main-container">
+			<div class="data-container">
+				<h1 class="space-filler">Fill the options and click on the 'Generate table' button!</h1>
+			</div>
+			<div class="generator-container">
+				<div class="option-container">
 
-		<div class="data-container"></div>
+					<h3 class="group-header">Main</h3>
+
+					<div class="form-group">
+						<label class="label">Headers</label>
+						<textarea class="input json" name="headers"></textarea>
+					</div>
+					<div class="form-group">
+						<label class="label">Fixed headers</label>
+						<textarea class="input json" name="fixedHeaders"></textarea>
+					</div>
+					<div class="form-group">
+						<label class="label">Datasource</label>
+						<textarea class="input json" name="dataSource"></textarea>
+						<div class="inner-title">Generator</div>
+						<div class="inner-group">
+							<label for="data-generator-header-size">Header size:</label>
+							<input class="input" type="number" id="data-generator-header-size" value="20" min="1">
+						</div>
+						<div class="inner-group">
+							<label for="data-generator-fixed-header-size">Fixed header size:</label>
+							<input class="input" type="number" id="data-generator-fixed-header-size" value="0" min="0" max="5">
+						</div>
+						<div class="inner-group">
+							<label for="data-generator-headers-row-size">Header's row size:</label>
+							<input class="input" type="number" id="data-generator-headers-row-size" value="1" min="1" max="5">
+						</div>
+						<div class="inner-group">
+							<label for="data-generator-data-size">Data size:</label>
+							<input class="input" type="number" id="data-generator-data-size" value="100" min="0">
+						</div>
+						<div class="inner-group">
+							<button class="btn primary" type="button" id="generate-data">Generate&nbsp;data</button>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="label">Unique row key</label>
+						<input class="input" type="text" name="uniqueRowKey" data-no-default="true">
+					</div>
+					<div class="form-group">
+						<label class="label">Auto resize</label>
+						<div class="radio-options">
+							<input class="radio-input" type="radio" name="autoResize" value="true" id="autoResize-true">
+							<label class="radio-label" for="autoResize-true">True</label>
+							<input class="radio-input" type="radio" name="autoResize" value="false" id="autoResize-false">
+							<label class="radio-label" for="autoResize-false">False</label>
+						</div>
+					</div>
+
+					<h3 class="group-header">Selectors</h3>
+
+					<div class="form-group">
+						<label class="label">Main container</label>
+						<input class="input" type="text" name="selectors-mainContainer">
+					</div>
+					<div class="form-group">
+						<label class="label">Fixed container</label>
+						<input class="input" type="text" name="selectors-fixedContainer">
+					</div>
+					<div class="form-group">
+						<label class="label">Fixed table</label>
+						<input class="input" type="text" name="selectors-fixedTable">
+					</div>
+					<div class="form-group">
+						<label class="label">Virtual container</label>
+						<input class="input" type="text" name="selectors-virtualContainer">
+					</div>
+					<div class="form-group">
+						<label class="label">Virtual table</label>
+						<input class="input" type="text" name="selectors-virtualTable">
+					</div>
+					<div class="form-group">
+						<label class="label">Editing cell</label>
+						<input class="input" type="text" name="selectors-editingCell">
+					</div>
+					<div class="form-group">
+						<label class="label">Edited cell</label>
+						<input class="input" type="text" name="selectors-editedCell">
+					</div>
+					<div class="form-group">
+						<label class="label">Save button</label>
+						<input class="input" type="text" name="selectors-saveButton">
+					</div>
+
+					<h3 class="group-header">Dimensions</h3>
+
+					<div class="form-group">
+						<label class="label">Cell width</label>
+						<input class="input" type="number" name="dimensions-cellWidth">
+					</div>
+					<div class="form-group">
+						<label class="label">Cell height</label>
+						<input class="input" type="number" name="dimensions-cellHeight">
+					</div>
+					<div class="form-group">
+						<label class="label">Cell padding vertical</label>
+						<input class="input" type="number" name="dimensions-cellPaddingVertical">
+					</div>
+					<div class="form-group">
+						<label class="label">Cell padding horizontal</label>
+						<input class="input" type="number" name="dimensions-cellPaddingHorizontal">
+					</div>
+					<div class="form-group">
+						<label class="label">Cell border width</label>
+						<input class="input" type="number" name="dimensions-cellBorderWidth">
+					</div>
+					<div class="form-group">
+						<label class="label">Container height</label>
+						<input class="input" type="number" name="dimensions-containerHeight">
+					</div>
+
+					<h3 class="group-header">Edit</h3>
+
+					<div class="form-group">
+						<label class="label">Enabled</label>
+						<div class="radio-options">
+							<input class="radio-input" type="radio" name="edit-enabled" value="true" id="edit-enabled-true">
+							<label class="radio-label" for="edit-enabled-true">True</label>
+							<input class="radio-input" type="radio" name="edit-enabled" value="false" id="edit-enabled-false">
+							<label class="radio-label" for="edit-enabled-false">False</label>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="label">Mode</label>
+						<div class="radio-options">
+							<input class="radio-input" type="radio" name="edit-mode" value="batch" id="edit-mode-batch">
+							<label class="radio-label" for="edit-mode-batch">Batch</label>
+							<input class="radio-input" type="radio" name="edit-mode" value="row" id="edit-mode-row">
+							<label class="radio-label" for="edit-mode-row">Row</label>
+						</div>
+					</div>
+
+					<h3 class="group-header">Filter</h3>
+
+					<div class="form-group">
+						<label class="label">Enabled</label>
+						<div class="radio-options">
+							<input class="radio-input" type="radio" name="filter-enabled" value="true" id="filter-enabled-true">
+							<label class="radio-label" for="filter-enabled-true">True</label>
+							<input class="radio-input" type="radio" name="filter-enabled" value="false" id="filter-enabled-false">
+							<label class="radio-label" for="filter-enabled-false">False</label>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="label">Custom filter</label>
+						<div class="function-container" data-before="function (options) {" data-after="}">
+							<textarea class="input function" name="filter-customFilter" data-attributes="options"></textarea>
+						</div>
+					</div>
+
+					<h3 class="group-header">Sort</h3>
+
+					<div class="form-group">
+						<label class="label">Enabled</label>
+						<div class="radio-options">
+							<input class="radio-input" type="radio" name="sort-enabled" value="true" id="sort-enabled-true">
+							<label class="radio-label" for="sort-enabled-true">True</label>
+							<input class="radio-input" type="radio" name="sort-enabled" value="false" id="sort-enabled-false">
+							<label class="radio-label" for="sort-enabled-false">False</label>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="label">Default</label>
+						<input class="input" type="text" name="sort-default">
+					</div>
+					<div class="form-group">
+						<label class="label">Custom sort</label>
+						<div class="function-container" data-before="function (a, b, options) {" data-after="}">
+							<textarea class="input function" name="sort-customSort" data-attributes="a,b,options"></textarea>
+						</div>
+					</div>
+
+					<h3 class="group-header">Locale</h3>
+
+					<div class="form-group">
+						<label class="label">Name</label>
+						<input class="input" type="text" name="locale-name">
+					</div>
+
+					<h3 class="group-header">Event handlers</h3>
+
+					<div class="form-group">
+						<label class="label">Before edit</label>
+						<div class="function-container" data-before="function (args) {" data-after="}">
+							<textarea class="input function" name="eventHandlers-onBeforeEdit" data-attributes="args"></textarea>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="label">Validation</label>
+						<div class="function-container" data-before="function (args) {" data-after="}">
+							<textarea class="input function" name="eventHandlers-onValidation" data-attributes="args"></textarea>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="label">After edit</label>
+						<div class="function-container" data-before="function (args) {" data-after="}">
+							<textarea class="input function" name="eventHandlers-onAfterEdit" data-attributes="args"></textarea>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="label">Before save</label>
+						<div class="function-container" data-before="function (args) {" data-after="}">
+							<textarea class="input function" name="eventHandlers-onBeforeSave" data-attributes="args"></textarea>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="label">Save row</label>
+						<div class="function-container" data-before="function (args) {" data-after="}">
+							<textarea class="input function" name="eventHandlers-onSaveRow" data-attributes="args"></textarea>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="label">Save batch</label>
+						<div class="function-container" data-before="function (args) {" data-after="}">
+							<textarea class="input function" name="eventHandlers-onSaveBatch" data-attributes="args"></textarea>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="label">After save</label>
+						<div class="function-container" data-before="function (args) {" data-after="}">
+							<textarea class="input function" name="eventHandlers-onAfterSave" data-attributes="args"></textarea>
+						</div>
+					</div>
+				</div>
+				<div class="button-container">
+					<button class="btn primary" type="button" id="generate-table">Generate table</button>
+					<button class="btn info" type="button" id="test-options">Test options</button>
+					<button class="btn danger" type="button" id="reset-to-default">Reset to default</button>
+				</div>
+			</div>
+		</div>
 	</body>
 </html>

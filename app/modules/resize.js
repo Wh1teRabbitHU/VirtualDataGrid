@@ -25,6 +25,12 @@ function redrawTable(config) {
 		return;
 	}
 
+	if (config.inner.visibleRowNumber < 1) {
+		config.inner.visibleRowNumber = 1;
+
+		return;
+	}
+
 	var virtualContainerSelector = '#' + config.inner.selectors.uniqueId + ' .' + config.selectors.virtualContainer,
 		lastFixedRowSelector = '#' + config.inner.selectors.uniqueId + ' .' + config.selectors.fixedTable + ' .data-row:last-of-type',
 		lastVirtualRowSelector = '#' + config.inner.selectors.uniqueId + ' .' + config.selectors.virtualTable + ' .data-row:nth-last-of-type(2)',
@@ -38,7 +44,10 @@ function redrawTable(config) {
 	if (prevRowNumber < config.inner.visibleRowNumber) { // Ha több sor lett
 		for (i = 0; i < config.inner.visibleRowNumber - prevRowNumber; i++) {
 			lastRow = document.querySelector(lastFixedRowSelector);
-			lastRow.parentNode.insertBefore(lastRow.cloneNode(true), lastRow);
+
+			if (lastRow !== null) {
+				lastRow.parentNode.insertBefore(lastRow.cloneNode(true), lastRow);
+			}
 
 			lastRow = document.querySelector(lastVirtualRowSelector);
 			lastRow.parentNode.insertBefore(lastRow.cloneNode(true), lastRow);
@@ -46,7 +55,10 @@ function redrawTable(config) {
 	} else if (prevRowNumber > config.inner.visibleRowNumber) { // Ha kevesebb sor lett
 		for (i = 0; i < prevRowNumber - config.inner.visibleRowNumber; i++) {
 			lastRow = document.querySelector(lastFixedRowSelector);
-			lastRow.remove();
+
+			if (lastRow !== null) {
+				lastRow.remove();
+			}
 
 			lastRow = document.querySelector(lastVirtualRowSelector);
 			lastRow.remove();
