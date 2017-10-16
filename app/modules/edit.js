@@ -12,7 +12,7 @@ var BeforeEditArgs = require('../models/event-arguments/before-edit'),
 	domModule      = require('../modules/dom'),
 	filterModule   = require('../modules/filter');
 
-function startEditingCell(config, cellElement, instances, onInputBlurEventHandler) {
+function startEditingCell(config, cellElement, instances, eventHandlers) {
 	if (!config.edit.enabled) {
 		return;
 	}
@@ -43,15 +43,17 @@ function startEditingCell(config, cellElement, instances, onInputBlurEventHandle
 		cellElement.innerHTML = '';
 		cellElement.appendChild(inputElement);
 
-		instances.onInputBlurEventHandler = function(ev) { onInputBlurEventHandler(ev, config); };
+		instances.onInputBlurEventHandler = function(ev) { eventHandlers.onInputBlurEventHandler(ev, config); };
+		instances.onInputKeyUpEventHandler = function(ev) { eventHandlers.onInputKeyUpEventHandler(ev, config); };
 
 		inputElement.focus();
 		inputElement.value = cellData.getValue();
 		inputElement.addEventListener('blur', instances.onInputBlurEventHandler);
+		inputElement.addEventListener('keyup', instances.onInputKeyUpEventHandler);
 	}
 }
 
-function finishEditingCell(config, inputElement, onInputBlurEventHandler) {
+function finishEditingCell(config, inputElement, eventHandlers) {
 	var cellElement = inputElement.parentNode,
 		rowNumber = domUtil.getRowNumber(config, cellElement),
 		columnNumber = domUtil.getColumnNumber(config, cellElement),
@@ -62,7 +64,7 @@ function finishEditingCell(config, inputElement, onInputBlurEventHandler) {
 	cellData.updateValue(updatedValue);
 
 	if (!cellData.isCellChanged()) {
-		domModule.resetEditingCell(config, onInputBlurEventHandler);
+		domModule.resetEditingCell(config, eventHandlers);
 
 		return;
 	}
@@ -88,6 +90,10 @@ function finishEditingCell(config, inputElement, onInputBlurEventHandler) {
 
 		filterModule.filter(config);
 	}
+}
+
+function cancelEditingCell(config) {
+	return '';
 }
 
 function saveCells(config) {
@@ -154,5 +160,6 @@ function saveCells(config) {
 module.exports = {
 	startEditingCell: startEditingCell,
 	finishEditingCell: finishEditingCell,
+	cancelEditingCell: cancelEditingCell,
 	saveCells: saveCells
 };

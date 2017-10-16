@@ -1,6 +1,7 @@
 'use strict';
 
 var domUtil      = require('../utils/dom'),
+	keyboardUtil = require('../utils/keyboard'),
 	sortModule   = require('../modules/sort'),
 	editModule   = require('../modules/edit'),
 	domModule    = require('../modules/dom'),
@@ -37,11 +38,39 @@ function onClickCellEventHandler(event, config) {
 		return;
 	}
 
-	editModule.startEditingCell(config, event.target, instances, onInputBlurEventHandler);
+	editModule.startEditingCell(config, event.target, instances, {
+		onInputBlurEventHandler: onInputBlurEventHandler,
+		onInputKeyUpEventHandler: onInputKeyUpEventHandler
+	});
 }
 
 function onInputBlurEventHandler(event, config) {
-	editModule.finishEditingCell(config, event.target, instances.onInputBlurEventHandler);
+	editModule.finishEditingCell(config, event.target, {
+		onInputBlurEventHandler: onInputBlurEventHandler,
+		onInputKeyUpEventHandler: onInputKeyUpEventHandler
+	});
+}
+
+function onInputKeyUpEventHandler(event, config) {
+	var keyCode = keyboardUtil.getKeyCode(event);
+
+	switch (keyCode) {
+		case keyboardUtil.KEY_CODES.ENTER:
+			event.target.removeEventListener('blur', instances.onInputBlurEventHandler);
+			editModule.finishEditingCell(config, event.target, {
+				onInputBlurEventHandler: onInputBlurEventHandler,
+				onInputKeyUpEventHandler: onInputKeyUpEventHandler
+			});
+			break;
+		case keyboardUtil.KEY_CODES.ESCAPE:
+			editModule.cancelEditingCell(config, event.target, {
+				onInputBlurEventHandler: onInputBlurEventHandler,
+				onInputKeyUpEventHandler: onInputKeyUpEventHandler
+			});
+			break;
+		default:
+			break;
+	}
 }
 
 function onClickSaveButtonEventHandler(event, config) {

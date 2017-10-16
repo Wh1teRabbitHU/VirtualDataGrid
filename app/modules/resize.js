@@ -25,8 +25,6 @@ function redrawTable(config) {
 		return;
 	}
 
-	window.console.log(config.inner.visibleColumnNumber);
-
 	if (config.inner.visibleRowNumber < 1) {
 		config.inner.visibleRowNumber = 1;
 

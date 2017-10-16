@@ -85,7 +85,9 @@ function resetSort(config) {
 }
 
 function getSortType(config, attribute) {
-	return configUtil.getHeaderObject(config, attribute).dataType || 'string';
+	var headerObj = configUtil.getHeaderObject(config, attribute);
+
+	return typeof headerObj == 'undefined' || typeof headerObj.dataType == 'undefined' ? 'string' : headerObj.dataType;
 }
 
 module.exports = {

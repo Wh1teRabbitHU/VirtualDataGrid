@@ -153,11 +153,12 @@ function recalculateDimensions(config) {
 	config.inner.tableOffsetHeight = configUtil.getTableOffsetHeight(config);
 }
 
-function resetEditingCell(config, onInputBlurEventHandler) {
+function resetEditingCell(config, eventHandlers) {
 	document.querySelectorAll('.' + config.selectors.virtualTable + ' td.' + config.selectors.editingCell).forEach(function(editingCell) {
 		var input = editingCell.querySelector('input');
 
-		input.removeEventListener('blur', onInputBlurEventHandler);
+		input.removeEventListener('blur', eventHandlers.onInputBlurEventHandler);
+		input.removeEventListener('keyup', eventHandlers.onInputKeyUpEventHandler);
 
 		editingCell.innerHTML = input.value;
 		editingCell.classList.remove(config.selectors.editingCell);

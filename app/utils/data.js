@@ -9,7 +9,18 @@ function defaultComparator(a, b, options) {
 		isDown = options.direction === 'down';
 
 	if (options.dataType === 'string') {
-		var compareResult = attrA.localeCompare(attrB, options.locale);
+		var compareResult = 0;
+
+		if (typeof attrA == 'undefined') {
+			compareResult = -1;
+		} else if (typeof attrB == 'undefined') {
+			compareResult = 1;
+		} else {
+			attrA += '';
+			attrB += '';
+
+			compareResult = attrA.localeCompare(attrB, options.locale);
+		}
 
 		return isDown || compareResult === 0 ? compareResult : compareResult * -1;
 	} else if (options.dataType === 'number') {
