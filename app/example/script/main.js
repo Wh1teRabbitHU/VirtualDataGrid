@@ -93,9 +93,12 @@ function fillInputsWithOptions(keyChain, value) {
 	var input = document.querySelector('[name=' + keyChain + ']');
 
 	if (input !== null && typeof value !== 'function' && value !== null) {
-		var inputType = input.getAttribute('type');
+		var inputType = input.getAttribute('type'),
+			noDefault = input.getAttribute('data-no-default');
 
-		if (inputType === 'radio' || inputType === 'checkbox') {
+		if (noDefault === 'true') {
+			return;
+		} else if (inputType === 'radio' || inputType === 'checkbox') {
 			document.querySelectorAll('[name=' + keyChain + ']').forEach(function(el) {
 				el.checked = el.value === value + '';
 			});
