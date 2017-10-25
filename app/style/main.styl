@@ -44,6 +44,7 @@ $cTableRowBorder = #d3d3d3
 		border-bottom 1px solid $cTableRowBorder
 		background-color $dirtyWhite
 		font-size 13px
+		padding 0
 
 		&.editing-cell
 			padding 0
@@ -62,6 +63,9 @@ $cTableRowBorder = #d3d3d3
 		&.edited-cell
 			background-color lighten($green, 80%)
 
+		.cell-data-container
+			overflow hidden
+			text-overflow ellipsis
 
 	.data-cell
 		color $darkGray

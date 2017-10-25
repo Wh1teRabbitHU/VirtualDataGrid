@@ -98,8 +98,8 @@ function initTable(config) {
 		for (j = 0; j < maxColumnNumber; j++) {
 			tdElement = document.createElement('td');
 			tdElement.classList.add(config.inner.selectors.headerCell);
-			tdElement.style.minWidth = config.dimensions.cellWidth + 'px';
-			tdElement.style.padding = config.dimensions.cellPaddingVertical + 'px ' + config.dimensions.cellPaddingHorizontal + 'px';
+
+			generateDataContainer(config, tdElement);
 
 			domModule.updateCellData(config, tdElement, domUtil.getHeaderCellHtml(config, tdElement, headerRow[j], isLastRow));
 
@@ -138,8 +138,8 @@ function initTable(config) {
 
 			tdElement = document.createElement('td');
 			tdElement.classList.add(config.inner.selectors.filterCell);
-			tdElement.style.minWidth = config.dimensions.cellWidth + 'px';
-			tdElement.style.padding = config.dimensions.cellPaddingVertical + 'px ' + config.dimensions.cellPaddingHorizontal + 'px';
+
+			generateDataContainer(config, tdElement);
 
 			domModule.updateCellData(config, tdElement, domUtil.getFilterCellHtml(config, tdElement, cellObj, {}));
 
@@ -172,8 +172,8 @@ function initTable(config) {
 		for (j = 0; j < maxColumnNumber; j++) {
 			tdElement = document.createElement('td');
 			tdElement.classList.add(config.inner.selectors.dataCell);
-			tdElement.style.minWidth = config.dimensions.cellWidth + 'px';
-			tdElement.style.padding = config.dimensions.cellPaddingVertical + 'px ' + config.dimensions.cellPaddingHorizontal + 'px';
+
+			generateDataContainer(config, tdElement);
 
 			trBody.appendChild(tdElement);
 		}
@@ -222,7 +222,8 @@ function initTable(config) {
 
 			tdElement = document.createElement('td');
 			tdElement.classList.add(config.inner.selectors.headerCell);
-			tdElement.style.minWidth = config.dimensions.cellWidth + 'px';
+
+			generateDataContainer(config, tdElement);
 
 			domModule.updateCellData(config, tdElement, domUtil.getHeaderCellHtml(config, tdElement, config.fixedHeaders[i][j], isLastRow));
 
@@ -256,8 +257,8 @@ function initTable(config) {
 			tdElement = document.createElement('td');
 			tdElement.classList.add(config.inner.selectors.filterCell);
 			tdElement.style.minWidth = config.dimensions.cellWidth + 'px';
-			tdElement.style.maxWidth = config.dimensions.cellWidth + 'px';
-			tdElement.style.padding = config.dimensions.cellPaddingVertical + 'px ' + config.dimensions.cellPaddingHorizontal + 'px';
+
+			generateDataContainer(config, tdElement);
 
 			domModule.updateCellData(config, tdElement, domUtil.getFilterCellHtml(config, tdElement, cellObj, {}));
 
@@ -281,8 +282,8 @@ function initTable(config) {
 		for (j = 0; j < config.fixedHeaders[config.inner.indexOfCellKeyHeader].length; j++) {
 			tdElement = document.createElement('td');
 			tdElement.classList.add(config.inner.selectors.dataCell);
-			tdElement.style.padding = config.dimensions.cellPaddingVertical + 'px ' + config.dimensions.cellPaddingHorizontal + 'px';
-			tdElement.style.minWidth = config.dimensions.cellWidth + 'px';
+
+			generateDataContainer(config, tdElement);
 
 			trBody.appendChild(tdElement);
 		}
@@ -296,6 +297,18 @@ function initTable(config) {
 
 function getDefaultOptions() {
 	return dataUtil.cloneObject(configuration.DEFAULTS);
+}
+
+function generateDataContainer(config, parentElement) {
+	var dataContainer = document.createElement('div'),
+		maxHeight = config.dimensions.cellHeight - config.dimensions.cellBorderWidth - config.dimensions.cellPaddingVertical * 2;
+
+	dataContainer.classList.add(config.inner.selectors.cellDataContainer);
+	dataContainer.style.width = config.dimensions.cellWidth + 'px';
+	dataContainer.style.maxHeight = maxHeight + 'px';
+	dataContainer.style.padding = config.dimensions.cellPaddingVertical + 'px ' + config.dimensions.cellPaddingHorizontal + 'px';
+
+	parentElement.append(dataContainer);
 }
 
 module.exports = {

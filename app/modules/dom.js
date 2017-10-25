@@ -7,13 +7,6 @@ var tableUtil  = require('../utils/table'),
 function updateCellData(config, cellElement, data) {
 	var dataContainer = cellElement.querySelector('.' + config.inner.selectors.cellDataContainer);
 
-	if (dataContainer === null) {
-		dataContainer = document.createElement('div');
-		dataContainer.classList.add(config.inner.selectors.cellDataContainer);
-
-		cellElement.append(dataContainer);
-	}
-
 	dataContainer.innerHTML = '';
 
 	if (data.nodeType) { // If its an Element object
