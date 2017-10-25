@@ -83,7 +83,8 @@ var STATIC_INNER_ATTRS = {
 		filterSearchIcon: 'filter-search-icon',
 		filterClearIcon: 'filter-clear-icon',
 		dataRow: 'data-row',
-		dataCell: 'data-cell'
+		dataCell: 'data-cell',
+		cellDataContainer: 'cell-data-container'
 	},
 	dimensions: {},
 	icons: {

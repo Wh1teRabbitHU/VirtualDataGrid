@@ -34,11 +34,11 @@ function onScrollEventHandler(event, config) {
 }
 
 function onClickCellEventHandler(event, config) {
-	if (event.target.matches('input')) {
+	if (!event.target.matches('.' + config.inner.selectors.cellDataContainer)) {
 		return;
 	}
 
-	editModule.startEditingCell(config, event.target, instances, {
+	editModule.startEditingCell(config, event.target.parentNode, instances, {
 		onInputBlurEventHandler: onInputBlurEventHandler,
 		onInputKeyUpEventHandler: onInputKeyUpEventHandler
 	});
@@ -79,10 +79,11 @@ function onClickSaveButtonEventHandler(event, config) {
 
 function onClickSortHeader(event, config) {
 	var sortCellSelector = '.' + config.inner.selectors.sortCell,
+		sortContainerSelector = sortCellSelector + ' .' + config.inner.selectors.cellDataContainer,
 		sortDisabledSelector = '.' + config.inner.selectors.sortDisabled,
 		sortIconSelector = sortCellSelector + ' .' + config.inner.selectors.sortIcon;
 
-	if (!event.target.matches(sortCellSelector) &&
+	if (!event.target.matches(sortContainerSelector) &&
 		!event.target.matches(sortIconSelector) ||
 		event.target.matches(sortDisabledSelector)) {
 		return;
@@ -92,18 +93,19 @@ function onClickSortHeader(event, config) {
 		sortModule.resetSort(config);
 	}
 
-	if (event.target.matches(sortCellSelector)) {
-		sortModule.sortByColumn(config, event.target);
+	if (event.target.matches(sortContainerSelector)) {
+		sortModule.sortByColumn(config, domUtil.findParentNode(event.target, sortCellSelector));
 	}
 }
 
 function onClickFilterHeader(event, config) {
 	var filterCellSelector = '.' + config.inner.selectors.filterCell,
+		filterContainerSelector = filterCellSelector + ' .' + config.inner.selectors.cellDataContainer,
 		filterDisabledSelector = '.' + config.inner.selectors.filterDisabled,
 		filterSearchIconSelector = filterCellSelector + ' .' + config.inner.selectors.filterSearchIcon,
 		filterClearIconSelector = filterCellSelector + ' .' + config.inner.selectors.filterClearIcon;
 
-	if (!event.target.matches(filterCellSelector) &&
+	if (!event.target.matches(filterContainerSelector) &&
 		!event.target.matches(filterSearchIconSelector) &&
 		!event.target.matches(filterClearIconSelector) ||
 		event.target.matches(filterDisabledSelector)) {
@@ -111,7 +113,7 @@ function onClickFilterHeader(event, config) {
 		return;
 	}
 
-	var cell = event.target.matches(filterCellSelector) ? event.target : domUtil.findParentNode(event.target, filterCellSelector);
+	var cell = domUtil.findParentNode(event.target, filterCellSelector);
 
 	if (event.target.matches(filterClearIconSelector)) {
 		filterModule.clearFilter(config, cell);

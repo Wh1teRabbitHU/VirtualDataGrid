@@ -40,8 +40,8 @@ function startEditingCell(config, cellElement, instances, eventHandlers) {
 	if (!beforeEditArgs.cancelEvent) {
 		cellElement.classList.add(config.selectors.editingCell);
 		cellElement.classList.remove(config.selectors.editedCell);
-		cellElement.innerHTML = '';
-		cellElement.appendChild(inputElement);
+
+		domModule.updateCellData(config, cellElement, inputElement);
 
 		instances.onInputBlurEventHandler = function(ev) { eventHandlers.onInputBlurEventHandler(ev, config); };
 		instances.onInputKeyUpEventHandler = function(ev) { eventHandlers.onInputKeyUpEventHandler(ev, config); };
@@ -54,7 +54,7 @@ function startEditingCell(config, cellElement, instances, eventHandlers) {
 }
 
 function finishEditingCell(config, inputElement, eventHandlers) {
-	var cellElement = inputElement.parentNode,
+	var cellElement = inputElement.parentNode.parentNode,
 		rowNumber = domUtil.getRowNumber(config, cellElement),
 		columnNumber = domUtil.getColumnNumber(config, cellElement),
 		cellData = tableUtil.getCellData(config, rowNumber, columnNumber),

@@ -100,7 +100,8 @@ function initTable(config) {
 			tdElement.classList.add(config.inner.selectors.headerCell);
 			tdElement.style.minWidth = config.dimensions.cellWidth + 'px';
 			tdElement.style.padding = config.dimensions.cellPaddingVertical + 'px ' + config.dimensions.cellPaddingHorizontal + 'px';
-			tdElement.innerHTML = domUtil.getHeaderCellHtml(config, tdElement, headerRow[j], isLastRow);
+
+			domModule.updateCellData(config, tdElement, domUtil.getHeaderCellHtml(config, tdElement, headerRow[j], isLastRow));
 
 			if (isLastRow) {
 				tdElement.classList.add(config.inner.selectors.sortCell);
@@ -139,7 +140,8 @@ function initTable(config) {
 			tdElement.classList.add(config.inner.selectors.filterCell);
 			tdElement.style.minWidth = config.dimensions.cellWidth + 'px';
 			tdElement.style.padding = config.dimensions.cellPaddingVertical + 'px ' + config.dimensions.cellPaddingHorizontal + 'px';
-			tdElement.innerHTML = domUtil.getFilterCellHtml(config, tdElement, cellObj, {});
+
+			domModule.updateCellData(config, tdElement, domUtil.getFilterCellHtml(config, tdElement, cellObj, {}));
 
 			if (cellObj.filterDisabled) {
 				tdElement.classList.add(config.inner.selectors.filterDisabled);
@@ -221,7 +223,8 @@ function initTable(config) {
 			tdElement = document.createElement('td');
 			tdElement.classList.add(config.inner.selectors.headerCell);
 			tdElement.style.minWidth = config.dimensions.cellWidth + 'px';
-			tdElement.innerHTML = domUtil.getHeaderCellHtml(config, tdElement, config.fixedHeaders[i][j], isLastRow);
+
+			domModule.updateCellData(config, tdElement, domUtil.getHeaderCellHtml(config, tdElement, config.fixedHeaders[i][j], isLastRow));
 
 			if (isLastRow) {
 				tdElement.classList.add(config.inner.selectors.sortCell);
@@ -255,7 +258,8 @@ function initTable(config) {
 			tdElement.style.minWidth = config.dimensions.cellWidth + 'px';
 			tdElement.style.maxWidth = config.dimensions.cellWidth + 'px';
 			tdElement.style.padding = config.dimensions.cellPaddingVertical + 'px ' + config.dimensions.cellPaddingHorizontal + 'px';
-			tdElement.innerHTML = domUtil.getFilterCellHtml(config, tdElement, cellObj, {});
+
+			domModule.updateCellData(config, tdElement, domUtil.getFilterCellHtml(config, tdElement, cellObj, {}));
 
 			if (cellObj.filterDisabled) {
 				tdElement.classList.add(config.inner.selectors.filterDisabled);

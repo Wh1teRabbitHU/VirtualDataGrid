@@ -25,8 +25,7 @@ function startEditingFilter(config, cell) {
 
 	var container = document.createElement('div');
 
-	cell.innerHTML = '';
-	cell.appendChild(container);
+	domModule.updateCellData(config, cell, container);
 
 	container.classList.add(config.inner.selectors.filterContainer);
 	container.innerHTML = '<input><i class="' + clearIconElementClass + '" aria-hidden="true"></i>';
@@ -76,8 +75,8 @@ function filter(config, sortTable) {
 				filterType: filterObj.filterType,
 				valueOne: filterObj.value,
 				valueTwo: filterObj.valueTwo,
-				editedValues: config.editedValues,
-				uniqueRowKey: config.inner.uniqueRowKey
+				editedValues: config.inner.editedValues,
+				uniqueRowKey: config.uniqueRowKey
 			});
 		}
 	});
@@ -112,7 +111,7 @@ function clearFilter(config, cell) {
 }
 
 function finishEditingFilter(config, cell, cellObj, filterObj) {
-	cell.innerHTML = domUtil.getFilterCellHtml(config, cell, cellObj, filterObj);
+	domModule.updateCellData(config, cell, domUtil.getFilterCellHtml(config, cell, cellObj, filterObj));
 
 	filter(config);
 }

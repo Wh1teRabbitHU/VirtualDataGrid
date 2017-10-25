@@ -21,7 +21,7 @@ function getHeaderCellHtml(config, cell, cellObj, isLastRow) {
 			direction = typeof attribute != 'undefined' && config.inner.sort.attribute === attribute ? config.inner.sort.direction : 'none',
 			isSorted = direction !== 'none',
 			iconClass = direction === 'down' ? config.inner.icons.sort.asc : config.inner.icons.sort.desc,
-			iconElementClass = config.inner.selectors.sortIcon + (isSorted ? ' ' + iconClass : 'hidden');
+			iconElementClass = config.inner.selectors.sortIcon + (isSorted ? ' ' + iconClass : ' hidden');
 
 		innerHTML += '<i class="' + iconElementClass + '" aria-hidden="true"></i>';
 
