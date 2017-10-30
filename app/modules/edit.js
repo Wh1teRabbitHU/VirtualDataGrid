@@ -27,8 +27,6 @@ function startEditingCell(config, cellElement, instances, eventHandlers) {
 	var cellData = tableUtil.getCellData(config, rowNumber, columnNumber),
 		inputElement = document.createElement('input');
 
-	inputElement.setAttribute('type', cellData.dataType);
-
 	var beforeEditArgs = new BeforeEditArgs({
 		cellElement: cellElement,
 		cellData: cellData,
@@ -48,6 +46,9 @@ function startEditingCell(config, cellElement, instances, eventHandlers) {
 
 		inputElement.focus();
 		inputElement.value = cellData.getValue();
+		inputElement.style.minWidth = '10px'; // TODO: Kiszervezni osztályba
+		inputElement.style.width = '80%'; // TODO: Kiszervezni osztályba
+		inputElement.setAttribute('type', cellData.dataType);
 		inputElement.addEventListener('blur', instances.onInputBlurEventHandler);
 		inputElement.addEventListener('keyup', instances.onInputKeyUpEventHandler);
 	}

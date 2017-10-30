@@ -1,12 +1,13 @@
 'use strict';
 
-var domUtil      = require('../utils/dom'),
-	keyboardUtil = require('../utils/keyboard'),
-	sortModule   = require('../modules/sort'),
-	editModule   = require('../modules/edit'),
-	domModule    = require('../modules/dom'),
-	filterModule = require('../modules/filter'),
-	resizeModule = require('../modules/resize');
+var domUtil       = require('../utils/dom'),
+	keyboardUtil  = require('../utils/keyboard'),
+	sortModule    = require('../modules/sort'),
+	editModule    = require('../modules/edit'),
+	domModule     = require('../modules/dom'),
+	filterModule  = require('../modules/filter'),
+	resizeModule  = require('../modules/resize'),
+	tooltipModule = require('../modules/tooltip');
 
 var container;
 
@@ -17,7 +18,9 @@ var instances = {
 	onClickSaveButtonEventHandler: function() {},
 	onClickSortHeader: function() {},
 	onClickFilterHeader: function() {},
-	onWindowResize: function() {}
+	onWindowResize: function() {},
+	onMouseEnterCellWithTitle: function() {},
+	onMouseLeaveCellWithTitle: function() {},
 };
 
 function onWheelEventHandler(event) {
@@ -28,6 +31,8 @@ function onWheelEventHandler(event) {
 }
 
 function onScrollEventHandler(event, config) {
+	tooltipModule.hideAll(config);
+
 	domModule.resetEditingCell(config, instances.onInputBlurEventHandler);
 	domModule.updateBuffers(config);
 	domModule.updateTable(config, false);
@@ -132,6 +137,14 @@ function onWindowResize(event, config) {
 	resizeModule.resizeEventHandler(config);
 }
 
+function onMouseEnterCellWithTitle(event, config) {
+	tooltipModule.onMouseEnterCellWithTitle(config, event.target);
+}
+
+function onMouseLeaveCellWithTitle(event, config) {
+	tooltipModule.onMouseLeaveCellWithTitle(config, event.target);
+}
+
 function addEvents(config) {
 	container = document.querySelector('.' + config.selectors.virtualContainer);
 
@@ -141,10 +154,19 @@ function addEvents(config) {
 	instances.onClickSortHeader = function(event) { onClickSortHeader(event, config); };
 	instances.onClickFilterHeader = function(event) { onClickFilterHeader(event, config); };
 	instances.onWindowResize = function(event) { onWindowResize(event, config); };
+	instances.onMouseEnterCellWithTitle = function(event) { onMouseEnterCellWithTitle(event, config); };
+	instances.onMouseLeaveCellWithTitle = function(event) { onMouseLeaveCellWithTitle(event, config); };
 
 	if (container !== null) {
 		container.addEventListener('wheel', onWheelEventHandler, { passive: false, capture: true });
 		container.addEventListener('scroll', instances.onScrollEventHandler);
+	}
+
+	if (config.modules.tooltip.enabled) {
+		document.querySelectorAll('[title]').forEach(function(el) {
+			el.addEventListener('mouseenter', instances.onMouseEnterCellWithTitle);
+			el.addEventListener('mouseleave', instances.onMouseLeaveCellWithTitle);
+		});
 	}
 
 	if (config.edit.enabled && config.selectors.saveButton !== null) {
@@ -180,6 +202,13 @@ function removeEvents(config) {
 	if (container !== null) {
 		container.removeEventListener('wheel', onWheelEventHandler);
 		container.removeEventListener('scroll', instances.onScrollEventHandler);
+	}
+
+	if (config.modules.tooltip.enabled) {
+		document.querySelectorAll('[title]').forEach(function(el) {
+			el.removeEventListener('mouseenter', instances.onMouseEnterCellWithTitle);
+			el.removeEventListener('mouseleave', instances.onMouseLeaveCellWithTitle);
+		});
 	}
 
 	if (config.edit.enabled && config.selectors.saveButton !== null) {

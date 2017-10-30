@@ -70,11 +70,21 @@ function getColumnNumber(config, cell) {
 	return indexOfElement(cell) - 1 + config.inner.leftCellOffset;
 }
 
+function isEllipsisActive(element) {
+	return element.offsetWidth < element.scrollWidth;
+}
+
+function isOverflown(element) {
+	return element.scrollHeight > element.clientHeight || element.scrollWidth > element.clientWidth;
+}
+
 module.exports = {
 	indexOfElement: indexOfElement,
 	getHeaderCellHtml: getHeaderCellHtml,
 	getFilterCellHtml: getFilterCellHtml,
 	findParentNode: findParentNode,
 	getRowNumber: getRowNumber,
-	getColumnNumber: getColumnNumber
+	getColumnNumber: getColumnNumber,
+	isEllipsisActive: isEllipsisActive,
+	isOverflown: isOverflown
 };

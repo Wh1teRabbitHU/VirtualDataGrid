@@ -84,6 +84,10 @@ function nil() {
 	return function() {};
 }
 
+function wrapper(f) {
+	return function() { return f; };
+}
+
 module.exports = {
 	calculateVirtualContainerHeight: calculateVirtualContainerHeight,
 	getDefaultContainerHeight: getDefaultContainerHeight,
@@ -98,5 +102,6 @@ module.exports = {
 	getKeyHeader: getKeyHeader,
 	getFixedKeyHeader: getFixedKeyHeader,
 	getHeaderObject: getHeaderObject,
-	nil: nil
+	nil: nil,
+	wrapper: wrapper
 };

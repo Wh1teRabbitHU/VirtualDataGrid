@@ -11,10 +11,8 @@ $cTableRowBorder = #d3d3d3
 .fixed-container
 	overflow-anchor none
 
-	&.no-vertical-scroll
-
-		.buffer-row-bottom
-			display none
+	&.no-vertical-scroll .buffer-row-bottom
+		display none
 
 	.hidden
 		display none
@@ -40,6 +38,7 @@ $cTableRowBorder = #d3d3d3
 	.header-cell,
 	.filter-cell,
 	.data-cell
+		position relative
 		border-right 1px solid $cTableRowBorder
 		border-bottom 1px solid $cTableRowBorder
 		background-color $dirtyWhite
