@@ -4,8 +4,23 @@ var tableUtil  = require('../utils/table'),
 	configUtil = require('../utils/configuration'),
 	domUtil    = require('../utils/dom');
 
+function updateCellData(config, cellElement, data) {
+	var dataContainer = cellElement.querySelector('.' + config.inner.selectors.cellDataContainer);
+
+	dataContainer.innerHTML = '';
+
+	if (data.nodeType) { // If its an Element object
+		dataContainer.appendChild(data);
+		cellElement.title = data.textContent;
+	} else { // else just add to the containers innerHTML
+		dataContainer.innerHTML += data;
+		cellElement.title = dataContainer.textContent;
+	}
+}
+
 function updateCell(config, cellElement, cellData) {
-	cellElement.innerHTML = cellData.getValue();
+	updateCellData(config, cellElement, cellData.getValue());
+
 	cellElement.className = config.inner.selectors.dataCell + ' ' + (cellData.class || '');
 }
 
@@ -32,7 +47,8 @@ function updateTable(config, forceUpdate) {
 				cell.style.display = 'none';
 				colspan--;
 			} else {
-				cell.innerHTML = domUtil.getHeaderCellHtml(config, cell, cellObj, isLastRow);
+				updateCellData(config, cell, domUtil.getHeaderCellHtml(config, cell, cellObj, isLastRow));
+
 				cell.style.display = 'table-cell';
 			}
 
@@ -54,7 +70,7 @@ function updateTable(config, forceUpdate) {
 			var cellObj = config.fixedHeaders[rowCount][cellCount],
 				isLastRow = config.inner.indexOfCellKeyHeader === rowCount;
 
-			cell.innerHTML = domUtil.getHeaderCellHtml(config, cell, cellObj, isLastRow);
+			updateCellData(config, cell, domUtil.getHeaderCellHtml(config, cell, cellObj, isLastRow));
 		});
 	});
 
@@ -71,7 +87,8 @@ function updateTable(config, forceUpdate) {
 
 			cell.setAttribute('data-attribute', cellObj.key);
 			cell.classList.toggle(config.inner.selectors.filterDisabled, cellObj.filterDisabled);
-			cell.innerHTML = domUtil.getFilterCellHtml(config, cell, cellObj, filterObj);
+
+			updateCellData(config, cell, domUtil.getFilterCellHtml(config, cell, cellObj, filterObj));
 		});
 
 		document.querySelectorAll('.' + config.selectors.fixedTable + ' td.' + config.inner.selectors.filterCell).forEach(function(cell, cellCount) {
@@ -85,7 +102,8 @@ function updateTable(config, forceUpdate) {
 
 			cell.setAttribute('data-attribute', cellObj.key);
 			cell.classList.toggle(config.inner.selectors.filterDisabled, cellObj.filterDisabled);
-			cell.innerHTML = domUtil.getFilterCellHtml(config, cell, cellObj, filterObj);
+
+			updateCellData(config, cell, domUtil.getFilterCellHtml(config, cell, cellObj, filterObj));
 		});
 	}
 
@@ -160,7 +178,8 @@ function resetEditingCell(config, eventHandlers) {
 		input.removeEventListener('blur', eventHandlers.onInputBlurEventHandler);
 		input.removeEventListener('keyup', eventHandlers.onInputKeyUpEventHandler);
 
-		editingCell.innerHTML = input.value;
+		updateCellData(config, editingCell, input.value);
+
 		editingCell.classList.remove(config.selectors.editingCell);
 	});
 }
@@ -179,6 +198,7 @@ function destroyTable(config) {
 
 module.exports = {
 	updateCell: updateCell,
+	updateCellData: updateCellData,
 	updateTable: updateTable,
 	updateBuffers: updateBuffers,
 	recalculateDimensions: recalculateDimensions,

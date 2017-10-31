@@ -21,7 +21,7 @@ function getHeaderCellHtml(config, cell, cellObj, isLastRow) {
 			direction = typeof attribute != 'undefined' && config.inner.sort.attribute === attribute ? config.inner.sort.direction : 'none',
 			isSorted = direction !== 'none',
 			iconClass = direction === 'down' ? config.inner.icons.sort.asc : config.inner.icons.sort.desc,
-			iconElementClass = config.inner.selectors.sortIcon + (isSorted ? ' ' + iconClass : 'hidden');
+			iconElementClass = config.inner.selectors.sortIcon + (isSorted ? ' ' + iconClass : ' hidden');
 
 		innerHTML += '<i class="' + iconElementClass + '" aria-hidden="true"></i>';
 
@@ -70,11 +70,21 @@ function getColumnNumber(config, cell) {
 	return indexOfElement(cell) - 1 + config.inner.leftCellOffset;
 }
 
+function isEllipsisActive(element) {
+	return element.offsetWidth < element.scrollWidth;
+}
+
+function isOverflown(element) {
+	return element.scrollHeight > element.clientHeight || element.scrollWidth > element.clientWidth;
+}
+
 module.exports = {
 	indexOfElement: indexOfElement,
 	getHeaderCellHtml: getHeaderCellHtml,
 	getFilterCellHtml: getFilterCellHtml,
 	findParentNode: findParentNode,
 	getRowNumber: getRowNumber,
-	getColumnNumber: getColumnNumber
+	getColumnNumber: getColumnNumber,
+	isEllipsisActive: isEllipsisActive,
+	isOverflown: isOverflown
 };

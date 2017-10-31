@@ -27,8 +27,6 @@ function startEditingCell(config, cellElement, instances, eventHandlers) {
 	var cellData = tableUtil.getCellData(config, rowNumber, columnNumber),
 		inputElement = document.createElement('input');
 
-	inputElement.setAttribute('type', cellData.dataType);
-
 	var beforeEditArgs = new BeforeEditArgs({
 		cellElement: cellElement,
 		cellData: cellData,
@@ -40,21 +38,24 @@ function startEditingCell(config, cellElement, instances, eventHandlers) {
 	if (!beforeEditArgs.cancelEvent) {
 		cellElement.classList.add(config.selectors.editingCell);
 		cellElement.classList.remove(config.selectors.editedCell);
-		cellElement.innerHTML = '';
-		cellElement.appendChild(inputElement);
+
+		domModule.updateCellData(config, cellElement, inputElement);
 
 		instances.onInputBlurEventHandler = function(ev) { eventHandlers.onInputBlurEventHandler(ev, config); };
 		instances.onInputKeyUpEventHandler = function(ev) { eventHandlers.onInputKeyUpEventHandler(ev, config); };
 
 		inputElement.focus();
 		inputElement.value = cellData.getValue();
+		inputElement.style.minWidth = '10px'; // TODO: Kiszervezni osztályba
+		inputElement.style.width = '80%'; // TODO: Kiszervezni osztályba
+		inputElement.setAttribute('type', cellData.dataType);
 		inputElement.addEventListener('blur', instances.onInputBlurEventHandler);
 		inputElement.addEventListener('keyup', instances.onInputKeyUpEventHandler);
 	}
 }
 
 function finishEditingCell(config, inputElement, eventHandlers) {
-	var cellElement = inputElement.parentNode,
+	var cellElement = inputElement.parentNode.parentNode,
 		rowNumber = domUtil.getRowNumber(config, cellElement),
 		columnNumber = domUtil.getColumnNumber(config, cellElement),
 		cellData = tableUtil.getCellData(config, rowNumber, columnNumber),

@@ -7,6 +7,7 @@ VirtualDataGrid.prototype.loadPollyfills = function() {
 	require('./pollyfills/NodeList.forEach'); // eslint-disable-line global-require
 	require('./pollyfills/Object.assign'); // eslint-disable-line global-require
 	require('./pollyfills/Element.matches'); // eslint-disable-line global-require
+	require('./pollyfills/Element.remove'); // eslint-disable-line global-require
 };
 
 module.exports = VirtualDataGrid;

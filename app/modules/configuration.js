@@ -1,7 +1,8 @@
 'use strict';
 
-var configUtil = require('../utils/configuration'),
-	dataUtil   = require('../utils/data');
+var configUtil     = require('../utils/configuration'),
+	dataUtil       = require('../utils/data'),
+	tooltipDefault = require('../defaults/tooltip');
 
 var DEFAULTS = {
 	selectors: {
@@ -54,6 +55,17 @@ var DEFAULTS = {
 	autoResize: true,
 	debug: false,
 	uniqueId: 0,
+	modules: {
+		tooltip: {
+			enabled: true,
+			show: configUtil.wrapper(tooltipDefault.show),
+			hide: configUtil.wrapper(tooltipDefault.hide),
+			hideAll: configUtil.wrapper(tooltipDefault.hideAll),
+			showInfo: configUtil.wrapper(tooltipDefault.showInfo),
+			showWarn: configUtil.wrapper(tooltipDefault.showWarn),
+			showError: configUtil.wrapper(tooltipDefault.showError)
+		}
+	},
 	inner: {}
 };
 
@@ -83,7 +95,8 @@ var STATIC_INNER_ATTRS = {
 		filterSearchIcon: 'filter-search-icon',
 		filterClearIcon: 'filter-clear-icon',
 		dataRow: 'data-row',
-		dataCell: 'data-cell'
+		dataCell: 'data-cell',
+		cellDataContainer: 'cell-data-container'
 	},
 	dimensions: {},
 	icons: {
@@ -150,6 +163,15 @@ function init(config, options, initContainers) {
 	updateValue(config, options, 'eventHandlers.onSaveBatch');
 	updateValue(config, options, 'eventHandlers.onAfterSave');
 
+	// Tooltip module
+	updateValue(config, options, 'modules.tooltip.enabled');
+	updateValue(config, options, 'modules.tooltip.show');
+	updateValue(config, options, 'modules.tooltip.hide');
+	updateValue(config, options, 'modules.tooltip.hideAll');
+	updateValue(config, options, 'modules.tooltip.showInfo');
+	updateValue(config, options, 'modules.tooltip.showWarn');
+	updateValue(config, options, 'modules.tooltip.showError');
+
 	initHeaderData(config);
 	initDataSource(config, options.uniqueRowKey);
 	initInnerCalculatedValues(config);
@@ -185,6 +207,8 @@ function initInnerCalculatedValues(config) {
 	config.inner.tableOffsetWidth = configUtil.getTableOffsetWidth(config);
 	config.inner.tableOffsetHeight = configUtil.getTableOffsetHeight(config);
 	config.inner.originalDataSource = [].concat(config.dataSource);
+	config.inner.dimensions.scrollLineHeight = configUtil.getScrollLineHeight();
+	config.inner.dimensions.scrollPageHeight = configUtil.getScrollPageHeight();
 }
 
 function initHeaderData(config) {

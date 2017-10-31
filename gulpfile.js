@@ -18,7 +18,8 @@ var gulp       = require('gulp'),
 
 const APP_NAME = pconfig.name;
 
-var SRV_ENV, TARGET_FOLDER;
+var SRV_ENV = 'development',
+	TARGET_FOLDER = './example/assets/';
 
 var CSS_FILENAME = APP_NAME + '.min.css',
 	JS_FILENAME = APP_NAME + '.min.js';
@@ -55,6 +56,11 @@ gulp.task('example-fonts', () => {
 		.pipe(gulp.dest(TARGET_FOLDER));
 });
 
+gulp.task('example-fonts-vendor', () => {
+	return gulp.src('./app/example/vendor/fonts/**/*')
+		.pipe(gulp.dest(TARGET_FOLDER));
+});
+
 gulp.task('example-css', () => {
 	return gulp.src('./app/example/style/main.styl')
 		.pipe(sourcemaps.init())
@@ -66,7 +72,7 @@ gulp.task('example-css', () => {
 });
 
 gulp.task('example-css-vendor', () => {
-	return gulp.src('./app/example/style/font-awesome.css')
+	return gulp.src('./app/example/vendor/css/*.css')
 		.pipe(sourcemaps.init())
 		.pipe(concatCss('example-vendor.min.css'))
 		.pipe(cleanCss())
@@ -90,6 +96,15 @@ gulp.task('example-js', () => {
 		.pipe(uglify())
 		.pipe(sourcemaps.write())
 		.pipe(rename('example.min.js'))
+		.pipe(gulp.dest(TARGET_FOLDER));
+});
+
+gulp.task('example-js-vendor', () => {
+	return gulp.src('./app/example/vendor/js/*.js')
+		.pipe(sourcemaps.init())
+		.pipe(uglify())
+		.pipe(sourcemaps.write())
+		.pipe(rename('example-vendor.min.js'))
 		.pipe(gulp.dest(TARGET_FOLDER));
 });
 
@@ -121,7 +136,7 @@ gulp.task('reload-resources', (done) => {
 	done();
 });
 
-gulp.task('js', gulp.parallel('example-js', 'project-js'));
+gulp.task('js', gulp.parallel('example-js', 'example-js-vendor', 'project-js'));
 gulp.task('css', gulp.parallel('example-css', 'example-css-vendor', 'project-css'));
 
 gulp.task('watch', (done) => {
@@ -133,7 +148,7 @@ gulp.task('watch', (done) => {
 });
 
 gulp.task('compile-project', gulp.parallel('project-css', 'project-js'));
-gulp.task('compile-example', gulp.parallel('example-static', 'example-fonts', 'example-css', 'example-css-vendor', 'example-js'));
+gulp.task('compile-example', gulp.parallel('example-static', 'example-fonts', 'example-fonts-vendor', 'example-css', 'example-css-vendor', 'example-js', 'example-js-vendor'));
 
 gulp.task('compile-development', gulp.series('set-dev-enviroment', 'clean', gulp.parallel('compile-example', 'compile-project')));
 gulp.task('compile-production', gulp.series('set-prod-enviroment', 'compile-project'));
