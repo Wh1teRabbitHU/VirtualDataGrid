@@ -59,6 +59,7 @@ function setupOptionContainer() {
 	var generatorContainerHeight = window.innerHeight - document.querySelector('.main-container').getBoundingClientRect().top - 20;
 
 	document.querySelector('.generator-container').style.maxHeight = generatorContainerHeight + 'px';
+	document.querySelector('.generator-container').style.height = generatorContainerHeight + 'px';
 }
 
 function setupOptions() {

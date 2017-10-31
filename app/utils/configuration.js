@@ -34,6 +34,35 @@ function getMaxColspan(config) {
 	return maxVal;
 }
 
+// Firefox using MouseEvent.DOM_DELTA_LINE || MouseEvent.DOM_DELTA_PAGE instead of exact pixels, when measuring scroll delta values.
+// This function will give the exact line height for the pixel conversion
+function getScrollLineHeight() {
+	var iframe = document.createElement('iframe');
+
+	iframe.src = '#';
+	document.body.appendChild(iframe);
+
+	var iwin = iframe.contentWindow,
+		idoc = iwin.document;
+
+	idoc.open();
+	idoc.write('<!DOCTYPE html><html><head></head><body><span>a</span></body></html>');
+	idoc.close();
+
+	var span = idoc.body.firstElementChild,
+		r = span.offsetHeight;
+
+	document.body.removeChild(iframe);
+
+	return r;
+}
+
+// Firefox using MouseEvent.DOM_DELTA_LINE || MouseEvent.DOM_DELTA_PAGE instead of exact pixels, when measuring scroll delta values.
+// This function will give the exact page height for the pixel conversion
+function getScrollPageHeight() {
+	return window.document.body.clientHeight;
+}
+
 function getVisibleRowNumber(config) {
 	var hasFilter = config.filter.enabled,
 		containerHeight = config.dimensions.containerHeight - config.inner.minBufferHeight * 2,
@@ -94,6 +123,8 @@ module.exports = {
 	getIndexOfCellKeyHeader: getIndexOfCellKeyHeader,
 	getSortDefault: getSortDefault,
 	getMaxColspan: getMaxColspan,
+	getScrollLineHeight: getScrollLineHeight,
+	getScrollPageHeight: getScrollPageHeight,
 	getVisibleRowNumber: getVisibleRowNumber,
 	getVisibleColumnNumber: getVisibleColumnNumber,
 	getTableOffsetWidth: getTableOffsetWidth,

@@ -207,6 +207,8 @@ function initInnerCalculatedValues(config) {
 	config.inner.tableOffsetWidth = configUtil.getTableOffsetWidth(config);
 	config.inner.tableOffsetHeight = configUtil.getTableOffsetHeight(config);
 	config.inner.originalDataSource = [].concat(config.dataSource);
+	config.inner.dimensions.scrollLineHeight = configUtil.getScrollLineHeight();
+	config.inner.dimensions.scrollPageHeight = configUtil.getScrollPageHeight();
 }
 
 function initHeaderData(config) {

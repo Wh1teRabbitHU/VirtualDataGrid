@@ -13,6 +13,7 @@ var container;
 
 var instances = {
 	onScrollEventHandler: function() {},
+	onWheelEventHandler: function() {},
 	onInputBlurEventHandler: function() {},
 	onClickCellEventHandler: function() {},
 	onClickSaveButtonEventHandler: function() {},
@@ -23,11 +24,19 @@ var instances = {
 	onMouseLeaveCellWithTitle: function() {},
 };
 
-function onWheelEventHandler(event) {
+function onWheelEventHandler(event, config) {
 	event.preventDefault();
 
-	container.scrollTop += event.deltaY;
-	container.scrollLeft += event.deltaX;
+	if (event.deltaMode === WheelEvent.DOM_DELTA_PIXEL) {
+		container.scrollTop += event.deltaY;
+		container.scrollLeft += event.deltaX;
+	} else if (event.deltaMode === WheelEvent.DOM_DELTA_LINE) {
+		container.scrollTop += event.deltaY * config.inner.dimensions.scrollLineHeight;
+		container.scrollLeft += event.deltaX * config.inner.dimensions.scrollLineHeight;
+	} else if (event.deltaMode === WheelEvent.DOM_DELTA_PAGE) {
+		container.scrollTop += event.deltaY * config.inner.dimensions.scrollPageHeight;
+		container.scrollLeft += event.deltaX * config.inner.dimensions.scrollPageHeight;
+	}
 }
 
 function onScrollEventHandler(event, config) {
@@ -149,6 +158,7 @@ function addEvents(config) {
 	container = document.querySelector('.' + config.selectors.virtualContainer);
 
 	instances.onScrollEventHandler = function(event) { onScrollEventHandler(event, config); };
+	instances.onWheelEventHandler = function(event) { onWheelEventHandler(event, config); };
 	instances.onClickCellEventHandler = function(event) { onClickCellEventHandler(event, config); };
 	instances.onClickSaveButtonEventHandler = function(event) { onClickSaveButtonEventHandler(event, config); };
 	instances.onClickSortHeader = function(event) { onClickSortHeader(event, config); };
@@ -158,7 +168,7 @@ function addEvents(config) {
 	instances.onMouseLeaveCellWithTitle = function(event) { onMouseLeaveCellWithTitle(event, config); };
 
 	if (container !== null) {
-		container.addEventListener('wheel', onWheelEventHandler, { passive: false, capture: true });
+		container.addEventListener('wheel', instances.onWheelEventHandler, { passive: false, capture: true });
 		container.addEventListener('scroll', instances.onScrollEventHandler);
 	}
 
@@ -200,7 +210,7 @@ function removeEvents(config) {
 	container = document.querySelector('.' + config.selectors.virtualContainer);
 
 	if (container !== null) {
-		container.removeEventListener('wheel', onWheelEventHandler);
+		container.removeEventListener('wheel', instances.onWheelEventHandler);
 		container.removeEventListener('scroll', instances.onScrollEventHandler);
 	}
 
