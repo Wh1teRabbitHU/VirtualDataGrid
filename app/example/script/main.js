@@ -74,7 +74,7 @@ function setupOptions() {
 			var inputType = input.getAttribute('type');
 
 			if (inputType !== 'radio' && inputType !== 'checkbox') {
-				input.value = null;
+				input.value = '';
 			}
 		});
 	}

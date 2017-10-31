@@ -308,7 +308,7 @@ function generateDataContainer(config, parentElement) {
 	dataContainer.style.maxHeight = maxHeight + 'px';
 	dataContainer.style.padding = config.dimensions.cellPaddingVertical + 'px ' + config.dimensions.cellPaddingHorizontal + 'px';
 
-	parentElement.append(dataContainer);
+	parentElement.appendChild(dataContainer);
 }
 
 module.exports = {

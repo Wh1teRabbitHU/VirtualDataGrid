@@ -10,7 +10,7 @@ function updateCellData(config, cellElement, data) {
 	dataContainer.innerHTML = '';
 
 	if (data.nodeType) { // If its an Element object
-		dataContainer.append(data);
+		dataContainer.appendChild(data);
 		cellElement.title = data.textContent;
 	} else { // else just add to the containers innerHTML
 		dataContainer.innerHTML += data;
