@@ -304,7 +304,7 @@ function generateDataContainer(config, parentElement) {
 		maxHeight = config.dimensions.cellHeight - config.dimensions.cellBorderWidth - config.dimensions.cellPaddingVertical * 2;
 
 	dataContainer.classList.add(config.inner.selectors.cellDataContainer);
-	dataContainer.style.width = config.dimensions.cellWidth + 'px';
+	dataContainer.style.minWidth = config.dimensions.cellWidth + 'px';
 	dataContainer.style.maxHeight = maxHeight + 'px';
 	dataContainer.style.padding = config.dimensions.cellPaddingVertical + 'px ' + config.dimensions.cellPaddingHorizontal + 'px';
 
