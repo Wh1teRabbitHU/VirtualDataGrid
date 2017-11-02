@@ -1,6 +1,12 @@
 'use strict';
 
-var tlite = window.tlite;
+function invokeFn(name, param1, param2) {
+	if (typeof window.tlite == 'undefined') {
+		return;
+	}
+
+	window.tlite[name](param1, param2);
+}
 
 function show(options) {
 	switch (options.type) {
@@ -20,7 +26,7 @@ function show(options) {
 }
 
 function hide(element) {
-	tlite.hide(element);
+	invokeFn('hide', element);
 }
 
 function hideAll() {
@@ -36,15 +42,15 @@ function showInfo(options) {
 		orientation = 'n';
 	}
 
-	tlite.show(options.element, { grav: orientation });
+	invokeFn('show', options.element, { grav: orientation });
 }
 
 function showWarn(options) {
-	tlite.show(options.element);
+	invokeFn('show', options.element);
 }
 
 function showError(config, options) {
-	tlite.show(options.element);
+	invokeFn('show', options.element);
 }
 
 module.exports = {

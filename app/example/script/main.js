@@ -2,17 +2,22 @@
 
 var virtualDG;
 
+var colspans = [ 1, 2, 4, 8, 16 ];
+
 function generateHeaders(headerSize, headersRowSize) {
 	var headers = [];
 
 	for (var i = 0; i < headersRowSize; i++) {
 		headers.push([]);
 
-		for (var j = 1; j <= headerSize; j++) {
+		var colspanNumber = colspans[headersRowSize - i - 1];
+
+		for (var j = 1; j <= headerSize / colspanNumber; j++) {
 			headers[i].push({
 				key: 'column_' + j,
 				text: j + '. column',
-				dataType: 'text'
+				dataType: 'text',
+				colspan: colspanNumber
 			});
 		}
 	}

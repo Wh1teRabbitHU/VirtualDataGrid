@@ -7,13 +7,15 @@ var tableUtil  = require('../utils/table'),
 function updateCellData(config, cellElement, data) {
 	var dataContainer = cellElement.querySelector('.' + config.inner.selectors.cellDataContainer);
 
-	dataContainer.innerHTML = '';
-
-	if (data.nodeType) { // If its an Element object
+	if (typeof data == 'undefined' || data === null) {
+		dataContainer.innerHTML = '';
+		cellElement.title = '';
+	} else if (data.nodeType) { // If its an Element object
+		dataContainer.innerHTML = '';
 		dataContainer.appendChild(data);
 		cellElement.title = data.textContent;
 	} else { // else just add to the containers innerHTML
-		dataContainer.innerHTML += data;
+		dataContainer.innerHTML = data;
 		cellElement.title = dataContainer.textContent;
 	}
 }
