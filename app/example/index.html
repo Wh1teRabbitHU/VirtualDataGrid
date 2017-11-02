@@ -199,6 +199,54 @@
 						<input class="input" type="text" name="locale-name">
 					</div>
 
+					<h3 class="group-header">Tooltip module</h3>
+
+					<div class="form-group">
+						<label class="label">Enabled</label>
+						<div class="radio-options">
+							<input class="radio-input" type="radio" name="modules-tooltip-enabled" value="true" id="modules-tooltip-enabled-true">
+							<label class="radio-label" for="modules-tooltip-enabled-true">True</label>
+							<input class="radio-input" type="radio" name="modules-tooltip-enabled" value="false" id="modules-tooltip-enabled-false">
+							<label class="radio-label" for="modules-tooltip-enabled-false">False</label>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="label">Show</label>
+						<div class="function-container" data-before="function (options) {" data-after="}">
+							<textarea class="input function" name="modules-tooltip-show" data-attributes="options"></textarea>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="label">Hide</label>
+						<div class="function-container" data-before="function (element) {" data-after="}">
+							<textarea class="input function" name="modules-tooltip-hide" data-attributes="element"></textarea>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="label">Hide all</label>
+						<div class="function-container" data-before="function () {" data-after="}">
+							<textarea class="input function" name="modules-tooltip-hideAll"></textarea>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="label">Show info</label>
+						<div class="function-container" data-before="function (options) {" data-after="}">
+							<textarea class="input function" name="modules-tooltip-showInfo" data-attributes="options"></textarea>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="label">Show warn</label>
+						<div class="function-container" data-before="function (options) {" data-after="}">
+							<textarea class="input function" name="modules-tooltip-showWarn" data-attributes="options"></textarea>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="label">Show error</label>
+						<div class="function-container" data-before="function (options) {" data-after="}">
+							<textarea class="input function" name="modules-tooltip-showError" data-attributes="options"></textarea>
+						</div>
+					</div>
+
 					<h3 class="group-header">Event handlers</h3>
 
 					<div class="form-group">

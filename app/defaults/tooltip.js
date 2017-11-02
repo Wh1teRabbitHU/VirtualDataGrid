@@ -49,7 +49,7 @@ function showWarn(options) {
 	invokeFn('show', options.element);
 }
 
-function showError(config, options) {
+function showError(options) {
 	invokeFn('show', options.element);
 }
 
