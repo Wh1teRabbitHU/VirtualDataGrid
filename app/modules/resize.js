@@ -1,7 +1,7 @@
 'use strict';
 
-var configUtil = require('../utils/configuration'),
-	domModule  = require('../modules/dom');
+var configUtil  = require('../utils/configuration'),
+	tableModule = require('../modules/table');
 
 var DELAY = 200;
 
@@ -86,8 +86,8 @@ function redrawTable(config) {
 	config.inner.bufferTop = document.querySelectorAll('.' + config.inner.selectors.bufferRowTop);
 	config.inner.bufferBottom = document.querySelectorAll('.' + config.inner.selectors.bufferRowBottom);
 
-	domModule.updateBuffers(config);
-	domModule.updateTable(config);
+	tableModule.updateBuffers(config);
+	tableModule.updateTable(config);
 }
 
 function resizeEventHandler(config) {

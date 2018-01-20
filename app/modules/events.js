@@ -4,7 +4,7 @@ var domUtil       = require('../utils/dom'),
 	keyboardUtil  = require('../utils/keyboard'),
 	sortModule    = require('../modules/sort'),
 	editModule    = require('../modules/edit'),
-	domModule     = require('../modules/dom'),
+	tableModule   = require('../modules/table'),
 	filterModule  = require('../modules/filter'),
 	resizeModule  = require('../modules/resize'),
 	tooltipModule = require('../modules/tooltip');
@@ -42,9 +42,9 @@ function onWheelEventHandler(event, config) {
 function onScrollEventHandler(event, config) {
 	tooltipModule.hideAll(config);
 
-	domModule.resetEditingCell(config, instances.onInputBlurEventHandler);
-	domModule.updateBuffers(config);
-	domModule.updateTable(config, false);
+	tableModule.resetEditingCell(config, instances.onInputBlurEventHandler);
+	tableModule.updateBuffers(config);
+	tableModule.updateTable(config, false);
 }
 
 function onClickCellEventHandler(event, config) {
@@ -154,7 +154,7 @@ function onMouseLeaveCellWithTitle(event, config) {
 	tooltipModule.onMouseLeaveCellWithTitle(config, event.target);
 }
 
-function addEvents(config) {
+function init(config) {
 	container = document.querySelector('.' + config.selectors.virtualContainer);
 
 	instances.onScrollEventHandler = function(event) { onScrollEventHandler(event, config); };
@@ -206,7 +206,7 @@ function addEvents(config) {
 	}
 }
 
-function removeEvents(config) {
+function remove(config) {
 	container = document.querySelector('.' + config.selectors.virtualContainer);
 
 	if (container !== null) {
@@ -249,6 +249,6 @@ function removeEvents(config) {
 }
 
 module.exports = {
-	addEvents: addEvents,
-	removeEvents: removeEvents
+	init: init,
+	remove: remove
 };

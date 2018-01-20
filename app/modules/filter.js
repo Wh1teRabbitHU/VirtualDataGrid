@@ -1,10 +1,11 @@
 'use strict';
 
-var domModule   = require('../modules/dom'),
-	sortModule  = require('../modules/sort'),
-	dataUtil    = require('../utils/data'),
-	configUtil  = require('../utils/configuration'),
-	cellElement = require('../elements/cell');
+var tableModule   = require('../modules/table'),
+	sortModule    = require('../modules/sort'),
+	dataUtil      = require('../utils/data'),
+	configUtil    = require('../utils/configuration'),
+	cellElement   = require('../elements/cell'),
+	filterElement = require('../elements/filter');
 
 function startEditingFilter(config, cellNode) {
 	if (cellNode.querySelector('.' + config.inner.selectors.filterContainer) !== null) {
@@ -13,41 +14,26 @@ function startEditingFilter(config, cellNode) {
 
 	var attribute = cellNode.getAttribute('data-attribute'),
 		filterObj = config.inner.filters[attribute] || {},
-		headerObj = configUtil.getHeaderObject(config, attribute),
-		clearIconClass = config.inner.icons.filter.clear,
-		clearIconElementClass = config.inner.selectors.filterClearIcon + ' ' + clearIconClass;
+		headerObj = configUtil.getHeaderObject(config, attribute);
 
 	filterObj.attribute = attribute;
+	filterObj.dataType = headerObj.dataType;
 	filterObj.filterType = headerObj.filterType;
 	filterObj.value = filterObj.value || '';
 
 	config.inner.filters[attribute] = filterObj;
 
-	var container = document.createElement('div');
+	var filterContainer = filterElement.createContainer(config);
 
-	cellElement.updateDataContainer(config, cellNode, container);
+	cellElement.updateDataContainer(config, cellNode, filterContainer);
 
-	container.classList.add(config.inner.selectors.filterContainer);
-	container.innerHTML = '<input><i class="' + clearIconElementClass + '" aria-hidden="true"></i>';
+	var filterInput = filterElement.updateInput(config, cellNode, filterObj, headerObj, finishEditingFilter);
 
-	var input = container.querySelector('input');
-
-	input.setAttribute('type', headerObj.dataType);
-	input.value = filterObj.value;
-	input.focus();
-	input.addEventListener('keyup', function(event) {
-		if ((event.keyCode || event.which) === 13) { // Enter key
-			filterObj.value = dataUtil.getValueByType(input.value, headerObj.dataType);
-
-			finishEditingFilter(config, cellNode, headerObj, filterObj);
-		} else if ((event.keyCode || event.which) === 27) { // Escape key
-			finishEditingFilter(config, cellNode, headerObj, filterObj);
-		}
-	});
+	filterInput.focus();
 }
 
-function filter(config, sortTable) {
-	sortTable = sortTable !== false;
+function filter(config, sortAfterFiltering) {
+	sortAfterFiltering = sortAfterFiltering !== false;
 
 	config.dataSource = config.inner.originalDataSource;
 
@@ -81,13 +67,13 @@ function filter(config, sortTable) {
 		}
 	});
 
-	if (sortTable) {
+	if (sortAfterFiltering) {
 		sortModule.sort(config, false);
 	}
 
-	domModule.recalculateDimensions(config);
-	domModule.updateBuffers(config);
-	domModule.updateTable(config);
+	tableModule.recalculateDimensions(config);
+	tableModule.updateBuffers(config);
+	tableModule.updateTable(config);
 }
 
 function clearFilter(config, cellNode) {

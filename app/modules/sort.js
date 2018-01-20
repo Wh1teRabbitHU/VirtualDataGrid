@@ -1,8 +1,8 @@
 'use strict';
 
-var domModule  = require('../modules/dom'),
-	configUtil = require('../utils/configuration'),
-	dataUtil   = require('../utils/data');
+var tableModule = require('../modules/table'),
+	configUtil  = require('../utils/configuration'),
+	dataUtil    = require('../utils/data');
 
 function sortByColumn(config, column) {
 	var attribute = column.getAttribute('data-attribute'),
@@ -51,7 +51,7 @@ function sort(config, updateTable) {
 	});
 
 	if (updateTable) {
-		domModule.updateTable(config);
+		tableModule.updateTable(config);
 	}
 }
 
@@ -81,7 +81,7 @@ function resetSort(config) {
 		});
 	});
 
-	domModule.updateTable(config);
+	tableModule.updateTable(config);
 }
 
 function getSortType(config, attribute) {

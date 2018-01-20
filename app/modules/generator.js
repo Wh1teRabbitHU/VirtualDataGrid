@@ -1,30 +1,30 @@
 'use strict';
 
-var configuration      = require('../modules/configuration'),
-	eventHandlerModule = require('../modules/event-handler'),
-	domModule          = require('../modules/dom'),
-	configUtil         = require('../utils/configuration'),
-	dataUtil           = require('../utils/data'),
-	cellElement        = require('../elements/cell');
+var globalConfig = require('../configs/global'),
+	events       = require('../modules/events'),
+	tableModule  = require('../modules/table'),
+	configUtil   = require('../utils/configuration'),
+	dataUtil     = require('../utils/data'),
+	cellElement  = require('../elements/cell');
 
 function generateTable(config, options) {
-	configuration.init(config, options);
+	globalConfig.init(config, options);
 
 	initContainers(config);
 
-	configuration.initCalculatedValues(config);
+	globalConfig.initCalculatedValues(config);
 
 	initTable(config);
 
-	domModule.updateBuffers(config);
-	domModule.updateTable(config);
+	tableModule.updateBuffers(config);
+	tableModule.updateTable(config);
 
-	eventHandlerModule.addEvents(config);
+	events.init(config);
 }
 
 function destroyTable(config) {
-	eventHandlerModule.removeEvents(config);
-	domModule.destroyTable(config);
+	events.remove(config);
+	tableModule.destroyTable(config);
 }
 
 function initContainers(config) {
@@ -292,7 +292,7 @@ function initTable(config) {
 }
 
 function getDefaultOptions() {
-	return dataUtil.cloneObject(configuration.DEFAULTS);
+	return dataUtil.cloneObject(globalConfig.DEFAULTS);
 }
 
 module.exports = {

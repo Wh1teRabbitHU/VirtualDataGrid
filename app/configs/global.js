@@ -2,7 +2,7 @@
 
 var configUtil     = require('../utils/configuration'),
 	dataUtil       = require('../utils/data'),
-	tooltipDefault = require('../defaults/tooltip');
+	tooltipDefault = require('../configs/defaults/tooltip');
 
 var DEFAULTS = {
 	selectors: {

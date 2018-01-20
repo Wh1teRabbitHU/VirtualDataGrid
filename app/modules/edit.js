@@ -8,9 +8,10 @@ var BeforeEditArgs = require('../models/event-arguments/before-edit'),
 	AfterEditArgs  = require('../models/event-arguments/after-edit'),
 	AfterSaveArgs  = require('../models/event-arguments/after-save'),
 	cellElement    = require('../elements/cell'),
+	inputElement   = require('../elements/input'),
+	tableModule    = require('../modules/table'),
 	tableUtil      = require('../utils/table'),
 	domUtil        = require('../utils/dom'),
-	domModule      = require('../modules/dom'),
 	filterModule   = require('../modules/filter');
 
 function startEditingCell(config, cellNode, instances, eventHandlers) {
@@ -25,8 +26,7 @@ function startEditingCell(config, cellNode, instances, eventHandlers) {
 		return;
 	}
 
-	var cellData = tableUtil.getCellData(config, rowNumber, columnNumber),
-		inputElement = document.createElement('input');
+	var cellData = tableUtil.getCellData(config, rowNumber, columnNumber);
 
 	var beforeEditArgs = new BeforeEditArgs({
 		cellNode: cellNode,
@@ -40,27 +40,23 @@ function startEditingCell(config, cellNode, instances, eventHandlers) {
 		cellNode.classList.add(config.selectors.editingCell);
 		cellNode.classList.remove(config.selectors.editedCell);
 
-		cellElement.updateDataContainer(config, cellNode, inputElement);
-
 		instances.onInputBlurEventHandler = function(ev) { eventHandlers.onInputBlurEventHandler(ev, config); };
 		instances.onInputKeyUpEventHandler = function(ev) { eventHandlers.onInputKeyUpEventHandler(ev, config); };
 
-		inputElement.focus();
-		inputElement.value = cellData.getValue();
-		inputElement.style.minWidth = '10px'; // TODO: Kiszervezni osztályba
-		inputElement.style.width = '80%'; // TODO: Kiszervezni osztályba
-		inputElement.setAttribute('type', cellData.dataType);
-		inputElement.addEventListener('blur', instances.onInputBlurEventHandler);
-		inputElement.addEventListener('keyup', instances.onInputKeyUpEventHandler);
+		var inputNode = inputElement.createInputNode(cellData, instances);
+
+		cellElement.updateDataContainer(config, cellNode, inputNode);
+
+		inputNode.focus();
 	}
 }
 
-function finishEditingCell(config, inputElement, eventHandlers) {
-	var cellNode = inputElement.parentNode.parentNode,
+function finishEditingCell(config, inputNode, eventHandlers) {
+	var cellNode = inputNode.parentNode.parentNode,
 		rowNumber = domUtil.getRowNumber(config, cellNode),
 		columnNumber = domUtil.getColumnNumber(config, cellNode),
 		cellData = tableUtil.getCellData(config, rowNumber, columnNumber),
-		updatedValue = inputElement.value;
+		updatedValue = inputNode.value;
 
 	cellData.updateAttributes({ class: config.selectors.editedCell });
 	cellData.updateValue(updatedValue);
@@ -94,7 +90,7 @@ function finishEditingCell(config, inputElement, eventHandlers) {
 	}
 }
 
-function cancelEditingCell(config) {
+function cancelEditingCell() {
 	return '';
 }
 
@@ -154,7 +150,7 @@ function saveCells(config) {
 		savedRows: config.inner.editedValues
 	});
 
-	domModule.resetEditedCells(config);
+	tableModule.resetEditedCells(config);
 
 	config.eventHandlers.onAfterSave(afterSaveArgs);
 }
