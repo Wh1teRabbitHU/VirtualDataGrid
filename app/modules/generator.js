@@ -1,14 +1,18 @@
 'use strict';
 
-var configuration      = require('./configuration'),
-	configUtil         = require('../utils/configuration'),
+var configuration      = require('../modules/configuration'),
 	eventHandlerModule = require('../modules/event-handler'),
-	domUtil            = require('../utils/dom'),
+	domModule          = require('../modules/dom'),
+	configUtil         = require('../utils/configuration'),
 	dataUtil           = require('../utils/data'),
-	domModule          = require('../modules/dom');
+	cellElement        = require('../elements/cell');
 
 function generateTable(config, options) {
-	configuration.init(config, options, initContainers);
+	configuration.init(config, options);
+
+	initContainers(config);
+
+	configuration.initCalculatedValues(config);
 
 	initTable(config);
 
@@ -99,9 +103,7 @@ function initTable(config) {
 			tdElement = document.createElement('td');
 			tdElement.classList.add(config.inner.selectors.headerCell);
 
-			generateDataContainer(config, tdElement);
-
-			domModule.updateCellData(config, tdElement, domUtil.getHeaderCellHtml(config, tdElement, headerRow[j], isLastRow));
+			cellElement.createDataContainer(config, tdElement, cellElement.createHeaderData(config, tdElement, headerRow[j], isLastRow));
 
 			if (isLastRow) {
 				tdElement.classList.add(config.inner.selectors.sortCell);
@@ -139,9 +141,7 @@ function initTable(config) {
 			tdElement = document.createElement('td');
 			tdElement.classList.add(config.inner.selectors.filterCell);
 
-			generateDataContainer(config, tdElement);
-
-			domModule.updateCellData(config, tdElement, domUtil.getFilterCellHtml(config, tdElement, cellObj, {}));
+			cellElement.createDataContainer(config, tdElement, cellElement.createFilterData(config, tdElement, cellObj, {}));
 
 			if (cellObj.filterDisabled) {
 				tdElement.classList.add(config.inner.selectors.filterDisabled);
@@ -173,7 +173,7 @@ function initTable(config) {
 			tdElement = document.createElement('td');
 			tdElement.classList.add(config.inner.selectors.dataCell);
 
-			generateDataContainer(config, tdElement);
+			cellElement.createDataContainer(config, tdElement);
 
 			trBody.appendChild(tdElement);
 		}
@@ -223,9 +223,7 @@ function initTable(config) {
 			tdElement = document.createElement('td');
 			tdElement.classList.add(config.inner.selectors.headerCell);
 
-			generateDataContainer(config, tdElement);
-
-			domModule.updateCellData(config, tdElement, domUtil.getHeaderCellHtml(config, tdElement, config.fixedHeaders[i][j], isLastRow));
+			cellElement.createDataContainer(config, tdElement, cellElement.createHeaderData(config, tdElement, config.fixedHeaders[i][j], isLastRow));
 
 			if (isLastRow) {
 				tdElement.classList.add(config.inner.selectors.sortCell);
@@ -258,9 +256,7 @@ function initTable(config) {
 			tdElement.classList.add(config.inner.selectors.filterCell);
 			tdElement.style.minWidth = config.dimensions.cellWidth + 'px';
 
-			generateDataContainer(config, tdElement);
-
-			domModule.updateCellData(config, tdElement, domUtil.getFilterCellHtml(config, tdElement, cellObj, {}));
+			cellElement.createDataContainer(config, tdElement, cellElement.createFilterData(config, tdElement, cellObj, {}));
 
 			if (cellObj.filterDisabled) {
 				tdElement.classList.add(config.inner.selectors.filterDisabled);
@@ -283,7 +279,7 @@ function initTable(config) {
 			tdElement = document.createElement('td');
 			tdElement.classList.add(config.inner.selectors.dataCell);
 
-			generateDataContainer(config, tdElement);
+			cellElement.createDataContainer(config, tdElement);
 
 			trBody.appendChild(tdElement);
 		}
@@ -297,18 +293,6 @@ function initTable(config) {
 
 function getDefaultOptions() {
 	return dataUtil.cloneObject(configuration.DEFAULTS);
-}
-
-function generateDataContainer(config, parentElement) {
-	var dataContainer = document.createElement('div'),
-		maxHeight = config.dimensions.cellHeight - config.dimensions.cellBorderWidth - config.dimensions.cellPaddingVertical * 2;
-
-	dataContainer.classList.add(config.inner.selectors.cellDataContainer);
-	dataContainer.style.minWidth = config.dimensions.cellWidth + 'px';
-	dataContainer.style.maxHeight = maxHeight + 'px';
-	dataContainer.style.padding = config.dimensions.cellPaddingVertical + 'px ' + config.dimensions.cellPaddingHorizontal + 'px';
-
-	parentElement.appendChild(dataContainer);
 }
 
 module.exports = {

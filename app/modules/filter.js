@@ -1,17 +1,17 @@
 'use strict';
 
-var domUtil    = require('../utils/dom'),
-	domModule  = require('../modules/dom'),
-	sortModule = require('../modules/sort'),
-	dataUtil   = require('../utils/data'),
-	configUtil = require('../utils/configuration');
+var domModule   = require('../modules/dom'),
+	sortModule  = require('../modules/sort'),
+	dataUtil    = require('../utils/data'),
+	configUtil  = require('../utils/configuration'),
+	cellElement = require('../elements/cell');
 
-function startEditingFilter(config, cell) {
-	if (cell.querySelector('.' + config.inner.selectors.filterContainer) !== null) {
+function startEditingFilter(config, cellNode) {
+	if (cellNode.querySelector('.' + config.inner.selectors.filterContainer) !== null) {
 		return;
 	}
 
-	var attribute = cell.getAttribute('data-attribute'),
+	var attribute = cellNode.getAttribute('data-attribute'),
 		filterObj = config.inner.filters[attribute] || {},
 		headerObj = configUtil.getHeaderObject(config, attribute),
 		clearIconClass = config.inner.icons.filter.clear,
@@ -25,7 +25,7 @@ function startEditingFilter(config, cell) {
 
 	var container = document.createElement('div');
 
-	domModule.updateCellData(config, cell, container);
+	cellElement.updateDataContainer(config, cellNode, container);
 
 	container.classList.add(config.inner.selectors.filterContainer);
 	container.innerHTML = '<input><i class="' + clearIconElementClass + '" aria-hidden="true"></i>';
@@ -39,9 +39,9 @@ function startEditingFilter(config, cell) {
 		if ((event.keyCode || event.which) === 13) { // Enter key
 			filterObj.value = dataUtil.getValueByType(input.value, headerObj.dataType);
 
-			finishEditingFilter(config, cell, headerObj, filterObj);
+			finishEditingFilter(config, cellNode, headerObj, filterObj);
 		} else if ((event.keyCode || event.which) === 27) { // Escape key
-			finishEditingFilter(config, cell, headerObj, filterObj);
+			finishEditingFilter(config, cellNode, headerObj, filterObj);
 		}
 	});
 }
@@ -90,8 +90,8 @@ function filter(config, sortTable) {
 	domModule.updateTable(config);
 }
 
-function clearFilter(config, cell) {
-	var attribute = cell.getAttribute('data-attribute'),
+function clearFilter(config, cellNode) {
+	var attribute = cellNode.getAttribute('data-attribute'),
 		cellObj = configUtil.getHeaderObject(config, attribute),
 		filterObj = config.inner.filters[attribute];
 
@@ -107,11 +107,11 @@ function clearFilter(config, cell) {
 
 	config.inner.filters = newFilters;
 
-	finishEditingFilter(config, cell, cellObj, filterObj);
+	finishEditingFilter(config, cellNode, cellObj, filterObj);
 }
 
-function finishEditingFilter(config, cell, cellObj, filterObj) {
-	domModule.updateCellData(config, cell, domUtil.getFilterCellHtml(config, cell, cellObj, filterObj));
+function finishEditingFilter(config, cellNode, cellObj, filterObj) {
+	cellElement.updateDataContainer(config, cellNode, cellElement.createFilterData(config, cellNode, cellObj, filterObj));
 
 	filter(config);
 }

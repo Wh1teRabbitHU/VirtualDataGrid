@@ -118,7 +118,7 @@ var STATIC_INNER_ATTRS = {
 	topCellOffset: 0
 };
 
-function init(config, options, initContainers) {
+function init(config, options) {
 	initConfigObject(config);
 
 	updateValue(config, options, 'selectors.mainContainer');
@@ -138,8 +138,6 @@ function init(config, options, initContainers) {
 
 	calculateUniqueIdSelector(config);
 	calculateVirtualContainerHeight(config, options);
-
-	initContainers(config);
 
 	updateValue(config, options, 'locale.name');
 	updateValue(config, options, 'dataSource');
@@ -174,7 +172,6 @@ function init(config, options, initContainers) {
 
 	initHeaderData(config);
 	initDataSource(config, options.uniqueRowKey);
-	initInnerCalculatedValues(config);
 }
 
 function initConfigObject(config) {
@@ -198,7 +195,7 @@ function calculateVirtualContainerHeight(config, options) {
 	config.dimensions.containerHeight = configUtil.calculateVirtualContainerHeight(config, containerHeight);
 }
 
-function initInnerCalculatedValues(config) {
+function initCalculatedValues(config) {
 	// Annak a header sornak az indexe, ami a cella kulcsokat is meghatározza. Mivel ez mindig az utolsó lesz, ezért TODO: Kiszedni/átalakítani
 	config.inner.indexOfCellKeyHeader = configUtil.getIndexOfCellKeyHeader(config);
 	config.inner.colspanOffset = configUtil.getMaxColspan(config);
@@ -337,5 +334,6 @@ function getInnerValue(object, key) {
 
 module.exports = {
 	init: init,
+	initCalculatedValues: initCalculatedValues,
 	DEFAULTS: DEFAULTS
 };

@@ -7,18 +7,19 @@ var BeforeEditArgs = require('../models/event-arguments/before-edit'),
 	SaveBatchArgs  = require('../models/event-arguments/save-batch'),
 	AfterEditArgs  = require('../models/event-arguments/after-edit'),
 	AfterSaveArgs  = require('../models/event-arguments/after-save'),
+	cellElement    = require('../elements/cell'),
 	tableUtil      = require('../utils/table'),
 	domUtil        = require('../utils/dom'),
 	domModule      = require('../modules/dom'),
 	filterModule   = require('../modules/filter');
 
-function startEditingCell(config, cellElement, instances, eventHandlers) {
+function startEditingCell(config, cellNode, instances, eventHandlers) {
 	if (!config.edit.enabled) {
 		return;
 	}
 
-	var rowNumber = domUtil.getRowNumber(config, cellElement),
-		columnNumber = domUtil.getColumnNumber(config, cellElement);
+	var rowNumber = domUtil.getRowNumber(config, cellNode),
+		columnNumber = domUtil.getColumnNumber(config, cellNode);
 
 	if (rowNumber >= config.dataSource.length) {
 		return;
@@ -28,7 +29,7 @@ function startEditingCell(config, cellElement, instances, eventHandlers) {
 		inputElement = document.createElement('input');
 
 	var beforeEditArgs = new BeforeEditArgs({
-		cellElement: cellElement,
+		cellNode: cellNode,
 		cellData: cellData,
 		cancelEvent: false
 	});
@@ -36,10 +37,10 @@ function startEditingCell(config, cellElement, instances, eventHandlers) {
 	config.eventHandlers.onBeforeEdit(beforeEditArgs);
 
 	if (!beforeEditArgs.cancelEvent) {
-		cellElement.classList.add(config.selectors.editingCell);
-		cellElement.classList.remove(config.selectors.editedCell);
+		cellNode.classList.add(config.selectors.editingCell);
+		cellNode.classList.remove(config.selectors.editedCell);
 
-		domModule.updateCellData(config, cellElement, inputElement);
+		cellElement.updateDataContainer(config, cellNode, inputElement);
 
 		instances.onInputBlurEventHandler = function(ev) { eventHandlers.onInputBlurEventHandler(ev, config); };
 		instances.onInputKeyUpEventHandler = function(ev) { eventHandlers.onInputKeyUpEventHandler(ev, config); };
@@ -55,9 +56,9 @@ function startEditingCell(config, cellElement, instances, eventHandlers) {
 }
 
 function finishEditingCell(config, inputElement, eventHandlers) {
-	var cellElement = inputElement.parentNode.parentNode,
-		rowNumber = domUtil.getRowNumber(config, cellElement),
-		columnNumber = domUtil.getColumnNumber(config, cellElement),
+	var cellNode = inputElement.parentNode.parentNode,
+		rowNumber = domUtil.getRowNumber(config, cellNode),
+		columnNumber = domUtil.getColumnNumber(config, cellNode),
 		cellData = tableUtil.getCellData(config, rowNumber, columnNumber),
 		updatedValue = inputElement.value;
 
@@ -71,7 +72,7 @@ function finishEditingCell(config, inputElement, eventHandlers) {
 	}
 
 	var validationArgs = new ValidationArgs({
-		cellElement: cellElement,
+		cellNode: cellNode,
 		cellData: cellData,
 		cancelEvent: false
 	});
@@ -80,10 +81,10 @@ function finishEditingCell(config, inputElement, eventHandlers) {
 
 	if (validationArgs.cancelEdit !== true) {
 		tableUtil.storeUpdatedCellValue(config, cellData);
-		domModule.updateCell(config, cellElement, cellData);
+		cellElement.updateCell(config, cellNode, cellData);
 
 		var afterEditArgs = new AfterEditArgs({
-			cellElement: cellElement,
+			cellNode: cellNode,
 			cellData: cellData
 		});
 

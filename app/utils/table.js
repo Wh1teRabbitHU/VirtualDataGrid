@@ -1,6 +1,6 @@
 'use strict';
 
-var Cell       = require('../models/table/cell'),
+var Cell       = require('../models/data/cell'),
 	configUtil = require('../utils/configuration');
 
 function getCellData(config, rowNumber, columnNumber) {

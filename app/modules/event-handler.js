@@ -127,15 +127,15 @@ function onClickFilterHeader(event, config) {
 		return;
 	}
 
-	var cell = domUtil.findParentNode(event.target, filterCellSelector);
+	var cellNode = domUtil.findParentNode(event.target, filterCellSelector);
 
 	if (event.target.matches(filterClearIconSelector)) {
-		filterModule.clearFilter(config, cell);
+		filterModule.clearFilter(config, cellNode);
 
 		return;
 	}
 
-	filterModule.startEditingFilter(config, cell);
+	filterModule.startEditingFilter(config, cellNode);
 }
 
 function onWindowResize(event, config) {

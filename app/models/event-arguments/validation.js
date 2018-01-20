@@ -3,7 +3,7 @@
 var BaseClass = require('../base');
 
 var ATTRIBUTES = [
-	'cellElement',
+	'cellNode',
 	'cellData',
 	'cancelEvent'
 ];

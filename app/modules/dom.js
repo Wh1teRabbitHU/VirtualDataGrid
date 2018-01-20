@@ -1,30 +1,8 @@
 'use strict';
 
-var tableUtil  = require('../utils/table'),
-	configUtil = require('../utils/configuration'),
-	domUtil    = require('../utils/dom');
-
-function updateCellData(config, cellElement, data) {
-	var dataContainer = cellElement.querySelector('.' + config.inner.selectors.cellDataContainer);
-
-	if (typeof data == 'undefined' || data === null) {
-		dataContainer.innerHTML = '';
-		cellElement.title = '';
-	} else if (data.nodeType) { // If its an Element object
-		dataContainer.innerHTML = '';
-		dataContainer.appendChild(data);
-		cellElement.title = data.textContent;
-	} else { // else just add to the containers innerHTML
-		dataContainer.innerHTML = data;
-		cellElement.title = dataContainer.textContent;
-	}
-}
-
-function updateCell(config, cellElement, cellData) {
-	updateCellData(config, cellElement, cellData.getValue());
-
-	cellElement.className = config.inner.selectors.dataCell + ' ' + (cellData.class || '');
-}
+var tableUtil   = require('../utils/table'),
+	configUtil  = require('../utils/configuration'),
+	cellElement = require('../elements/cell');
 
 function updateTable(config, forceUpdate) {
 	var colspan = 1;
@@ -49,7 +27,7 @@ function updateTable(config, forceUpdate) {
 				cell.style.display = 'none';
 				colspan--;
 			} else {
-				updateCellData(config, cell, domUtil.getHeaderCellHtml(config, cell, cellObj, isLastRow));
+				cellElement.updateDataContainer(config, cell, cellElement.createHeaderData(config, cell, cellObj, isLastRow));
 
 				cell.style.display = 'table-cell';
 			}
@@ -72,7 +50,7 @@ function updateTable(config, forceUpdate) {
 			var cellObj = config.fixedHeaders[rowCount][cellCount],
 				isLastRow = config.inner.indexOfCellKeyHeader === rowCount;
 
-			updateCellData(config, cell, domUtil.getHeaderCellHtml(config, cell, cellObj, isLastRow));
+			cellElement.updateDataContainer(config, cell, cellElement.createHeaderData(config, cell, cellObj, isLastRow));
 		});
 	});
 
@@ -90,7 +68,7 @@ function updateTable(config, forceUpdate) {
 			cell.setAttribute('data-attribute', cellObj.key);
 			cell.classList.toggle(config.inner.selectors.filterDisabled, cellObj.filterDisabled);
 
-			updateCellData(config, cell, domUtil.getFilterCellHtml(config, cell, cellObj, filterObj));
+			cellElement.updateDataContainer(config, cell, cellElement.createFilterData(config, cell, cellObj, filterObj));
 		});
 
 		document.querySelectorAll('.' + config.selectors.fixedTable + ' td.' + config.inner.selectors.filterCell).forEach(function(cell, cellCount) {
@@ -105,7 +83,7 @@ function updateTable(config, forceUpdate) {
 			cell.setAttribute('data-attribute', cellObj.key);
 			cell.classList.toggle(config.inner.selectors.filterDisabled, cellObj.filterDisabled);
 
-			updateCellData(config, cell, domUtil.getFilterCellHtml(config, cell, cellObj, filterObj));
+			cellElement.updateDataContainer(config, cell, cellElement.createFilterData(config, cell, cellObj, filterObj));
 		});
 	}
 
@@ -114,7 +92,7 @@ function updateTable(config, forceUpdate) {
 		row.querySelectorAll('td.' + config.inner.selectors.dataCell).forEach(function(cell, cellNumber) {
 			var cellData = tableUtil.getCellData(config, config.inner.topCellOffset + rowNumber, config.inner.leftCellOffset + cellNumber);
 
-			updateCell(config, cell, cellData);
+			cellElement.updateCell(config, cell, cellData);
 		});
 	});
 
@@ -123,7 +101,7 @@ function updateTable(config, forceUpdate) {
 		row.querySelectorAll('td.' + config.inner.selectors.dataCell).forEach(function(cell, cellNumber) {
 			var fixedCellData = tableUtil.getFixedCellData(config, config.inner.topCellOffset + rowNumber, cellNumber);
 
-			updateCell(config, cell, fixedCellData);
+			cellElement.updateCell(config, cell, fixedCellData);
 		});
 	});
 }
@@ -180,7 +158,7 @@ function resetEditingCell(config, eventHandlers) {
 		input.removeEventListener('blur', eventHandlers.onInputBlurEventHandler);
 		input.removeEventListener('keyup', eventHandlers.onInputKeyUpEventHandler);
 
-		updateCellData(config, editingCell, input.value);
+		cellElement.updateDataContainer(config, editingCell, input.value);
 
 		editingCell.classList.remove(config.selectors.editingCell);
 	});
@@ -199,8 +177,6 @@ function destroyTable(config) {
 }
 
 module.exports = {
-	updateCell: updateCell,
-	updateCellData: updateCellData,
 	updateTable: updateTable,
 	updateBuffers: updateBuffers,
 	recalculateDimensions: recalculateDimensions,
