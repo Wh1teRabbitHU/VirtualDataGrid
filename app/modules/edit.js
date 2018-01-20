@@ -10,6 +10,7 @@ var BeforeEditArgs = require('../models/event-arguments/before-edit'),
 	cellElement    = require('../elements/cell'),
 	inputElement   = require('../elements/input'),
 	tableModule    = require('../modules/table'),
+	validation     = require('../modules/validation'),
 	tableUtil      = require('../utils/table'),
 	domUtil        = require('../utils/dom'),
 	filterModule   = require('../modules/filter');
@@ -67,15 +68,23 @@ function finishEditingCell(config, inputNode, eventHandlers) {
 		return;
 	}
 
-	var validationArgs = new ValidationArgs({
-		cellNode: cellNode,
-		cellData: cellData,
-		cancelEvent: false
-	});
+	var validationEnabled = config.edit.validate;
 
-	config.eventHandlers.onValidation(validationArgs);
+	var validationResult = validation.validate(config, cellData),
+		isDataValid = validationResult.length === 0,
+		validationArgs = new ValidationArgs({
+			cellNode: cellNode,
+			cellData: cellData,
+			isDataValid: isDataValid,
+			validationResult: validationResult,
+			cancelEvent: !isDataValid
+		});
 
-	if (validationArgs.cancelEdit !== true) {
+	if (validationEnabled) {
+		config.eventHandlers.onValidation(validationArgs);
+	}
+
+	if (validationArgs.cancelEvent !== true) {
 		tableUtil.storeUpdatedCellValue(config, cellData);
 		cellElement.updateCell(config, cellNode, cellData);
 
@@ -87,6 +96,8 @@ function finishEditingCell(config, inputNode, eventHandlers) {
 		config.eventHandlers.onAfterEdit(afterEditArgs);
 
 		filterModule.filter(config);
+	} else if (validationEnabled && !isDataValid) {
+		validation.showErrors(validationResult);
 	}
 }
 

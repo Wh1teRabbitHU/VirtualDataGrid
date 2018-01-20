@@ -25,7 +25,8 @@ var DEFAULTS = {
 	},
 	edit: {
 		enabled: false,
-		mode: 'batch'
+		mode: 'batch',
+		validate: false
 	},
 	filter: {
 		enabled: false,
@@ -73,7 +74,9 @@ var HEADER_DEFAULTS = {
 	dataType: 'text',
 	filterType: 'equals',
 	filterDisabled: false,
-	sortDisabled: false
+	sortDisabled: false,
+	validatorObject: {},
+	customValidator: null
 };
 
 var STATIC_INNER_ATTRS = {
@@ -109,7 +112,7 @@ var STATIC_INNER_ATTRS = {
 			clear: 'fa fa-times'
 		}
 	},
-	editedValues: {},
+	editedValues: { },
 	sort: { },
 	filters: { },
 	minBufferWidth: 2,
@@ -147,6 +150,7 @@ function init(config, options) {
 	updateValue(config, options, 'autoResize');
 	updateValue(config, options, 'edit.enabled');
 	updateValue(config, options, 'edit.mode');
+	updateValue(config, options, 'edit.validate');
 	updateValue(config, options, 'filter.enabled');
 	updateValue(config, options, 'filter.customFilter');
 	updateValue(config, options, 'sort.enabled');
@@ -230,6 +234,14 @@ function initHeaderData(config) {
 
 			if (typeof headerCell.sortDisabled == 'undefined') {
 				headerCell.sortDisabled = HEADER_DEFAULTS.sortDisabled;
+			}
+
+			if (typeof headerCell.validatorObject == 'undefined') {
+				headerCell.validatorObject = HEADER_DEFAULTS.validatorObject;
+			}
+
+			if (typeof headerCell.customValidator == 'undefined') {
+				headerCell.customValidator = HEADER_DEFAULTS.customValidator;
 			}
 
 			hRow.push(headerCell);

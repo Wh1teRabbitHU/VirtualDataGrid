@@ -5,6 +5,8 @@ var BaseClass = require('../base');
 var ATTRIBUTES = [
 	'cellNode',
 	'cellData',
+	'isDataValid',
+	'validationResult',
 	'cancelEvent'
 ];
 

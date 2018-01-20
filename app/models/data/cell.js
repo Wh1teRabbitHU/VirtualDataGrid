@@ -10,6 +10,8 @@ function CellObject(p) {
 	initAttr('class');
 	initAttr('rowNumber');
 	initAttr('columnNumber');
+	initAttr('validatorObject');
+	initAttr('customValidator');
 
 	function initAttr(name) {
 		self[name] = typeof p == 'undefined' || typeof p[name] == 'undefined' ? null : p[name];
