@@ -62,7 +62,7 @@ function finishEditingCell(config, inputNode, eventHandlers) {
 	cellData.updateValue(updatedValue);
 
 	if (!cellData.isCellChanged()) {
-		domModule.resetEditingCell(config, eventHandlers);
+		tableModule.resetEditingCell(config, eventHandlers);
 
 		return;
 	}
