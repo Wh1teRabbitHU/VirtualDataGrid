@@ -171,6 +171,7 @@ function init(config, options) {
 
 	initHeaderData(config);
 	initDataSource(config, options.uniqueRowKey);
+	initCalculatedValues(config);
 }
 
 function initConfigObject(config) {
@@ -187,11 +188,6 @@ function calculateUniqueIdSelector(config) {
 function initCalculatedValues(config) {
 	// Annak a header sornak az indexe, ami a cella kulcsokat is meghatározza. Mivel ez mindig az utolsó lesz, ezért TODO: Kiszedni/átalakítani
 	config.inner.indexOfCellKeyHeader = configUtil.getIndexOfCellKeyHeader(config);
-	config.inner.colspanOffset = configUtil.getMaxColspan(config);
-	config.inner.visibleRowNumber = configUtil.getVisibleRowNumber(config);
-	config.inner.visibleColumnNumber = configUtil.getVisibleColumnNumber(config);
-	config.inner.tableOffsetWidth = configUtil.getTableOffsetWidth(config);
-	config.inner.tableOffsetHeight = configUtil.getTableOffsetHeight(config);
 	config.inner.originalDataSource = [].concat(config.dataSource);
 	config.inner.dimensions.scrollLineHeight = configUtil.getScrollLineHeight();
 	config.inner.dimensions.scrollPageHeight = configUtil.getScrollPageHeight();
@@ -331,6 +327,5 @@ function getInnerValue(object, key) {
 
 module.exports = {
 	init: init,
-	initCalculatedValues: initCalculatedValues,
 	DEFAULTS: DEFAULTS
 };

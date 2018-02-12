@@ -11,9 +11,6 @@ function generateTable(config, options) {
 	globalConfig.init(config, options);
 
 	initContainers(config);
-
-	globalConfig.initCalculatedValues(config);
-
 	initTable(config);
 
 	tableModule.fillTable(config);
@@ -23,6 +20,7 @@ function generateTable(config, options) {
 
 function destroyTable(config) {
 	events.remove(config);
+
 	tableModule.destroyTable(config);
 }
 
