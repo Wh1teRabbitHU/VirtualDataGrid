@@ -71,9 +71,7 @@ function filter(config, sortAfterFiltering) {
 		sortModule.sort(config, false);
 	}
 
-	tableModule.recalculateDimensions(config);
-	tableModule.updateBuffers(config);
-	tableModule.updateTable(config);
+	tableModule.fillTable(config);
 }
 
 function clearFilter(config, cellNode) {

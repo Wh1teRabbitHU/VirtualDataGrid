@@ -16,8 +16,7 @@ function generateTable(config, options) {
 
 	initTable(config);
 
-	tableModule.updateBuffers(config);
-	tableModule.updateTable(config);
+	tableModule.fillTable(config);
 
 	events.init(config);
 }
@@ -50,7 +49,10 @@ function initContainers(config) {
 	virtualContainer.style.height = config.dimensions.containerHeight + 'px';
 	virtualContainer.style.overflow = 'scroll';
 
-	fixedContainer.style.padding = config.inner.minBufferHeight + 'px 0';
+	fixedContainer.style.maxHeight = config.dimensions.containerHeight + 'px';
+	fixedContainer.style.height = config.dimensions.containerHeight + 'px';
+	fixedContainer.style.overflow = 'hidden';
+
 	fixedContainer.style.float = 'left';
 }
 
@@ -58,35 +60,12 @@ function initTable(config) {
 	// Generate virtual table
 	var virtualThead = document.createElement('thead'),
 		virtualTbody = document.createElement('tbody'),
-		trHeadBuffer = document.createElement('tr'),
 		columnsNumber = configUtil.getKeyHeader(config).length,
-		rowsNumber = config.dataSource.length,
-		maxColumnNumber = config.inner.visibleColumnNumber >= columnsNumber ? columnsNumber : config.inner.visibleColumnNumber,
-		maxRowNumber = config.inner.visibleRowNumber >= rowsNumber ? rowsNumber : config.inner.visibleRowNumber;
+		rowsNumber = config.dataSource.length;
 
-	trHeadBuffer.classList.add(config.inner.selectors.bufferRowTop);
-
-	var i, j, trHead, trBody, bufferColumnLeft, bufferColumnRight, bufferRowBottom, tdElement, cellObj;
+	var i, j, trHead, trBody, tdElement, cellObj;
 
 	// Generate virtual header
-	bufferColumnLeft = document.createElement('td');
-	bufferColumnLeft.classList.add(config.inner.selectors.bufferColumnLeft);
-
-	trHeadBuffer.appendChild(bufferColumnLeft);
-
-	for (i = 0; i < maxColumnNumber; i++) {
-		tdElement = document.createElement('td');
-		tdElement.style.minWidth = config.dimensions.cellWidth + 'px';
-		trHeadBuffer.appendChild(tdElement);
-	}
-
-	bufferColumnRight = document.createElement('td');
-	bufferColumnRight.classList.add(config.inner.selectors.bufferColumnRight);
-
-	trHeadBuffer.appendChild(bufferColumnRight);
-
-	virtualThead.appendChild(trHeadBuffer);
-
 	config.headers.forEach(function(headerRow, rowCount) {
 		var isLastRow = config.inner.indexOfCellKeyHeader === rowCount;
 
@@ -94,12 +73,7 @@ function initTable(config) {
 		trHead.classList.add(config.inner.selectors.headerRow);
 		trHead.style.height = config.dimensions.cellHeight + 'px';
 
-		tdElement = document.createElement('td');
-		tdElement.classList.add(config.inner.selectors.bufferColumnLeft);
-
-		trHead.appendChild(tdElement);
-
-		for (j = 0; j < maxColumnNumber; j++) {
+		for (j = 0; j < columnsNumber; j++) {
 			tdElement = document.createElement('td');
 			tdElement.classList.add(config.inner.selectors.headerCell);
 
@@ -116,11 +90,6 @@ function initTable(config) {
 			trHead.appendChild(tdElement);
 		}
 
-		tdElement = document.createElement('td');
-		tdElement.classList.add(config.inner.selectors.bufferColumnRight);
-
-		trHead.appendChild(tdElement);
-
 		virtualThead.appendChild(trHead);
 	});
 
@@ -130,12 +99,7 @@ function initTable(config) {
 		trHead.classList.add(config.inner.selectors.filterRow);
 		trHead.style.height = config.dimensions.cellHeight + 'px';
 
-		tdElement = document.createElement('td');
-		tdElement.classList.add(config.inner.selectors.bufferColumnLeft);
-
-		trHead.appendChild(tdElement);
-
-		for (j = 0; j < maxColumnNumber; j++) {
+		for (j = 0; j < columnsNumber; j++) {
 			cellObj = configUtil.getKeyHeader(config)[j];
 
 			tdElement = document.createElement('td');
@@ -150,26 +114,16 @@ function initTable(config) {
 			trHead.appendChild(tdElement);
 		}
 
-		tdElement = document.createElement('td');
-		tdElement.classList.add(config.inner.selectors.bufferColumnRight);
-
-		trHead.appendChild(tdElement);
-
 		virtualThead.appendChild(trHead);
 	}
 
 	// Generate virtual body
-	for (i = 0; i < maxRowNumber; i++) {
+	for (i = 0; i < rowsNumber; i++) {
 		trBody = document.createElement('tr');
 		trBody.classList.add(config.inner.selectors.dataRow);
 		trBody.style.height = config.dimensions.cellHeight + 'px';
 
-		tdElement = document.createElement('td');
-		tdElement.classList.add(config.inner.selectors.bufferColumnLeft);
-
-		trBody.appendChild(tdElement);
-
-		for (j = 0; j < maxColumnNumber; j++) {
+		for (j = 0; j < columnsNumber; j++) {
 			tdElement = document.createElement('td');
 			tdElement.classList.add(config.inner.selectors.dataCell);
 
@@ -178,26 +132,11 @@ function initTable(config) {
 			trBody.appendChild(tdElement);
 		}
 
-		tdElement = document.createElement('td');
-		tdElement.classList.add(config.inner.selectors.bufferColumnRight);
-
-		trBody.appendChild(tdElement);
-
 		virtualTbody.appendChild(trBody);
 	}
 
-	bufferRowBottom = document.createElement('tr');
-	bufferRowBottom.classList.add(config.inner.selectors.bufferRowBottom);
-
-	virtualTbody.appendChild(bufferRowBottom);
-
 	document.querySelector('.' + config.selectors.virtualTable).appendChild(virtualThead);
 	document.querySelector('.' + config.selectors.virtualTable).appendChild(virtualTbody);
-
-	config.inner.bufferLeft = document.querySelectorAll('.' + config.inner.selectors.bufferColumnLeft);
-	config.inner.bufferRight = document.querySelectorAll('.' + config.inner.selectors.bufferColumnRight);
-	config.inner.bufferTop = document.querySelectorAll('.' + config.inner.selectors.bufferRowTop);
-	config.inner.bufferBottom = document.querySelectorAll('.' + config.inner.selectors.bufferRowBottom);
 
 	// Generate fixed table
 
@@ -270,7 +209,7 @@ function initTable(config) {
 
 	// Generate fixed body
 
-	for (i = 0; i < maxRowNumber; i++) {
+	for (i = 0; i < rowsNumber; i++) {
 		trBody = document.createElement('tr');
 		trBody.classList.add(config.inner.selectors.dataRow);
 		trBody.style.height = config.dimensions.cellHeight + 'px';

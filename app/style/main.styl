@@ -9,10 +9,8 @@ $cTableRowBorder = #d3d3d3
 
 .virtual-container,
 .fixed-container
+	transform translate3d(0, 0, 0) // Force chrome to optimize the table
 	overflow-anchor none
-
-	&.no-vertical-scroll .buffer-row-bottom
-		display none
 
 	.hidden
 		display none
@@ -20,6 +18,9 @@ $cTableRowBorder = #d3d3d3
 	.virtual-table,
 	.fixed-table
 		border-spacing 0
+
+	.fixed-table
+		padding-bottom 50px
 
 	td
 		border-bottom none
@@ -70,15 +71,8 @@ $cTableRowBorder = #d3d3d3
 		color $darkGray
 		background-color $dirtyWhite
 
-	td:nth-last-child(2)
-		border-right none
-
-	tr:nth-last-child(1) > td
-		border-top none
-
-	.buffer-column-left,
-	.buffer-column-right
-		border none
+	td:first-child
+		border-left 1px solid $cTableRowBorder
 
 	.sort-cell:not(.sort-disabled)
 		cursor pointer

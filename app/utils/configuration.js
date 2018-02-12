@@ -1,15 +1,7 @@
 'use strict';
 
-function calculateVirtualContainerHeight(config, height) {
-	if (typeof height == 'undefined') {
-		return height;
-	}
-
-	return config.inner.minBufferHeight * 2 + Math.floor(height / config.dimensions.cellHeight) * config.dimensions.cellHeight;
-}
-
 function getDefaultContainerHeight(config) {
-	return calculateVirtualContainerHeight(config, window.innerHeight - document.querySelector(config.selectors.mainContainer).getBoundingClientRect().top - 64);
+	return window.innerHeight - document.querySelector(config.selectors.mainContainer).getBoundingClientRect().top - 32;
 }
 
 function getIndexOfCellKeyHeader(config) {
@@ -118,7 +110,6 @@ function wrapper(f) {
 }
 
 module.exports = {
-	calculateVirtualContainerHeight: calculateVirtualContainerHeight,
 	getDefaultContainerHeight: getDefaultContainerHeight,
 	getIndexOfCellKeyHeader: getIndexOfCellKeyHeader,
 	getSortDefault: getSortDefault,

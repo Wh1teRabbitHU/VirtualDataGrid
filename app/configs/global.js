@@ -82,10 +82,6 @@ var HEADER_DEFAULTS = {
 var STATIC_INNER_ATTRS = {
 	selectors: {
 		uniqueIdPrefix: 'virtual-data-grid-',
-		bufferRowTop: 'buffer-row-top',
-		bufferRowBottom: 'buffer-row-bottom',
-		bufferColumnLeft: 'buffer-column-left',
-		bufferColumnRight: 'buffer-column-right',
 		headerRow: 'header-row',
 		headerCell: 'header-cell',
 		sortCell: 'sort-cell',
@@ -116,7 +112,6 @@ var STATIC_INNER_ATTRS = {
 	sort: { },
 	filters: { },
 	minBufferWidth: 2,
-	minBufferHeight: 18, // Azért van rá szükség, mert ha nincs megadva, akkor ugrik egyett a scroll ha a végére vagy az elejére értünk a táblázatban
 	leftCellOffset: 0,
 	topCellOffset: 0
 };
@@ -132,6 +127,7 @@ function init(config, options) {
 	updateValue(config, options, 'selectors.editingCell');
 	updateValue(config, options, 'selectors.editedCell');
 	updateValue(config, options, 'selectors.saveButton');
+	updateValue(config, options, 'dimensions.containerHeight');
 	updateValue(config, options, 'dimensions.cellWidth');
 	updateValue(config, options, 'dimensions.cellHeight');
 	updateValue(config, options, 'dimensions.cellPaddingVertical');
@@ -140,7 +136,6 @@ function init(config, options) {
 	updateValue(config, options, 'uniqueId');
 
 	calculateUniqueIdSelector(config);
-	calculateVirtualContainerHeight(config, options);
 
 	updateValue(config, options, 'locale.name');
 	updateValue(config, options, 'dataSource');
@@ -187,16 +182,6 @@ function initConfigObject(config) {
 
 function calculateUniqueIdSelector(config) {
 	config.inner.selectors.uniqueId = config.inner.selectors.uniqueIdPrefix + config.uniqueId;
-}
-
-function calculateVirtualContainerHeight(config, options) {
-	var containerHeight = getInnerValue(options, 'dimensions.containerHeight');
-
-	if (typeof containerHeight == 'undefined') {
-		containerHeight = configUtil.getDefaultContainerHeight(config);
-	}
-
-	config.dimensions.containerHeight = configUtil.calculateVirtualContainerHeight(config, containerHeight);
 }
 
 function initCalculatedValues(config) {

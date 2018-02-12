@@ -4,23 +4,13 @@ var tableUtil   = require('../utils/table'),
 	configUtil  = require('../utils/configuration'),
 	cellElement = require('../elements/cell');
 
-function updateTable(config, forceUpdate) {
+function fillTable(config) {
 	var colspan = 1;
-
-	if (config.inner.previousLeftCellOffset === config.inner.leftCellOffset &&
-		config.inner.previousTopCellOffset === config.inner.topCellOffset &&
-		forceUpdate === false) {
-
-		return;
-	}
-
-	config.inner.previousLeftCellOffset = config.inner.leftCellOffset;
-	config.inner.previousTopCellOffset = config.inner.topCellOffset;
 
 	// Header cell update
 	document.querySelectorAll('.' + config.selectors.virtualTable + ' tr.' + config.inner.selectors.headerRow).forEach(function(row, rowCount) {
 		row.querySelectorAll('td.' + config.inner.selectors.headerCell).forEach(function(cell, cellCount) {
-			var cellObj = config.headers[rowCount][config.inner.leftCellOffset + cellCount],
+			var cellObj = config.headers[rowCount][cellCount],
 				isLastRow = config.inner.indexOfCellKeyHeader === rowCount;
 
 			if (colspan > 1) {
@@ -35,12 +25,12 @@ function updateTable(config, forceUpdate) {
 			if (typeof cellObj.colspan == 'undefined') {
 				cell.removeAttribute('colspan');
 			} else {
-				var calculatedColspan = config.inner.visibleColumnNumber <= cellCount + cellObj.colspan ? config.inner.visibleColumnNumber - cellCount : cellObj.colspan;
+				cell.setAttribute('colspan', cellObj.colspan);
 
-				cell.setAttribute('colspan', calculatedColspan);
-				colspan = calculatedColspan;
+				colspan = cellObj.colspan;
 			}
 		});
+
 		colspan = 1;
 	});
 
@@ -57,7 +47,7 @@ function updateTable(config, forceUpdate) {
 	// Filter row update
 	if (config.filter.enabled) {
 		document.querySelectorAll('.' + config.selectors.virtualTable + ' td.' + config.inner.selectors.filterCell).forEach(function(cell, cellCount) {
-			var cellObj = configUtil.getKeyHeader(config)[config.inner.leftCellOffset + cellCount],
+			var cellObj = configUtil.getKeyHeader(config)[cellCount],
 				filterObj = config.inner.filters[cellObj.key] || {},
 				currentFilterAttr = cell.getAttribute('data-attribute');
 
@@ -90,7 +80,7 @@ function updateTable(config, forceUpdate) {
 	// Cell data row update
 	document.querySelectorAll('.' + config.selectors.virtualTable + ' tr.' + config.inner.selectors.dataRow).forEach(function(row, rowNumber) {
 		row.querySelectorAll('td.' + config.inner.selectors.dataCell).forEach(function(cell, cellNumber) {
-			var cellData = tableUtil.getCellData(config, config.inner.topCellOffset + rowNumber, config.inner.leftCellOffset + cellNumber);
+			var cellData = tableUtil.getCellData(config, rowNumber, cellNumber);
 
 			cellElement.updateCell(config, cell, cellData);
 		});
@@ -99,56 +89,24 @@ function updateTable(config, forceUpdate) {
 	// Fixed cell data row update
 	document.querySelectorAll('.' + config.selectors.fixedTable + ' tr.' + config.inner.selectors.dataRow).forEach(function(row, rowNumber) {
 		row.querySelectorAll('td.' + config.inner.selectors.dataCell).forEach(function(cell, cellNumber) {
-			var fixedCellData = tableUtil.getFixedCellData(config, config.inner.topCellOffset + rowNumber, cellNumber);
+			var fixedCellData = tableUtil.getFixedCellData(config, rowNumber, cellNumber);
 
 			cellElement.updateCell(config, cell, fixedCellData);
 		});
 	});
 }
 
-function updateBuffers(config) {
+function scrollTables(config) {
 	var virtualContainer = document.querySelector('.' + config.selectors.virtualContainer),
-		cellFullWidth = configUtil.getCellFullWidth(config),
-		left = virtualContainer.scrollLeft - virtualContainer.scrollLeft % cellFullWidth - config.inner.colspanOffset * cellFullWidth,
-		right = config.inner.tableOffsetWidth - left,
-		top = virtualContainer.scrollTop,
-		bottom = config.inner.tableOffsetHeight - top;
+		fixedContainer = document.querySelector('.' + config.selectors.fixedContainer);
 
-	left = left > config.inner.tableOffsetWidth ? config.inner.tableOffsetWidth : left;
-	left = left < config.inner.minBufferWidth ? config.inner.minBufferWidth : left;
-	right = config.inner.tableOffsetWidth - left;
-	top = top + config.inner.minBufferHeight > config.inner.tableOffsetHeight ? config.inner.tableOffsetHeight - config.inner.minBufferHeight : top + config.inner.minBufferHeight;
-	bottom = config.inner.tableOffsetHeight > top ? config.inner.tableOffsetHeight - top : config.inner.minBufferHeight;
-
-	config.inner.leftCellOffset = Math.floor(left / cellFullWidth);
-	config.inner.topCellOffset = Math.floor((top - top % config.dimensions.cellHeight) / config.dimensions.cellHeight);
-
-	config.inner.bufferLeft.forEach(function(el) {
-		el.style.minWidth = left + 'px';
-	});
-	config.inner.bufferRight.forEach(function(el) {
-		el.style.minWidth = right + 'px';
-	});
-	config.inner.bufferTop.forEach(function(el) {
-		el.style.height = top + 'px';
-	});
-	config.inner.bufferBottom.forEach(function(el) {
-		el.style.height = bottom + 'px';
-	});
-}
-
-function recalculateDimensions(config) {
-	var smallerTable = config.dataSource.length < config.inner.visibleRowNumber,
-		virtualContainer = document.querySelector('.' + config.selectors.virtualContainer);
-
-	virtualContainer.classList.toggle('no-vertical-scroll', smallerTable);
-
-	if (smallerTable) {
-		virtualContainer.scrollTop = 0;
+	if (virtualContainer === null) {
+		return;
 	}
 
-	config.inner.tableOffsetWidth = configUtil.getTableOffsetWidth(config);
-	config.inner.tableOffsetHeight = configUtil.getTableOffsetHeight(config);
+	if (fixedContainer !== null) {
+		fixedContainer.scrollTop = virtualContainer.scrollTop;
+	}
 }
 
 function resetEditingCell(config, eventHandlers) {
@@ -168,8 +126,6 @@ function resetEditedCells(config) {
 	document.querySelectorAll('.' + config.selectors.virtualTable + ' td.' + config.selectors.editingCell).forEach(function(editedCell) {
 		editedCell.classList.remove(config.selectors.editedCell);
 	});
-
-	updateTable(config);
 }
 
 function destroyTable(config) {
@@ -177,9 +133,8 @@ function destroyTable(config) {
 }
 
 module.exports = {
-	updateTable: updateTable,
-	updateBuffers: updateBuffers,
-	recalculateDimensions: recalculateDimensions,
+	fillTable: fillTable,
+	scrollTables: scrollTables,
 	resetEditingCell: resetEditingCell,
 	resetEditedCells: resetEditedCells,
 	destroyTable: destroyTable
