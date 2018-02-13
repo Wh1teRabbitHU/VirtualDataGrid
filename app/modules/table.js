@@ -13,7 +13,7 @@ function updateHeader(config) {
 	var colspan = 1;
 
 	// Header cell update
-	document.querySelectorAll('.' + config.selectors.dataTable + ' tr.' + config.inner.selectors.headerRow).forEach(function(row, rowCount) {
+	document.querySelectorAll('.' + config.selectors.dataHeaderTable + ' tr.' + config.inner.selectors.headerRow).forEach(function(row, rowCount) {
 		row.querySelectorAll('td.' + config.inner.selectors.headerCell).forEach(function(cell, cellCount) {
 			var cellObj = config.headers[rowCount][cellCount],
 				isLastRow = config.inner.indexOfCellKeyHeader === rowCount;
@@ -40,7 +40,7 @@ function updateHeader(config) {
 	});
 
 	// Fixed header cell update
-	document.querySelectorAll('.' + config.selectors.fixedTable + ' tr.' + config.inner.selectors.headerRow).forEach(function(row, rowCount) {
+	document.querySelectorAll('.' + config.selectors.fixedHeaderTable + ' tr.' + config.inner.selectors.headerRow).forEach(function(row, rowCount) {
 		row.querySelectorAll('td.' + config.inner.selectors.headerCell).forEach(function(cell, cellCount) {
 			var cellObj = config.fixedHeaders[rowCount][cellCount],
 				isLastRow = config.inner.indexOfCellKeyHeader === rowCount;
@@ -51,7 +51,7 @@ function updateHeader(config) {
 
 	// Filter row update
 	if (config.filter.enabled) {
-		document.querySelectorAll('.' + config.selectors.dataTable + ' td.' + config.inner.selectors.filterCell).forEach(function(cell, cellCount) {
+		document.querySelectorAll('.' + config.selectors.dataHeaderTable + ' td.' + config.inner.selectors.filterCell).forEach(function(cell, cellCount) {
 			var cellObj = configUtil.getKeyHeader(config)[cellCount],
 				filterObj = config.inner.filters[cellObj.key] || {},
 				currentFilterAttr = cell.getAttribute('data-attribute');
@@ -66,7 +66,7 @@ function updateHeader(config) {
 			cellElement.updateDataContainer(config, cell, cellElement.createFilterData(config, cell, cellObj, filterObj));
 		});
 
-		document.querySelectorAll('.' + config.selectors.fixedTable + ' td.' + config.inner.selectors.filterCell).forEach(function(cell, cellCount) {
+		document.querySelectorAll('.' + config.selectors.fixedHeaderTable + ' td.' + config.inner.selectors.filterCell).forEach(function(cell, cellCount) {
 			var cellObj = config.fixedHeaders[config.inner.indexOfCellKeyHeader][cellCount],
 				filterObj = config.inner.filters[cellObj.key] || {},
 				currentFilterAttr = cell.getAttribute('data-attribute');
@@ -106,7 +106,8 @@ function updateData(config) {
 
 function scrollTables(config) {
 	var dataContainer = document.querySelector('.' + config.selectors.dataContainer),
-		fixedContainer = document.querySelector('.' + config.selectors.fixedContainer);
+		fixedContainer = document.querySelector('.' + config.selectors.fixedContainer),
+		dataHeaderContainer = document.querySelector('.' + config.selectors.dataHeaderContainer);
 
 	if (dataContainer === null) {
 		return;
@@ -114,6 +115,10 @@ function scrollTables(config) {
 
 	if (fixedContainer !== null) {
 		fixedContainer.scrollTop = dataContainer.scrollTop;
+	}
+
+	if (dataHeaderContainer !== null) {
+		dataHeaderContainer.scrollLeft = dataContainer.scrollLeft;
 	}
 }
 

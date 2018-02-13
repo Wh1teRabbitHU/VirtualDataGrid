@@ -25,23 +25,40 @@ function destroyTable(config) {
 }
 
 function initContainers(config) {
-	var container = document.querySelector(config.selectors.mainContainer),
+	var mainContainer = document.querySelector(config.selectors.mainContainer),
 		dataContainer = document.createElement('div'),
+		dataHeaderContainer = document.createElement('div'),
 		dataTable = document.createElement('table'),
+		dataHeaderTable = document.createElement('table'),
 		fixedContainer = document.createElement('div'),
-		fixedTable = document.createElement('table');
+		fixedHeaderContainer = document.createElement('div'),
+		fixedTable = document.createElement('table'),
+		fixedHeaderTable = document.createElement('table');
 
-	container.setAttribute('id', config.inner.selectors.uniqueId);
+	mainContainer.setAttribute('id', config.inner.selectors.uniqueId);
+
 	dataContainer.classList.add(config.selectors.dataContainer);
+	dataHeaderContainer.classList.add(config.selectors.dataHeaderContainer);
 	dataTable.classList.add(config.selectors.dataTable);
+	dataHeaderTable.classList.add(config.selectors.dataHeaderTable);
 	fixedContainer.classList.add(config.selectors.fixedContainer);
+	fixedHeaderContainer.classList.add(config.selectors.fixedHeaderContainer);
 	fixedTable.classList.add(config.selectors.fixedTable);
+	fixedHeaderTable.classList.add(config.selectors.fixedHeaderTable);
 
-	container.appendChild(fixedContainer);
+	mainContainer.appendChild(fixedHeaderContainer);
+	fixedHeaderContainer.appendChild(fixedHeaderTable);
+
+	mainContainer.appendChild(dataHeaderContainer);
+	dataHeaderContainer.appendChild(dataHeaderTable);
+
+	mainContainer.appendChild(fixedContainer);
 	fixedContainer.appendChild(fixedTable);
 
-	container.appendChild(dataContainer);
+	mainContainer.appendChild(dataContainer);
 	dataContainer.appendChild(dataTable);
+
+	dataHeaderContainer.style.overflow = 'hidden';
 
 	dataContainer.style.maxHeight = config.dimensions.containerHeight + 'px';
 	dataContainer.style.height = config.dimensions.containerHeight + 'px';
@@ -50,6 +67,8 @@ function initContainers(config) {
 	fixedContainer.style.maxHeight = config.dimensions.containerHeight + 'px';
 	fixedContainer.style.height = config.dimensions.containerHeight + 'px';
 	fixedContainer.style.overflow = 'hidden';
+
+	fixedHeaderContainer.style.float = 'left';
 
 	fixedContainer.style.float = 'left';
 }
@@ -133,12 +152,13 @@ function initTable(config) {
 		virtualTbody.appendChild(trBody);
 	}
 
-	document.querySelector('.' + config.selectors.dataTable).appendChild(virtualThead);
+	document.querySelector('.' + config.selectors.dataHeaderTable).appendChild(virtualThead);
 	document.querySelector('.' + config.selectors.dataTable).appendChild(virtualTbody);
 
 	// Generate fixed table
 
 	if (config.fixedHeaders.length === 0 || config.fixedHeaders[0].length === 0) {
+		document.querySelector('.' + config.selectors.fixedHeaderTable).remove();
 		document.querySelector('.' + config.selectors.fixedTable).remove();
 
 		return;
@@ -224,7 +244,7 @@ function initTable(config) {
 		fixedTbody.appendChild(trBody);
 	}
 
-	document.querySelector('.' + config.selectors.fixedTable).appendChild(fixedThead);
+	document.querySelector('.' + config.selectors.fixedHeaderTable).appendChild(fixedThead);
 	document.querySelector('.' + config.selectors.fixedTable).appendChild(fixedTbody);
 }
 

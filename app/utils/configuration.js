@@ -1,7 +1,8 @@
 'use strict';
 
 function getDefaultContainerHeight(config) {
-	return window.innerHeight - document.querySelector(config.selectors.mainContainer).getBoundingClientRect().top - 32;
+	return window.innerHeight - document.querySelector(config.selectors.mainContainer).getBoundingClientRect().top -
+			(config.headers.length + (config.filter.enabled ? 1 : 0)) * config.dimensions.cellHeight - 52;
 }
 
 function getIndexOfCellKeyHeader(config) {

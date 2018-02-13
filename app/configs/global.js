@@ -11,7 +11,7 @@ var DEFAULTS = {
 		fixedContainer: 'fixed-container',
 		fixedHeaderContainer: 'fixed-header-container',
 		dataContainer: 'data-container',
-		dataHeaderContainer: '.data-header-container',
+		dataHeaderContainer: 'data-header-container',
 
 		fixedTable: 'fixed-table',
 		fixedHeaderTable: 'fixed-header-table',
@@ -127,28 +127,25 @@ function init(config, options) {
 
 	updateValue(config, options, 'selectors.mainContainer');
 	updateValue(config, options, 'selectors.fixedContainer');
+	updateValue(config, options, 'selectors.fixedHeaderContainer');
 	updateValue(config, options, 'selectors.fixedTable');
+	updateValue(config, options, 'selectors.fixedHeaderTable');
 	updateValue(config, options, 'selectors.dataContainer');
+	updateValue(config, options, 'selectors.dataHeaderContainer');
 	updateValue(config, options, 'selectors.dataTable');
+	updateValue(config, options, 'selectors.dataHeaderTable');
 	updateValue(config, options, 'selectors.editingCell');
 	updateValue(config, options, 'selectors.editedCell');
 	updateValue(config, options, 'selectors.saveButton');
-	updateValue(config, options, 'dimensions.containerHeight');
-	updateValue(config, options, 'dimensions.cellWidth');
-	updateValue(config, options, 'dimensions.cellHeight');
-	updateValue(config, options, 'dimensions.cellPaddingVertical');
-	updateValue(config, options, 'dimensions.cellPaddingHorizontal');
-	updateValue(config, options, 'dimensions.cellBorderWidth');
+
 	updateValue(config, options, 'uniqueId');
-
-	calculateUniqueIdSelector(config);
-
+	updateValue(config, options, 'headers');
 	updateValue(config, options, 'locale.name');
 	updateValue(config, options, 'dataSource');
-	updateValue(config, options, 'headers');
 	updateValue(config, options, 'fixedHeaders');
 	updateValue(config, options, 'uniqueRowKey');
 	updateValue(config, options, 'autoResize');
+
 	updateValue(config, options, 'edit.enabled');
 	updateValue(config, options, 'edit.mode');
 	updateValue(config, options, 'edit.validate');
@@ -158,6 +155,14 @@ function init(config, options) {
 	updateValue(config, options, 'sort.default');
 	updateValue(config, options, 'sort.customSort');
 	updateValue(config, options, 'debug');
+
+	updateValue(config, options, 'dimensions.cellWidth');
+	updateValue(config, options, 'dimensions.cellHeight');
+	updateValue(config, options, 'dimensions.cellPaddingVertical');
+	updateValue(config, options, 'dimensions.cellPaddingHorizontal');
+	updateValue(config, options, 'dimensions.cellBorderWidth');
+	updateValue(config, options, 'dimensions.containerHeight');
+
 	updateValue(config, options, 'eventHandlers.onBeforeEdit');
 	updateValue(config, options, 'eventHandlers.onValidation');
 	updateValue(config, options, 'eventHandlers.onAfterEdit');
@@ -174,6 +179,8 @@ function init(config, options) {
 	updateValue(config, options, 'modules.tooltip.showInfo');
 	updateValue(config, options, 'modules.tooltip.showWarn');
 	updateValue(config, options, 'modules.tooltip.showError');
+
+	calculateUniqueIdSelector(config);
 
 	initHeaderData(config);
 	initDataSource(config, options.uniqueRowKey);

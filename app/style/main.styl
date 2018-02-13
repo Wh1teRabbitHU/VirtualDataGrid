@@ -8,7 +8,9 @@ $darkGray = #2f2f2f
 $cTableRowBorder = #d3d3d3
 
 .data-container,
-.fixed-container
+.data-header-container,
+.fixed-container,
+.fixed-header-container
 	transform translate3d(0, 0, 0) // Force chrome to optimize the table
 	overflow-anchor none
 
@@ -16,7 +18,9 @@ $cTableRowBorder = #d3d3d3
 		display none
 
 	.data-table,
-	.fixed-table
+	.data-header-table,
+	.fixed-table,
+	.fixed-header-table
 		border-spacing 0
 
 	.fixed-table
