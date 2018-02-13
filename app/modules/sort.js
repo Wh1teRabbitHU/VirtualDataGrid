@@ -51,7 +51,7 @@ function sort(config, updateTable) {
 	});
 
 	if (updateTable) {
-		tableModule.fillTable(config);
+		tableModule.updateTable(config);
 	}
 }
 
@@ -81,7 +81,7 @@ function resetSort(config) {
 		});
 	});
 
-	tableModule.fillTable(config);
+	tableModule.updateTable(config);
 }
 
 function getSortType(config, attribute) {

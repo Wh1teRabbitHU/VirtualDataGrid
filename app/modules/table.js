@@ -4,7 +4,12 @@ var tableUtil   = require('../utils/table'),
 	configUtil  = require('../utils/configuration'),
 	cellElement = require('../elements/cell');
 
-function fillTable(config) {
+function updateTable(config) {
+	updateHeader(config);
+	updateData(config);
+}
+
+function updateHeader(config) {
 	var colspan = 1;
 
 	// Header cell update
@@ -76,6 +81,9 @@ function fillTable(config) {
 			cellElement.updateDataContainer(config, cell, cellElement.createFilterData(config, cell, cellObj, filterObj));
 		});
 	}
+}
+
+function updateData(config) {
 
 	// Cell data row update
 	document.querySelectorAll('.' + config.selectors.virtualTable + ' tr.' + config.inner.selectors.dataRow).forEach(function(row, rowNumber) {
@@ -133,7 +141,9 @@ function destroyTable(config) {
 }
 
 module.exports = {
-	fillTable: fillTable,
+	updateTable: updateTable,
+	updateHeader: updateHeader,
+	updateData: updateData,
 	scrollTables: scrollTables,
 	resetEditingCell: resetEditingCell,
 	resetEditedCells: resetEditedCells,

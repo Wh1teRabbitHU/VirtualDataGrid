@@ -13,7 +13,7 @@ function generateTable(config, options) {
 	initContainers(config);
 	initTable(config);
 
-	tableModule.fillTable(config);
+	tableModule.updateTable(config);
 
 	events.init(config);
 }
