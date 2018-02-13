@@ -105,7 +105,7 @@ function finishEditingFilter(config, cellNode, cellObj, filterObj) {
 function filterOutEmptyRows(config) {
 	var dsLength = config.dataSource.length;
 
-	document.querySelectorAll('.' + config.selectors.virtualTable + ' tr.' + config.inner.selectors.dataRow).forEach(function(row, rowNumber) {
+	document.querySelectorAll('.' + config.selectors.dataTable + ' tr.' + config.inner.selectors.dataRow).forEach(function(row, rowNumber) {
 		row.classList.toggle(config.inner.selectors.filteredOutRow, dsLength <= rowNumber);
 	});
 

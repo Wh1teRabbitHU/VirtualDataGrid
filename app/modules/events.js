@@ -143,7 +143,7 @@ function onMouseLeaveCellWithTitle(event, config) {
 }
 
 function init(config) {
-	container = document.querySelector('.' + config.selectors.virtualContainer);
+	container = document.querySelector('.' + config.selectors.dataContainer);
 
 	instances.onScrollEventHandler = function(event) { onScrollEventHandler(event, config); };
 	instances.onWheelEventHandler = function(event) { onWheelEventHandler(event, config); };
@@ -171,7 +171,7 @@ function init(config) {
 	}
 
 	if (config.edit.enabled) {
-		document.querySelectorAll('.' + config.selectors.virtualTable + ' td.' + config.inner.selectors.dataCell).forEach(function(el) {
+		document.querySelectorAll('.' + config.selectors.dataTable + ' td.' + config.inner.selectors.dataCell).forEach(function(el) {
 			el.addEventListener('click', instances.onClickCellEventHandler);
 		});
 	}
@@ -190,7 +190,7 @@ function init(config) {
 }
 
 function remove(config) {
-	container = document.querySelector('.' + config.selectors.virtualContainer);
+	container = document.querySelector('.' + config.selectors.dataContainer);
 
 	if (container !== null) {
 		container.removeEventListener('wheel', instances.onWheelEventHandler);
@@ -209,7 +209,7 @@ function remove(config) {
 	}
 
 	if (config.edit.enabled) {
-		document.querySelectorAll('.' + config.selectors.virtualTable + ' td.' + config.inner.selectors.dataCell).forEach(function(el) {
+		document.querySelectorAll('.' + config.selectors.dataTable + ' td.' + config.inner.selectors.dataCell).forEach(function(el) {
 			el.removeEventListener('click', instances.onClickCellEventHandler);
 		});
 	}

@@ -61,7 +61,7 @@ function generateDataGrid() {
 }
 
 function setupOptionContainer() {
-	var generatorContainerHeight = window.innerHeight - document.querySelector('.main-container').getBoundingClientRect().top - 20;
+	var generatorContainerHeight = window.innerHeight - document.querySelector('.root-container').getBoundingClientRect().top - 20;
 
 	document.querySelector('.generator-container').style.maxHeight = generatorContainerHeight + 'px';
 	document.querySelector('.generator-container').style.height = generatorContainerHeight + 'px';
@@ -227,7 +227,7 @@ window.addEventListener('load', function() {
 
 	if (generateTableButton !== null) {
 		generateTableButton.addEventListener('click', function() {
-			var dataContainer = document.querySelector('.data-container');
+			var dataContainer = document.querySelector('.main-container');
 
 			if (dataContainer !== null) {
 				dataContainer.innerHTML = '';

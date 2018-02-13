@@ -6,11 +6,18 @@ var configUtil     = require('../utils/configuration'),
 
 var DEFAULTS = {
 	selectors: {
-		mainContainer: '.data-container',
+		mainContainer: '.main-container',
+
 		fixedContainer: 'fixed-container',
+		fixedHeaderContainer: 'fixed-header-container',
+		dataContainer: 'data-container',
+		dataHeaderContainer: '.data-header-container',
+
 		fixedTable: 'fixed-table',
-		virtualContainer: 'virtual-container',
-		virtualTable: 'virtual-table',
+		fixedHeaderTable: 'fixed-header-table',
+		dataTable: 'data-table',
+		dataHeaderTable: 'data-header-table',
+
 		editingCell: 'editing-cell',
 		editedCell: 'edited-cell',
 		saveButton: null
@@ -113,8 +120,6 @@ var STATIC_INNER_ATTRS = {
 	sort: { },
 	filters: { },
 	minBufferWidth: 2,
-	leftCellOffset: 0,
-	topCellOffset: 0
 };
 
 function init(config, options) {
@@ -123,8 +128,8 @@ function init(config, options) {
 	updateValue(config, options, 'selectors.mainContainer');
 	updateValue(config, options, 'selectors.fixedContainer');
 	updateValue(config, options, 'selectors.fixedTable');
-	updateValue(config, options, 'selectors.virtualContainer');
-	updateValue(config, options, 'selectors.virtualTable');
+	updateValue(config, options, 'selectors.dataContainer');
+	updateValue(config, options, 'selectors.dataTable');
 	updateValue(config, options, 'selectors.editingCell');
 	updateValue(config, options, 'selectors.editedCell');
 	updateValue(config, options, 'selectors.saveButton');

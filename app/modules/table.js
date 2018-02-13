@@ -13,7 +13,7 @@ function updateHeader(config) {
 	var colspan = 1;
 
 	// Header cell update
-	document.querySelectorAll('.' + config.selectors.virtualTable + ' tr.' + config.inner.selectors.headerRow).forEach(function(row, rowCount) {
+	document.querySelectorAll('.' + config.selectors.dataTable + ' tr.' + config.inner.selectors.headerRow).forEach(function(row, rowCount) {
 		row.querySelectorAll('td.' + config.inner.selectors.headerCell).forEach(function(cell, cellCount) {
 			var cellObj = config.headers[rowCount][cellCount],
 				isLastRow = config.inner.indexOfCellKeyHeader === rowCount;
@@ -51,7 +51,7 @@ function updateHeader(config) {
 
 	// Filter row update
 	if (config.filter.enabled) {
-		document.querySelectorAll('.' + config.selectors.virtualTable + ' td.' + config.inner.selectors.filterCell).forEach(function(cell, cellCount) {
+		document.querySelectorAll('.' + config.selectors.dataTable + ' td.' + config.inner.selectors.filterCell).forEach(function(cell, cellCount) {
 			var cellObj = configUtil.getKeyHeader(config)[cellCount],
 				filterObj = config.inner.filters[cellObj.key] || {},
 				currentFilterAttr = cell.getAttribute('data-attribute');
@@ -86,7 +86,7 @@ function updateHeader(config) {
 function updateData(config) {
 
 	// Cell data row update
-	document.querySelectorAll('.' + config.selectors.virtualTable + ' tr.' + config.inner.selectors.dataRow).forEach(function(row, rowNumber) {
+	document.querySelectorAll('.' + config.selectors.dataTable + ' tr.' + config.inner.selectors.dataRow).forEach(function(row, rowNumber) {
 		row.querySelectorAll('td.' + config.inner.selectors.dataCell).forEach(function(cell, cellNumber) {
 			var cellData = tableUtil.getCellData(config, rowNumber, cellNumber);
 
@@ -105,20 +105,20 @@ function updateData(config) {
 }
 
 function scrollTables(config) {
-	var virtualContainer = document.querySelector('.' + config.selectors.virtualContainer),
+	var dataContainer = document.querySelector('.' + config.selectors.dataContainer),
 		fixedContainer = document.querySelector('.' + config.selectors.fixedContainer);
 
-	if (virtualContainer === null) {
+	if (dataContainer === null) {
 		return;
 	}
 
 	if (fixedContainer !== null) {
-		fixedContainer.scrollTop = virtualContainer.scrollTop;
+		fixedContainer.scrollTop = dataContainer.scrollTop;
 	}
 }
 
 function resetEditingCell(config, eventHandlers) {
-	document.querySelectorAll('.' + config.selectors.virtualTable + ' td.' + config.selectors.editingCell).forEach(function(editingCell) {
+	document.querySelectorAll('.' + config.selectors.dataTable + ' td.' + config.selectors.editingCell).forEach(function(editingCell) {
 		var input = editingCell.querySelector('input');
 
 		input.removeEventListener('blur', eventHandlers.onInputBlurEventHandler);
@@ -131,7 +131,7 @@ function resetEditingCell(config, eventHandlers) {
 }
 
 function resetEditedCells(config) {
-	document.querySelectorAll('.' + config.selectors.virtualTable + ' td.' + config.selectors.editingCell).forEach(function(editedCell) {
+	document.querySelectorAll('.' + config.selectors.dataTable + ' td.' + config.selectors.editingCell).forEach(function(editedCell) {
 		editedCell.classList.remove(config.selectors.editedCell);
 	});
 }

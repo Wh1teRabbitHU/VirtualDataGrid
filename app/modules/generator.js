@@ -26,26 +26,26 @@ function destroyTable(config) {
 
 function initContainers(config) {
 	var container = document.querySelector(config.selectors.mainContainer),
-		virtualContainer = document.createElement('div'),
-		virtualTable = document.createElement('table'),
+		dataContainer = document.createElement('div'),
+		dataTable = document.createElement('table'),
 		fixedContainer = document.createElement('div'),
 		fixedTable = document.createElement('table');
 
 	container.setAttribute('id', config.inner.selectors.uniqueId);
-	virtualContainer.classList.add(config.selectors.virtualContainer);
-	virtualTable.classList.add(config.selectors.virtualTable);
+	dataContainer.classList.add(config.selectors.dataContainer);
+	dataTable.classList.add(config.selectors.dataTable);
 	fixedContainer.classList.add(config.selectors.fixedContainer);
 	fixedTable.classList.add(config.selectors.fixedTable);
 
 	container.appendChild(fixedContainer);
 	fixedContainer.appendChild(fixedTable);
 
-	container.appendChild(virtualContainer);
-	virtualContainer.appendChild(virtualTable);
+	container.appendChild(dataContainer);
+	dataContainer.appendChild(dataTable);
 
-	virtualContainer.style.maxHeight = config.dimensions.containerHeight + 'px';
-	virtualContainer.style.height = config.dimensions.containerHeight + 'px';
-	virtualContainer.style.overflow = 'scroll';
+	dataContainer.style.maxHeight = config.dimensions.containerHeight + 'px';
+	dataContainer.style.height = config.dimensions.containerHeight + 'px';
+	dataContainer.style.overflow = 'scroll';
 
 	fixedContainer.style.maxHeight = config.dimensions.containerHeight + 'px';
 	fixedContainer.style.height = config.dimensions.containerHeight + 'px';
@@ -133,8 +133,8 @@ function initTable(config) {
 		virtualTbody.appendChild(trBody);
 	}
 
-	document.querySelector('.' + config.selectors.virtualTable).appendChild(virtualThead);
-	document.querySelector('.' + config.selectors.virtualTable).appendChild(virtualTbody);
+	document.querySelector('.' + config.selectors.dataTable).appendChild(virtualThead);
+	document.querySelector('.' + config.selectors.dataTable).appendChild(virtualTbody);
 
 	// Generate fixed table
 
