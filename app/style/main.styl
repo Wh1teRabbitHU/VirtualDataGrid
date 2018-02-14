@@ -6,6 +6,66 @@ $dirtyWhite = #eaeaea
 $green = #43A047
 $darkGray = #2f2f2f
 $cTableRowBorder = #d3d3d3
+$cTableHeaderRowBorder = darken($cTableRowBorder, 30%)
+$pTableEdgeBorder = 2px solid $cTableHeaderRowBorder
+$dContainerBorderRadius = 5px
+
+.fixed-container ~ .data-container
+	border-left none
+	border-bottom-left-radius 0
+
+.fixed-header-container ~ .data-header-container
+	border-left none
+	border-top-left-radius 0
+
+.data-container .data-table,
+.data-header-container .data-header-table,
+.fixed-container .fixed-table,
+.fixed-header-container .fixed-header-table
+	td:first-child
+		border-left none
+
+	td:last-child
+		border-right none
+
+	tr:first-child td
+		border-top none
+
+	tr:last-child td
+		border-bottom none
+
+.data-header-container,
+.fixed-header-container
+	border-top $pTableEdgeBorder
+	border-bottom $pTableEdgeBorder
+	font-size 1.2em
+	font-weight bold
+
+.fixed-container,
+.fixed-header-container,
+.data-container,
+.data-header-container
+	border-left $pTableEdgeBorder
+	border-right $pTableEdgeBorder
+
+.data-container,
+.fixed-container
+	border-bottom $pTableEdgeBorder
+	font-size 0.9em
+
+.data-container
+	border-bottom-left-radius $dContainerBorderRadius
+	border-bottom-right-radius $dContainerBorderRadius
+
+.data-header-container
+	border-top-left-radius $dContainerBorderRadius
+	border-top-right-radius $dContainerBorderRadius
+
+.fixed-container
+	border-bottom-left-radius $dContainerBorderRadius
+
+.fixed-header-container
+	border-top-left-radius $dContainerBorderRadius
 
 .data-container,
 .data-header-container,
@@ -14,20 +74,20 @@ $cTableRowBorder = #d3d3d3
 	transform translate3d(0, 0, 0) // Force chrome to optimize the table
 	overflow-anchor none
 
-	.hidden
-		display none
-
 	.data-table,
 	.data-header-table,
 	.fixed-table,
 	.fixed-header-table
-		border-spacing 0
+		border-collapse collapse
 
-	.data-header-table
-		padding-right 50px
+	.fixed-table tr:last-child td
+		border-bottom 1px solid $cTableRowBorder
+
+	.hidden
+		display none
 
 	.fixed-table
-		padding-bottom 50px
+		margin-bottom 20px
 
 	td
 		border-bottom none
@@ -36,12 +96,11 @@ $cTableRowBorder = #d3d3d3
 		padding 2px 4px
 
 	.header-cell
-		background $dirtyWhite
 		color $black
 		text-align center
 
-		&[colspan]
-			font-size 15px
+	.buffer-header-cell
+		min-width 20px
 
 	.header-cell,
 	.filter-cell,
@@ -49,9 +108,10 @@ $cTableRowBorder = #d3d3d3
 		position relative
 		border-right 1px solid $cTableRowBorder
 		border-bottom 1px solid $cTableRowBorder
-		background-color $dirtyWhite
-		font-size 13px
 		padding 0
+
+		&.readonly-cell
+			background $dirtyWhite
 
 		&.editing-cell
 			padding 0
@@ -76,7 +136,6 @@ $cTableRowBorder = #d3d3d3
 
 	.data-cell
 		color $darkGray
-		background-color $dirtyWhite
 
 	td:first-child
 		border-left 1px solid $cTableRowBorder

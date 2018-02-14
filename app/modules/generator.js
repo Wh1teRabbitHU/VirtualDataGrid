@@ -67,10 +67,9 @@ function initContainers(config) {
 	fixedContainer.style.maxHeight = config.dimensions.containerHeight + 'px';
 	fixedContainer.style.height = config.dimensions.containerHeight + 'px';
 	fixedContainer.style.overflow = 'hidden';
+	fixedContainer.style.float = 'left';
 
 	fixedHeaderContainer.style.float = 'left';
-
-	fixedContainer.style.float = 'left';
 }
 
 function initTable(config) {
@@ -107,6 +106,12 @@ function initTable(config) {
 			trHead.appendChild(tdElement);
 		}
 
+		// A scrollbr miatti helyhiány miatt van szükség beszúrni a végére
+		tdElement = document.createElement('td');
+		tdElement.classList.add(config.inner.selectors.bufferHeaderCell);
+
+		trHead.appendChild(tdElement);
+
 		virtualThead.appendChild(trHead);
 	});
 
@@ -130,6 +135,12 @@ function initTable(config) {
 
 			trHead.appendChild(tdElement);
 		}
+
+		// A scrollbr miatti helyhiány miatt van szükség beszúrni a végére
+		tdElement = document.createElement('td');
+		tdElement.classList.add(config.inner.selectors.bufferHeaderCell);
+
+		trHead.appendChild(tdElement);
 
 		virtualThead.appendChild(trHead);
 	}
@@ -159,7 +170,9 @@ function initTable(config) {
 
 	if (config.fixedHeaders.length === 0 || config.fixedHeaders[0].length === 0) {
 		document.querySelector('.' + config.selectors.fixedHeaderTable).remove();
+		document.querySelector('.' + config.selectors.fixedHeaderContainer).remove();
 		document.querySelector('.' + config.selectors.fixedTable).remove();
+		document.querySelector('.' + config.selectors.fixedContainer).remove();
 
 		return;
 	}

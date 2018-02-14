@@ -91,6 +91,7 @@ var STATIC_INNER_ATTRS = {
 		uniqueIdPrefix: 'virtual-data-grid-',
 		headerRow: 'header-row',
 		headerCell: 'header-cell',
+		bufferHeaderCell: 'buffer-header-cell',
 		sortCell: 'sort-cell',
 		sortIcon: 'sort-icon',
 		sortDisabled: 'sort-disabled',
