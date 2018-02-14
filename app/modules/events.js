@@ -6,7 +6,6 @@ var domUtil       = require('../utils/dom'),
 	editModule    = require('../modules/edit'),
 	tableModule   = require('../modules/table'),
 	filterModule  = require('../modules/filter'),
-	resizeModule  = require('../modules/resize'),
 	tooltipModule = require('../modules/tooltip');
 
 var container;
@@ -19,7 +18,6 @@ var instances = {
 	onClickSaveButtonEventHandler: function() {},
 	onClickSortHeader: function() {},
 	onClickFilterHeader: function() {},
-	onWindowResize: function() {},
 	onMouseEnterCellWithTitle: function() {},
 	onMouseLeaveCellWithTitle: function() {},
 };
@@ -42,9 +40,7 @@ function onWheelEventHandler(event, config) {
 function onScrollEventHandler(event, config) {
 	tooltipModule.hideAll(config);
 
-	tableModule.resetEditingCell(config, instances.onInputBlurEventHandler);
-	tableModule.updateBuffers(config);
-	tableModule.updateTable(config, false);
+	tableModule.scrollTables(config);
 }
 
 function onClickCellEventHandler(event, config) {
@@ -138,14 +134,6 @@ function onClickFilterHeader(event, config) {
 	filterModule.startEditingFilter(config, cellNode);
 }
 
-function onWindowResize(event, config) {
-	if (document.querySelector('#' + config.inner.selectors.uniqueId) === null) {
-		return;
-	}
-
-	resizeModule.resizeEventHandler(config);
-}
-
 function onMouseEnterCellWithTitle(event, config) {
 	tooltipModule.onMouseEnterCellWithTitle(config, event.target);
 }
@@ -155,7 +143,7 @@ function onMouseLeaveCellWithTitle(event, config) {
 }
 
 function init(config) {
-	container = document.querySelector('.' + config.selectors.virtualContainer);
+	container = document.querySelector('.' + config.selectors.dataContainer);
 
 	instances.onScrollEventHandler = function(event) { onScrollEventHandler(event, config); };
 	instances.onWheelEventHandler = function(event) { onWheelEventHandler(event, config); };
@@ -163,7 +151,6 @@ function init(config) {
 	instances.onClickSaveButtonEventHandler = function(event) { onClickSaveButtonEventHandler(event, config); };
 	instances.onClickSortHeader = function(event) { onClickSortHeader(event, config); };
 	instances.onClickFilterHeader = function(event) { onClickFilterHeader(event, config); };
-	instances.onWindowResize = function(event) { onWindowResize(event, config); };
 	instances.onMouseEnterCellWithTitle = function(event) { onMouseEnterCellWithTitle(event, config); };
 	instances.onMouseLeaveCellWithTitle = function(event) { onMouseLeaveCellWithTitle(event, config); };
 
@@ -184,7 +171,7 @@ function init(config) {
 	}
 
 	if (config.edit.enabled) {
-		document.querySelectorAll('.' + config.selectors.virtualTable + ' td.' + config.inner.selectors.dataCell).forEach(function(el) {
+		document.querySelectorAll('.' + config.selectors.dataTable + ' td.' + config.inner.selectors.dataCell).forEach(function(el) {
 			el.addEventListener('click', instances.onClickCellEventHandler);
 		});
 	}
@@ -200,14 +187,10 @@ function init(config) {
 			el.addEventListener('click', instances.onClickFilterHeader);
 		});
 	}
-
-	if (config.autoResize) {
-		window.addEventListener('resize', instances.onWindowResize);
-	}
 }
 
 function remove(config) {
-	container = document.querySelector('.' + config.selectors.virtualContainer);
+	container = document.querySelector('.' + config.selectors.dataContainer);
 
 	if (container !== null) {
 		container.removeEventListener('wheel', instances.onWheelEventHandler);
@@ -226,7 +209,7 @@ function remove(config) {
 	}
 
 	if (config.edit.enabled) {
-		document.querySelectorAll('.' + config.selectors.virtualTable + ' td.' + config.inner.selectors.dataCell).forEach(function(el) {
+		document.querySelectorAll('.' + config.selectors.dataTable + ' td.' + config.inner.selectors.dataCell).forEach(function(el) {
 			el.removeEventListener('click', instances.onClickCellEventHandler);
 		});
 	}
@@ -241,10 +224,6 @@ function remove(config) {
 		document.querySelectorAll('#' + config.inner.selectors.uniqueId + ' td.' + config.inner.selectors.filterCell).forEach(function(el) {
 			el.removeEventListener('click', instances.onClickFilterHeader);
 		});
-	}
-
-	if (config.autoResize) {
-		window.removeEventListener('resize', instances.onWindowResize);
 	}
 }
 

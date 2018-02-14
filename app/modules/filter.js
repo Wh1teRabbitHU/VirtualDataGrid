@@ -67,12 +67,12 @@ function filter(config, sortAfterFiltering) {
 		}
 	});
 
+	filterOutEmptyRows(config);
+
 	if (sortAfterFiltering) {
 		sortModule.sort(config, false);
 	}
 
-	tableModule.recalculateDimensions(config);
-	tableModule.updateBuffers(config);
 	tableModule.updateTable(config);
 }
 
@@ -100,6 +100,19 @@ function finishEditingFilter(config, cellNode, cellObj, filterObj) {
 	cellElement.updateDataContainer(config, cellNode, cellElement.createFilterData(config, cellNode, cellObj, filterObj));
 
 	filter(config);
+}
+
+function filterOutEmptyRows(config) {
+	var dsLength = config.dataSource.length;
+
+	document.querySelectorAll('.' + config.selectors.dataTable + ' tr.' + config.inner.selectors.dataRow).forEach(function(row, rowNumber) {
+		row.classList.toggle(config.inner.selectors.filteredOutRow, dsLength <= rowNumber);
+	});
+
+	// Fixed cell data row update
+	document.querySelectorAll('.' + config.selectors.fixedTable + ' tr.' + config.inner.selectors.dataRow).forEach(function(row, rowNumber) {
+		row.classList.toggle(config.inner.selectors.filteredOutRow, dsLength <= rowNumber);
+	});
 }
 
 module.exports = {

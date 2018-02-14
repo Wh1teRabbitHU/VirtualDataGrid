@@ -4,23 +4,18 @@ var tableUtil   = require('../utils/table'),
 	configUtil  = require('../utils/configuration'),
 	cellElement = require('../elements/cell');
 
-function updateTable(config, forceUpdate) {
+function updateTable(config) {
+	updateHeader(config);
+	updateData(config);
+}
+
+function updateHeader(config) {
 	var colspan = 1;
 
-	if (config.inner.previousLeftCellOffset === config.inner.leftCellOffset &&
-		config.inner.previousTopCellOffset === config.inner.topCellOffset &&
-		forceUpdate === false) {
-
-		return;
-	}
-
-	config.inner.previousLeftCellOffset = config.inner.leftCellOffset;
-	config.inner.previousTopCellOffset = config.inner.topCellOffset;
-
 	// Header cell update
-	document.querySelectorAll('.' + config.selectors.virtualTable + ' tr.' + config.inner.selectors.headerRow).forEach(function(row, rowCount) {
+	document.querySelectorAll('.' + config.selectors.dataHeaderTable + ' tr.' + config.inner.selectors.headerRow).forEach(function(row, rowCount) {
 		row.querySelectorAll('td.' + config.inner.selectors.headerCell).forEach(function(cell, cellCount) {
-			var cellObj = config.headers[rowCount][config.inner.leftCellOffset + cellCount],
+			var cellObj = config.headers[rowCount][cellCount],
 				isLastRow = config.inner.indexOfCellKeyHeader === rowCount;
 
 			if (colspan > 1) {
@@ -35,17 +30,17 @@ function updateTable(config, forceUpdate) {
 			if (typeof cellObj.colspan == 'undefined') {
 				cell.removeAttribute('colspan');
 			} else {
-				var calculatedColspan = config.inner.visibleColumnNumber <= cellCount + cellObj.colspan ? config.inner.visibleColumnNumber - cellCount : cellObj.colspan;
+				cell.setAttribute('colspan', cellObj.colspan);
 
-				cell.setAttribute('colspan', calculatedColspan);
-				colspan = calculatedColspan;
+				colspan = cellObj.colspan;
 			}
 		});
+
 		colspan = 1;
 	});
 
 	// Fixed header cell update
-	document.querySelectorAll('.' + config.selectors.fixedTable + ' tr.' + config.inner.selectors.headerRow).forEach(function(row, rowCount) {
+	document.querySelectorAll('.' + config.selectors.fixedHeaderTable + ' tr.' + config.inner.selectors.headerRow).forEach(function(row, rowCount) {
 		row.querySelectorAll('td.' + config.inner.selectors.headerCell).forEach(function(cell, cellCount) {
 			var cellObj = config.fixedHeaders[rowCount][cellCount],
 				isLastRow = config.inner.indexOfCellKeyHeader === rowCount;
@@ -56,8 +51,8 @@ function updateTable(config, forceUpdate) {
 
 	// Filter row update
 	if (config.filter.enabled) {
-		document.querySelectorAll('.' + config.selectors.virtualTable + ' td.' + config.inner.selectors.filterCell).forEach(function(cell, cellCount) {
-			var cellObj = configUtil.getKeyHeader(config)[config.inner.leftCellOffset + cellCount],
+		document.querySelectorAll('.' + config.selectors.dataHeaderTable + ' td.' + config.inner.selectors.filterCell).forEach(function(cell, cellCount) {
+			var cellObj = configUtil.getKeyHeader(config)[cellCount],
 				filterObj = config.inner.filters[cellObj.key] || {},
 				currentFilterAttr = cell.getAttribute('data-attribute');
 
@@ -71,7 +66,7 @@ function updateTable(config, forceUpdate) {
 			cellElement.updateDataContainer(config, cell, cellElement.createFilterData(config, cell, cellObj, filterObj));
 		});
 
-		document.querySelectorAll('.' + config.selectors.fixedTable + ' td.' + config.inner.selectors.filterCell).forEach(function(cell, cellCount) {
+		document.querySelectorAll('.' + config.selectors.fixedHeaderTable + ' td.' + config.inner.selectors.filterCell).forEach(function(cell, cellCount) {
 			var cellObj = config.fixedHeaders[config.inner.indexOfCellKeyHeader][cellCount],
 				filterObj = config.inner.filters[cellObj.key] || {},
 				currentFilterAttr = cell.getAttribute('data-attribute');
@@ -86,11 +81,14 @@ function updateTable(config, forceUpdate) {
 			cellElement.updateDataContainer(config, cell, cellElement.createFilterData(config, cell, cellObj, filterObj));
 		});
 	}
+}
+
+function updateData(config) {
 
 	// Cell data row update
-	document.querySelectorAll('.' + config.selectors.virtualTable + ' tr.' + config.inner.selectors.dataRow).forEach(function(row, rowNumber) {
+	document.querySelectorAll('.' + config.selectors.dataTable + ' tr.' + config.inner.selectors.dataRow).forEach(function(row, rowNumber) {
 		row.querySelectorAll('td.' + config.inner.selectors.dataCell).forEach(function(cell, cellNumber) {
-			var cellData = tableUtil.getCellData(config, config.inner.topCellOffset + rowNumber, config.inner.leftCellOffset + cellNumber);
+			var cellData = tableUtil.getCellData(config, rowNumber, cellNumber);
 
 			cellElement.updateCell(config, cell, cellData);
 		});
@@ -99,60 +97,33 @@ function updateTable(config, forceUpdate) {
 	// Fixed cell data row update
 	document.querySelectorAll('.' + config.selectors.fixedTable + ' tr.' + config.inner.selectors.dataRow).forEach(function(row, rowNumber) {
 		row.querySelectorAll('td.' + config.inner.selectors.dataCell).forEach(function(cell, cellNumber) {
-			var fixedCellData = tableUtil.getFixedCellData(config, config.inner.topCellOffset + rowNumber, cellNumber);
+			var fixedCellData = tableUtil.getFixedCellData(config, rowNumber, cellNumber);
 
 			cellElement.updateCell(config, cell, fixedCellData);
 		});
 	});
 }
 
-function updateBuffers(config) {
-	var virtualContainer = document.querySelector('.' + config.selectors.virtualContainer),
-		cellFullWidth = configUtil.getCellFullWidth(config),
-		left = virtualContainer.scrollLeft - virtualContainer.scrollLeft % cellFullWidth - config.inner.colspanOffset * cellFullWidth,
-		right = config.inner.tableOffsetWidth - left,
-		top = virtualContainer.scrollTop,
-		bottom = config.inner.tableOffsetHeight - top;
+function scrollTables(config) {
+	var dataContainer = document.querySelector('.' + config.selectors.dataContainer),
+		fixedContainer = document.querySelector('.' + config.selectors.fixedContainer),
+		dataHeaderContainer = document.querySelector('.' + config.selectors.dataHeaderContainer);
 
-	left = left > config.inner.tableOffsetWidth ? config.inner.tableOffsetWidth : left;
-	left = left < config.inner.minBufferWidth ? config.inner.minBufferWidth : left;
-	right = config.inner.tableOffsetWidth - left;
-	top = top + config.inner.minBufferHeight > config.inner.tableOffsetHeight ? config.inner.tableOffsetHeight - config.inner.minBufferHeight : top + config.inner.minBufferHeight;
-	bottom = config.inner.tableOffsetHeight > top ? config.inner.tableOffsetHeight - top : config.inner.minBufferHeight;
-
-	config.inner.leftCellOffset = Math.floor(left / cellFullWidth);
-	config.inner.topCellOffset = Math.floor((top - top % config.dimensions.cellHeight) / config.dimensions.cellHeight);
-
-	config.inner.bufferLeft.forEach(function(el) {
-		el.style.minWidth = left + 'px';
-	});
-	config.inner.bufferRight.forEach(function(el) {
-		el.style.minWidth = right + 'px';
-	});
-	config.inner.bufferTop.forEach(function(el) {
-		el.style.height = top + 'px';
-	});
-	config.inner.bufferBottom.forEach(function(el) {
-		el.style.height = bottom + 'px';
-	});
-}
-
-function recalculateDimensions(config) {
-	var smallerTable = config.dataSource.length < config.inner.visibleRowNumber,
-		virtualContainer = document.querySelector('.' + config.selectors.virtualContainer);
-
-	virtualContainer.classList.toggle('no-vertical-scroll', smallerTable);
-
-	if (smallerTable) {
-		virtualContainer.scrollTop = 0;
+	if (dataContainer === null) {
+		return;
 	}
 
-	config.inner.tableOffsetWidth = configUtil.getTableOffsetWidth(config);
-	config.inner.tableOffsetHeight = configUtil.getTableOffsetHeight(config);
+	if (fixedContainer !== null) {
+		fixedContainer.scrollTop = dataContainer.scrollTop;
+	}
+
+	if (dataHeaderContainer !== null) {
+		dataHeaderContainer.scrollLeft = dataContainer.scrollLeft;
+	}
 }
 
 function resetEditingCell(config, eventHandlers) {
-	document.querySelectorAll('.' + config.selectors.virtualTable + ' td.' + config.selectors.editingCell).forEach(function(editingCell) {
+	document.querySelectorAll('.' + config.selectors.dataTable + ' td.' + config.selectors.editingCell).forEach(function(editingCell) {
 		var input = editingCell.querySelector('input');
 
 		input.removeEventListener('blur', eventHandlers.onInputBlurEventHandler);
@@ -165,11 +136,9 @@ function resetEditingCell(config, eventHandlers) {
 }
 
 function resetEditedCells(config) {
-	document.querySelectorAll('.' + config.selectors.virtualTable + ' td.' + config.selectors.editingCell).forEach(function(editedCell) {
+	document.querySelectorAll('.' + config.selectors.dataTable + ' td.' + config.selectors.editingCell).forEach(function(editedCell) {
 		editedCell.classList.remove(config.selectors.editedCell);
 	});
-
-	updateTable(config);
 }
 
 function destroyTable(config) {
@@ -178,8 +147,9 @@ function destroyTable(config) {
 
 module.exports = {
 	updateTable: updateTable,
-	updateBuffers: updateBuffers,
-	recalculateDimensions: recalculateDimensions,
+	updateHeader: updateHeader,
+	updateData: updateData,
+	scrollTables: scrollTables,
 	resetEditingCell: resetEditingCell,
 	resetEditedCells: resetEditedCells,
 	destroyTable: destroyTable

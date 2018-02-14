@@ -6,11 +6,18 @@ var configUtil     = require('../utils/configuration'),
 
 var DEFAULTS = {
 	selectors: {
-		mainContainer: '.data-container',
+		mainContainer: '.main-container',
+
 		fixedContainer: 'fixed-container',
+		fixedHeaderContainer: 'fixed-header-container',
+		dataContainer: 'data-container',
+		dataHeaderContainer: 'data-header-container',
+
 		fixedTable: 'fixed-table',
-		virtualContainer: 'virtual-container',
-		virtualTable: 'virtual-table',
+		fixedHeaderTable: 'fixed-header-table',
+		dataTable: 'data-table',
+		dataHeaderTable: 'data-header-table',
+
 		editingCell: 'editing-cell',
 		editedCell: 'edited-cell',
 		saveButton: null
@@ -82,12 +89,9 @@ var HEADER_DEFAULTS = {
 var STATIC_INNER_ATTRS = {
 	selectors: {
 		uniqueIdPrefix: 'virtual-data-grid-',
-		bufferRowTop: 'buffer-row-top',
-		bufferRowBottom: 'buffer-row-bottom',
-		bufferColumnLeft: 'buffer-column-left',
-		bufferColumnRight: 'buffer-column-right',
 		headerRow: 'header-row',
 		headerCell: 'header-cell',
+		bufferHeaderCell: 'buffer-header-cell',
 		sortCell: 'sort-cell',
 		sortIcon: 'sort-icon',
 		sortDisabled: 'sort-disabled',
@@ -97,6 +101,7 @@ var STATIC_INNER_ATTRS = {
 		filterContainer: 'filter-container',
 		filterSearchIcon: 'filter-search-icon',
 		filterClearIcon: 'filter-clear-icon',
+		filteredOutRow: 'filtered-out',
 		dataRow: 'data-row',
 		dataCell: 'data-cell',
 		cellDataContainer: 'cell-data-container'
@@ -116,9 +121,6 @@ var STATIC_INNER_ATTRS = {
 	sort: { },
 	filters: { },
 	minBufferWidth: 2,
-	minBufferHeight: 18, // Azért van rá szükség, mert ha nincs megadva, akkor ugrik egyett a scroll ha a végére vagy az elejére értünk a táblázatban
-	leftCellOffset: 0,
-	topCellOffset: 0
 };
 
 function init(config, options) {
@@ -126,28 +128,25 @@ function init(config, options) {
 
 	updateValue(config, options, 'selectors.mainContainer');
 	updateValue(config, options, 'selectors.fixedContainer');
+	updateValue(config, options, 'selectors.fixedHeaderContainer');
 	updateValue(config, options, 'selectors.fixedTable');
-	updateValue(config, options, 'selectors.virtualContainer');
-	updateValue(config, options, 'selectors.virtualTable');
+	updateValue(config, options, 'selectors.fixedHeaderTable');
+	updateValue(config, options, 'selectors.dataContainer');
+	updateValue(config, options, 'selectors.dataHeaderContainer');
+	updateValue(config, options, 'selectors.dataTable');
+	updateValue(config, options, 'selectors.dataHeaderTable');
 	updateValue(config, options, 'selectors.editingCell');
 	updateValue(config, options, 'selectors.editedCell');
 	updateValue(config, options, 'selectors.saveButton');
-	updateValue(config, options, 'dimensions.cellWidth');
-	updateValue(config, options, 'dimensions.cellHeight');
-	updateValue(config, options, 'dimensions.cellPaddingVertical');
-	updateValue(config, options, 'dimensions.cellPaddingHorizontal');
-	updateValue(config, options, 'dimensions.cellBorderWidth');
+
 	updateValue(config, options, 'uniqueId');
-
-	calculateUniqueIdSelector(config);
-	calculateVirtualContainerHeight(config, options);
-
+	updateValue(config, options, 'headers');
 	updateValue(config, options, 'locale.name');
 	updateValue(config, options, 'dataSource');
-	updateValue(config, options, 'headers');
 	updateValue(config, options, 'fixedHeaders');
 	updateValue(config, options, 'uniqueRowKey');
 	updateValue(config, options, 'autoResize');
+
 	updateValue(config, options, 'edit.enabled');
 	updateValue(config, options, 'edit.mode');
 	updateValue(config, options, 'edit.validate');
@@ -157,6 +156,14 @@ function init(config, options) {
 	updateValue(config, options, 'sort.default');
 	updateValue(config, options, 'sort.customSort');
 	updateValue(config, options, 'debug');
+
+	updateValue(config, options, 'dimensions.cellWidth');
+	updateValue(config, options, 'dimensions.cellHeight');
+	updateValue(config, options, 'dimensions.cellPaddingVertical');
+	updateValue(config, options, 'dimensions.cellPaddingHorizontal');
+	updateValue(config, options, 'dimensions.cellBorderWidth');
+	updateValue(config, options, 'dimensions.containerHeight');
+
 	updateValue(config, options, 'eventHandlers.onBeforeEdit');
 	updateValue(config, options, 'eventHandlers.onValidation');
 	updateValue(config, options, 'eventHandlers.onAfterEdit');
@@ -174,8 +181,11 @@ function init(config, options) {
 	updateValue(config, options, 'modules.tooltip.showWarn');
 	updateValue(config, options, 'modules.tooltip.showError');
 
+	calculateUniqueIdSelector(config);
+
 	initHeaderData(config);
 	initDataSource(config, options.uniqueRowKey);
+	initCalculatedValues(config);
 }
 
 function initConfigObject(config) {
@@ -189,24 +199,9 @@ function calculateUniqueIdSelector(config) {
 	config.inner.selectors.uniqueId = config.inner.selectors.uniqueIdPrefix + config.uniqueId;
 }
 
-function calculateVirtualContainerHeight(config, options) {
-	var containerHeight = getInnerValue(options, 'dimensions.containerHeight');
-
-	if (typeof containerHeight == 'undefined') {
-		containerHeight = configUtil.getDefaultContainerHeight(config);
-	}
-
-	config.dimensions.containerHeight = configUtil.calculateVirtualContainerHeight(config, containerHeight);
-}
-
 function initCalculatedValues(config) {
 	// Annak a header sornak az indexe, ami a cella kulcsokat is meghatározza. Mivel ez mindig az utolsó lesz, ezért TODO: Kiszedni/átalakítani
 	config.inner.indexOfCellKeyHeader = configUtil.getIndexOfCellKeyHeader(config);
-	config.inner.colspanOffset = configUtil.getMaxColspan(config);
-	config.inner.visibleRowNumber = configUtil.getVisibleRowNumber(config);
-	config.inner.visibleColumnNumber = configUtil.getVisibleColumnNumber(config);
-	config.inner.tableOffsetWidth = configUtil.getTableOffsetWidth(config);
-	config.inner.tableOffsetHeight = configUtil.getTableOffsetHeight(config);
 	config.inner.originalDataSource = [].concat(config.dataSource);
 	config.inner.dimensions.scrollLineHeight = configUtil.getScrollLineHeight();
 	config.inner.dimensions.scrollPageHeight = configUtil.getScrollPageHeight();
@@ -346,6 +341,5 @@ function getInnerValue(object, key) {
 
 module.exports = {
 	init: init,
-	initCalculatedValues: initCalculatedValues,
 	DEFAULTS: DEFAULTS
 };

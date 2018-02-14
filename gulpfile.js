@@ -89,7 +89,8 @@ gulp.task('project-css', () => {
 		.pipe(concatCss(CSS_FILENAME))
 		.pipe(cleanCss())
 		.pipe(gulpif(isDevelopment(), sourcemaps.write()))
-		.pipe(gulp.dest(TARGET_FOLDER));
+		.pipe(gulp.dest(TARGET_FOLDER))
+		.pipe(bsync.stream());
 });
 
 gulp.task('example-js', () => {
@@ -150,7 +151,7 @@ gulp.task('css', gulp.parallel('example-css', 'example-css-vendor', 'project-css
 
 gulp.task('watch', (done) => {
 	gulp.watch([ './index.js', './app/**/*.js' ], gulp.series('js', 'reload-resources'));
-	gulp.watch([ './app/style/**/*', './app/example/style/**/*' ], gulp.series('css', 'reload-resources'));
+	gulp.watch([ './app/style/**/*', './app/example/style/**/*' ], gulp.series('css'));
 	gulp.watch([ './app/example/index.html' ], gulp.series('example-static', 'reload-resources'));
 
 	done();

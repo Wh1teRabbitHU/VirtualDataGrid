@@ -11,12 +11,8 @@ function generateTable(config, options) {
 	globalConfig.init(config, options);
 
 	initContainers(config);
-
-	globalConfig.initCalculatedValues(config);
-
 	initTable(config);
 
-	tableModule.updateBuffers(config);
 	tableModule.updateTable(config);
 
 	events.init(config);
@@ -24,69 +20,68 @@ function generateTable(config, options) {
 
 function destroyTable(config) {
 	events.remove(config);
+
 	tableModule.destroyTable(config);
 }
 
 function initContainers(config) {
-	var container = document.querySelector(config.selectors.mainContainer),
-		virtualContainer = document.createElement('div'),
-		virtualTable = document.createElement('table'),
+	var mainContainer = document.querySelector(config.selectors.mainContainer),
+		dataContainer = document.createElement('div'),
+		dataHeaderContainer = document.createElement('div'),
+		dataTable = document.createElement('table'),
+		dataHeaderTable = document.createElement('table'),
 		fixedContainer = document.createElement('div'),
-		fixedTable = document.createElement('table');
+		fixedHeaderContainer = document.createElement('div'),
+		fixedTable = document.createElement('table'),
+		fixedHeaderTable = document.createElement('table');
 
-	container.setAttribute('id', config.inner.selectors.uniqueId);
-	virtualContainer.classList.add(config.selectors.virtualContainer);
-	virtualTable.classList.add(config.selectors.virtualTable);
+	mainContainer.setAttribute('id', config.inner.selectors.uniqueId);
+
+	dataContainer.classList.add(config.selectors.dataContainer);
+	dataHeaderContainer.classList.add(config.selectors.dataHeaderContainer);
+	dataTable.classList.add(config.selectors.dataTable);
+	dataHeaderTable.classList.add(config.selectors.dataHeaderTable);
 	fixedContainer.classList.add(config.selectors.fixedContainer);
+	fixedHeaderContainer.classList.add(config.selectors.fixedHeaderContainer);
 	fixedTable.classList.add(config.selectors.fixedTable);
+	fixedHeaderTable.classList.add(config.selectors.fixedHeaderTable);
 
-	container.appendChild(fixedContainer);
+	mainContainer.appendChild(fixedHeaderContainer);
+	fixedHeaderContainer.appendChild(fixedHeaderTable);
+
+	mainContainer.appendChild(dataHeaderContainer);
+	dataHeaderContainer.appendChild(dataHeaderTable);
+
+	mainContainer.appendChild(fixedContainer);
 	fixedContainer.appendChild(fixedTable);
 
-	container.appendChild(virtualContainer);
-	virtualContainer.appendChild(virtualTable);
+	mainContainer.appendChild(dataContainer);
+	dataContainer.appendChild(dataTable);
 
-	virtualContainer.style.maxHeight = config.dimensions.containerHeight + 'px';
-	virtualContainer.style.height = config.dimensions.containerHeight + 'px';
-	virtualContainer.style.overflow = 'scroll';
+	dataHeaderContainer.style.overflow = 'hidden';
 
-	fixedContainer.style.padding = config.inner.minBufferHeight + 'px 0';
+	dataContainer.style.maxHeight = config.dimensions.containerHeight + 'px';
+	dataContainer.style.height = config.dimensions.containerHeight + 'px';
+	dataContainer.style.overflow = 'scroll';
+
+	fixedContainer.style.maxHeight = config.dimensions.containerHeight + 'px';
+	fixedContainer.style.height = config.dimensions.containerHeight + 'px';
+	fixedContainer.style.overflow = 'hidden';
 	fixedContainer.style.float = 'left';
+
+	fixedHeaderContainer.style.float = 'left';
 }
 
 function initTable(config) {
 	// Generate virtual table
 	var virtualThead = document.createElement('thead'),
 		virtualTbody = document.createElement('tbody'),
-		trHeadBuffer = document.createElement('tr'),
 		columnsNumber = configUtil.getKeyHeader(config).length,
-		rowsNumber = config.dataSource.length,
-		maxColumnNumber = config.inner.visibleColumnNumber >= columnsNumber ? columnsNumber : config.inner.visibleColumnNumber,
-		maxRowNumber = config.inner.visibleRowNumber >= rowsNumber ? rowsNumber : config.inner.visibleRowNumber;
+		rowsNumber = config.dataSource.length;
 
-	trHeadBuffer.classList.add(config.inner.selectors.bufferRowTop);
-
-	var i, j, trHead, trBody, bufferColumnLeft, bufferColumnRight, bufferRowBottom, tdElement, cellObj;
+	var i, j, trHead, trBody, tdElement, cellObj;
 
 	// Generate virtual header
-	bufferColumnLeft = document.createElement('td');
-	bufferColumnLeft.classList.add(config.inner.selectors.bufferColumnLeft);
-
-	trHeadBuffer.appendChild(bufferColumnLeft);
-
-	for (i = 0; i < maxColumnNumber; i++) {
-		tdElement = document.createElement('td');
-		tdElement.style.minWidth = config.dimensions.cellWidth + 'px';
-		trHeadBuffer.appendChild(tdElement);
-	}
-
-	bufferColumnRight = document.createElement('td');
-	bufferColumnRight.classList.add(config.inner.selectors.bufferColumnRight);
-
-	trHeadBuffer.appendChild(bufferColumnRight);
-
-	virtualThead.appendChild(trHeadBuffer);
-
 	config.headers.forEach(function(headerRow, rowCount) {
 		var isLastRow = config.inner.indexOfCellKeyHeader === rowCount;
 
@@ -94,12 +89,7 @@ function initTable(config) {
 		trHead.classList.add(config.inner.selectors.headerRow);
 		trHead.style.height = config.dimensions.cellHeight + 'px';
 
-		tdElement = document.createElement('td');
-		tdElement.classList.add(config.inner.selectors.bufferColumnLeft);
-
-		trHead.appendChild(tdElement);
-
-		for (j = 0; j < maxColumnNumber; j++) {
+		for (j = 0; j < columnsNumber; j++) {
 			tdElement = document.createElement('td');
 			tdElement.classList.add(config.inner.selectors.headerCell);
 
@@ -116,8 +106,9 @@ function initTable(config) {
 			trHead.appendChild(tdElement);
 		}
 
+		// A scrollbr miatti helyhiány miatt van szükség beszúrni a végére
 		tdElement = document.createElement('td');
-		tdElement.classList.add(config.inner.selectors.bufferColumnRight);
+		tdElement.classList.add(config.inner.selectors.bufferHeaderCell);
 
 		trHead.appendChild(tdElement);
 
@@ -130,12 +121,7 @@ function initTable(config) {
 		trHead.classList.add(config.inner.selectors.filterRow);
 		trHead.style.height = config.dimensions.cellHeight + 'px';
 
-		tdElement = document.createElement('td');
-		tdElement.classList.add(config.inner.selectors.bufferColumnLeft);
-
-		trHead.appendChild(tdElement);
-
-		for (j = 0; j < maxColumnNumber; j++) {
+		for (j = 0; j < columnsNumber; j++) {
 			cellObj = configUtil.getKeyHeader(config)[j];
 
 			tdElement = document.createElement('td');
@@ -150,8 +136,9 @@ function initTable(config) {
 			trHead.appendChild(tdElement);
 		}
 
+		// A scrollbr miatti helyhiány miatt van szükség beszúrni a végére
 		tdElement = document.createElement('td');
-		tdElement.classList.add(config.inner.selectors.bufferColumnRight);
+		tdElement.classList.add(config.inner.selectors.bufferHeaderCell);
 
 		trHead.appendChild(tdElement);
 
@@ -159,17 +146,12 @@ function initTable(config) {
 	}
 
 	// Generate virtual body
-	for (i = 0; i < maxRowNumber; i++) {
+	for (i = 0; i < rowsNumber; i++) {
 		trBody = document.createElement('tr');
 		trBody.classList.add(config.inner.selectors.dataRow);
 		trBody.style.height = config.dimensions.cellHeight + 'px';
 
-		tdElement = document.createElement('td');
-		tdElement.classList.add(config.inner.selectors.bufferColumnLeft);
-
-		trBody.appendChild(tdElement);
-
-		for (j = 0; j < maxColumnNumber; j++) {
+		for (j = 0; j < columnsNumber; j++) {
 			tdElement = document.createElement('td');
 			tdElement.classList.add(config.inner.selectors.dataCell);
 
@@ -178,31 +160,19 @@ function initTable(config) {
 			trBody.appendChild(tdElement);
 		}
 
-		tdElement = document.createElement('td');
-		tdElement.classList.add(config.inner.selectors.bufferColumnRight);
-
-		trBody.appendChild(tdElement);
-
 		virtualTbody.appendChild(trBody);
 	}
 
-	bufferRowBottom = document.createElement('tr');
-	bufferRowBottom.classList.add(config.inner.selectors.bufferRowBottom);
-
-	virtualTbody.appendChild(bufferRowBottom);
-
-	document.querySelector('.' + config.selectors.virtualTable).appendChild(virtualThead);
-	document.querySelector('.' + config.selectors.virtualTable).appendChild(virtualTbody);
-
-	config.inner.bufferLeft = document.querySelectorAll('.' + config.inner.selectors.bufferColumnLeft);
-	config.inner.bufferRight = document.querySelectorAll('.' + config.inner.selectors.bufferColumnRight);
-	config.inner.bufferTop = document.querySelectorAll('.' + config.inner.selectors.bufferRowTop);
-	config.inner.bufferBottom = document.querySelectorAll('.' + config.inner.selectors.bufferRowBottom);
+	document.querySelector('.' + config.selectors.dataHeaderTable).appendChild(virtualThead);
+	document.querySelector('.' + config.selectors.dataTable).appendChild(virtualTbody);
 
 	// Generate fixed table
 
 	if (config.fixedHeaders.length === 0 || config.fixedHeaders[0].length === 0) {
+		document.querySelector('.' + config.selectors.fixedHeaderTable).remove();
+		document.querySelector('.' + config.selectors.fixedHeaderContainer).remove();
 		document.querySelector('.' + config.selectors.fixedTable).remove();
+		document.querySelector('.' + config.selectors.fixedContainer).remove();
 
 		return;
 	}
@@ -270,7 +240,7 @@ function initTable(config) {
 
 	// Generate fixed body
 
-	for (i = 0; i < maxRowNumber; i++) {
+	for (i = 0; i < rowsNumber; i++) {
 		trBody = document.createElement('tr');
 		trBody.classList.add(config.inner.selectors.dataRow);
 		trBody.style.height = config.dimensions.cellHeight + 'px';
@@ -287,7 +257,7 @@ function initTable(config) {
 		fixedTbody.appendChild(trBody);
 	}
 
-	document.querySelector('.' + config.selectors.fixedTable).appendChild(fixedThead);
+	document.querySelector('.' + config.selectors.fixedHeaderTable).appendChild(fixedThead);
 	document.querySelector('.' + config.selectors.fixedTable).appendChild(fixedTbody);
 }
 

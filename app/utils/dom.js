@@ -23,11 +23,11 @@ function findParentNode(child, selector) {
 }
 
 function getRowNumber(config, cellNode) {
-	return indexOfElement(cellNode.parentNode) + config.inner.topCellOffset;
+	return indexOfElement(cellNode.parentNode);
 }
 
 function getColumnNumber(config, cellNode) {
-	return indexOfElement(cellNode) - 1 + config.inner.leftCellOffset;
+	return indexOfElement(cellNode);
 }
 
 function isEllipsisActive(element) {
