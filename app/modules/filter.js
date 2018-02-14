@@ -1,53 +1,39 @@
 'use strict';
 
-var domUtil    = require('../utils/dom'),
-	domModule  = require('../modules/dom'),
-	sortModule = require('../modules/sort'),
-	dataUtil   = require('../utils/data'),
-	configUtil = require('../utils/configuration');
+var tableModule   = require('../modules/table'),
+	sortModule    = require('../modules/sort'),
+	dataUtil      = require('../utils/data'),
+	configUtil    = require('../utils/configuration'),
+	cellElement   = require('../elements/cell'),
+	filterElement = require('../elements/filter');
 
-function startEditingFilter(config, cell) {
-	if (cell.querySelector('.' + config.inner.selectors.filterContainer) !== null) {
+function startEditingFilter(config, cellNode) {
+	if (cellNode.querySelector('.' + config.inner.selectors.filterContainer) !== null) {
 		return;
 	}
 
-	var attribute = cell.getAttribute('data-attribute'),
+	var attribute = cellNode.getAttribute('data-attribute'),
 		filterObj = config.inner.filters[attribute] || {},
-		headerObj = configUtil.getHeaderObject(config, attribute),
-		clearIconClass = config.inner.icons.filter.clear,
-		clearIconElementClass = config.inner.selectors.filterClearIcon + ' ' + clearIconClass;
+		headerObj = configUtil.getHeaderObject(config, attribute);
 
 	filterObj.attribute = attribute;
+	filterObj.dataType = headerObj.dataType;
 	filterObj.filterType = headerObj.filterType;
 	filterObj.value = filterObj.value || '';
 
 	config.inner.filters[attribute] = filterObj;
 
-	var container = document.createElement('div');
+	var filterContainer = filterElement.createContainer(config);
 
-	domModule.updateCellData(config, cell, container);
+	cellElement.updateDataContainer(config, cellNode, filterContainer);
 
-	container.classList.add(config.inner.selectors.filterContainer);
-	container.innerHTML = '<input><i class="' + clearIconElementClass + '" aria-hidden="true"></i>';
+	var filterInput = filterElement.updateInput(config, cellNode, filterObj, headerObj, finishEditingFilter);
 
-	var input = container.querySelector('input');
-
-	input.setAttribute('type', headerObj.dataType);
-	input.value = filterObj.value;
-	input.focus();
-	input.addEventListener('keyup', function(event) {
-		if ((event.keyCode || event.which) === 13) { // Enter key
-			filterObj.value = dataUtil.getValueByType(input.value, headerObj.dataType);
-
-			finishEditingFilter(config, cell, headerObj, filterObj);
-		} else if ((event.keyCode || event.which) === 27) { // Escape key
-			finishEditingFilter(config, cell, headerObj, filterObj);
-		}
-	});
+	filterInput.focus();
 }
 
-function filter(config, sortTable) {
-	sortTable = sortTable !== false;
+function filter(config, sortAfterFiltering) {
+	sortAfterFiltering = sortAfterFiltering !== false;
 
 	config.dataSource = config.inner.originalDataSource;
 
@@ -81,17 +67,17 @@ function filter(config, sortTable) {
 		}
 	});
 
-	if (sortTable) {
+	filterOutEmptyRows(config);
+
+	if (sortAfterFiltering) {
 		sortModule.sort(config, false);
 	}
 
-	domModule.recalculateDimensions(config);
-	domModule.updateBuffers(config);
-	domModule.updateTable(config);
+	tableModule.updateTable(config);
 }
 
-function clearFilter(config, cell) {
-	var attribute = cell.getAttribute('data-attribute'),
+function clearFilter(config, cellNode) {
+	var attribute = cellNode.getAttribute('data-attribute'),
 		cellObj = configUtil.getHeaderObject(config, attribute),
 		filterObj = config.inner.filters[attribute];
 
@@ -107,13 +93,26 @@ function clearFilter(config, cell) {
 
 	config.inner.filters = newFilters;
 
-	finishEditingFilter(config, cell, cellObj, filterObj);
+	finishEditingFilter(config, cellNode, cellObj, filterObj);
 }
 
-function finishEditingFilter(config, cell, cellObj, filterObj) {
-	domModule.updateCellData(config, cell, domUtil.getFilterCellHtml(config, cell, cellObj, filterObj));
+function finishEditingFilter(config, cellNode, cellObj, filterObj) {
+	cellElement.updateDataContainer(config, cellNode, cellElement.createFilterData(config, cellNode, cellObj, filterObj));
 
 	filter(config);
+}
+
+function filterOutEmptyRows(config) {
+	var dsLength = config.dataSource.length;
+
+	document.querySelectorAll('.' + config.selectors.dataTable + ' tr.' + config.inner.selectors.dataRow).forEach(function(row, rowNumber) {
+		row.classList.toggle(config.inner.selectors.filteredOutRow, dsLength <= rowNumber);
+	});
+
+	// Fixed cell data row update
+	document.querySelectorAll('.' + config.selectors.fixedTable + ' tr.' + config.inner.selectors.dataRow).forEach(function(row, rowNumber) {
+		row.classList.toggle(config.inner.selectors.filteredOutRow, dsLength <= rowNumber);
+	});
 }
 
 module.exports = {

@@ -7,28 +7,30 @@ var BeforeEditArgs = require('../models/event-arguments/before-edit'),
 	SaveBatchArgs  = require('../models/event-arguments/save-batch'),
 	AfterEditArgs  = require('../models/event-arguments/after-edit'),
 	AfterSaveArgs  = require('../models/event-arguments/after-save'),
+	cellElement    = require('../elements/cell'),
+	inputElement   = require('../elements/input'),
+	tableModule    = require('../modules/table'),
+	validation     = require('../modules/validation'),
 	tableUtil      = require('../utils/table'),
 	domUtil        = require('../utils/dom'),
-	domModule      = require('../modules/dom'),
 	filterModule   = require('../modules/filter');
 
-function startEditingCell(config, cellElement, instances, eventHandlers) {
+function startEditingCell(config, cellNode, instances, eventHandlers) {
 	if (!config.edit.enabled) {
 		return;
 	}
 
-	var rowNumber = domUtil.getRowNumber(config, cellElement),
-		columnNumber = domUtil.getColumnNumber(config, cellElement);
+	var rowNumber = domUtil.getRowNumber(config, cellNode),
+		columnNumber = domUtil.getColumnNumber(config, cellNode);
 
 	if (rowNumber >= config.dataSource.length) {
 		return;
 	}
 
-	var cellData = tableUtil.getCellData(config, rowNumber, columnNumber),
-		inputElement = document.createElement('input');
+	var cellData = tableUtil.getCellData(config, rowNumber, columnNumber);
 
 	var beforeEditArgs = new BeforeEditArgs({
-		cellElement: cellElement,
+		cellNode: cellNode,
 		cellData: cellData,
 		cancelEvent: false
 	});
@@ -36,64 +38,70 @@ function startEditingCell(config, cellElement, instances, eventHandlers) {
 	config.eventHandlers.onBeforeEdit(beforeEditArgs);
 
 	if (!beforeEditArgs.cancelEvent) {
-		cellElement.classList.add(config.selectors.editingCell);
-		cellElement.classList.remove(config.selectors.editedCell);
-
-		domModule.updateCellData(config, cellElement, inputElement);
+		cellNode.classList.add(config.selectors.editingCell);
+		cellNode.classList.remove(config.selectors.editedCell);
 
 		instances.onInputBlurEventHandler = function(ev) { eventHandlers.onInputBlurEventHandler(ev, config); };
 		instances.onInputKeyUpEventHandler = function(ev) { eventHandlers.onInputKeyUpEventHandler(ev, config); };
 
-		inputElement.focus();
-		inputElement.value = cellData.getValue();
-		inputElement.style.minWidth = '10px'; // TODO: Kiszervezni osztályba
-		inputElement.style.width = '80%'; // TODO: Kiszervezni osztályba
-		inputElement.setAttribute('type', cellData.dataType);
-		inputElement.addEventListener('blur', instances.onInputBlurEventHandler);
-		inputElement.addEventListener('keyup', instances.onInputKeyUpEventHandler);
+		var inputNode = inputElement.createInputNode(cellData, instances);
+
+		cellElement.updateDataContainer(config, cellNode, inputNode);
+
+		inputNode.focus();
 	}
 }
 
-function finishEditingCell(config, inputElement, eventHandlers) {
-	var cellElement = inputElement.parentNode.parentNode,
-		rowNumber = domUtil.getRowNumber(config, cellElement),
-		columnNumber = domUtil.getColumnNumber(config, cellElement),
+function finishEditingCell(config, inputNode, eventHandlers) {
+	var cellNode = inputNode.parentNode.parentNode,
+		rowNumber = domUtil.getRowNumber(config, cellNode),
+		columnNumber = domUtil.getColumnNumber(config, cellNode),
 		cellData = tableUtil.getCellData(config, rowNumber, columnNumber),
-		updatedValue = inputElement.value;
+		updatedValue = inputNode.value;
 
 	cellData.updateAttributes({ class: config.selectors.editedCell });
 	cellData.updateValue(updatedValue);
 
 	if (!cellData.isCellChanged()) {
-		domModule.resetEditingCell(config, eventHandlers);
+		tableModule.resetEditingCell(config, eventHandlers);
 
 		return;
 	}
 
-	var validationArgs = new ValidationArgs({
-		cellElement: cellElement,
-		cellData: cellData,
-		cancelEvent: false
-	});
+	var validationEnabled = config.edit.validate;
 
-	config.eventHandlers.onValidation(validationArgs);
+	var validationResult = validation.validate(config, cellData),
+		isDataValid = validationResult.length === 0,
+		validationArgs = new ValidationArgs({
+			cellNode: cellNode,
+			cellData: cellData,
+			isDataValid: isDataValid,
+			validationResult: validationResult,
+			cancelEvent: !isDataValid
+		});
 
-	if (validationArgs.cancelEdit !== true) {
+	if (validationEnabled) {
+		config.eventHandlers.onValidation(validationArgs);
+	}
+
+	if (validationArgs.cancelEvent !== true) {
 		tableUtil.storeUpdatedCellValue(config, cellData);
-		domModule.updateCell(config, cellElement, cellData);
+		cellElement.updateCell(config, cellNode, cellData);
 
 		var afterEditArgs = new AfterEditArgs({
-			cellElement: cellElement,
+			cellNode: cellNode,
 			cellData: cellData
 		});
 
 		config.eventHandlers.onAfterEdit(afterEditArgs);
 
 		filterModule.filter(config);
+	} else if (validationEnabled && !isDataValid) {
+		validation.showErrors(validationResult);
 	}
 }
 
-function cancelEditingCell(config) {
+function cancelEditingCell() {
 	return '';
 }
 
@@ -153,7 +161,7 @@ function saveCells(config) {
 		savedRows: config.inner.editedValues
 	});
 
-	domModule.resetEditedCells(config);
+	tableModule.resetEditedCells(config);
 
 	config.eventHandlers.onAfterSave(afterSaveArgs);
 }

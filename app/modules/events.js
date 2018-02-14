@@ -4,9 +4,8 @@ var domUtil       = require('../utils/dom'),
 	keyboardUtil  = require('../utils/keyboard'),
 	sortModule    = require('../modules/sort'),
 	editModule    = require('../modules/edit'),
-	domModule     = require('../modules/dom'),
+	tableModule   = require('../modules/table'),
 	filterModule  = require('../modules/filter'),
-	resizeModule  = require('../modules/resize'),
 	tooltipModule = require('../modules/tooltip');
 
 var container;
@@ -19,7 +18,6 @@ var instances = {
 	onClickSaveButtonEventHandler: function() {},
 	onClickSortHeader: function() {},
 	onClickFilterHeader: function() {},
-	onWindowResize: function() {},
 	onMouseEnterCellWithTitle: function() {},
 	onMouseLeaveCellWithTitle: function() {},
 };
@@ -42,9 +40,7 @@ function onWheelEventHandler(event, config) {
 function onScrollEventHandler(event, config) {
 	tooltipModule.hideAll(config);
 
-	domModule.resetEditingCell(config, instances.onInputBlurEventHandler);
-	domModule.updateBuffers(config);
-	domModule.updateTable(config, false);
+	tableModule.scrollTables(config);
 }
 
 function onClickCellEventHandler(event, config) {
@@ -127,23 +123,15 @@ function onClickFilterHeader(event, config) {
 		return;
 	}
 
-	var cell = domUtil.findParentNode(event.target, filterCellSelector);
+	var cellNode = domUtil.findParentNode(event.target, filterCellSelector);
 
 	if (event.target.matches(filterClearIconSelector)) {
-		filterModule.clearFilter(config, cell);
+		filterModule.clearFilter(config, cellNode);
 
 		return;
 	}
 
-	filterModule.startEditingFilter(config, cell);
-}
-
-function onWindowResize(event, config) {
-	if (document.querySelector('#' + config.inner.selectors.uniqueId) === null) {
-		return;
-	}
-
-	resizeModule.resizeEventHandler(config);
+	filterModule.startEditingFilter(config, cellNode);
 }
 
 function onMouseEnterCellWithTitle(event, config) {
@@ -154,8 +142,8 @@ function onMouseLeaveCellWithTitle(event, config) {
 	tooltipModule.onMouseLeaveCellWithTitle(config, event.target);
 }
 
-function addEvents(config) {
-	container = document.querySelector('.' + config.selectors.virtualContainer);
+function init(config) {
+	container = document.querySelector('.' + config.selectors.dataContainer);
 
 	instances.onScrollEventHandler = function(event) { onScrollEventHandler(event, config); };
 	instances.onWheelEventHandler = function(event) { onWheelEventHandler(event, config); };
@@ -163,7 +151,6 @@ function addEvents(config) {
 	instances.onClickSaveButtonEventHandler = function(event) { onClickSaveButtonEventHandler(event, config); };
 	instances.onClickSortHeader = function(event) { onClickSortHeader(event, config); };
 	instances.onClickFilterHeader = function(event) { onClickFilterHeader(event, config); };
-	instances.onWindowResize = function(event) { onWindowResize(event, config); };
 	instances.onMouseEnterCellWithTitle = function(event) { onMouseEnterCellWithTitle(event, config); };
 	instances.onMouseLeaveCellWithTitle = function(event) { onMouseLeaveCellWithTitle(event, config); };
 
@@ -184,7 +171,7 @@ function addEvents(config) {
 	}
 
 	if (config.edit.enabled) {
-		document.querySelectorAll('.' + config.selectors.virtualTable + ' td.' + config.inner.selectors.dataCell).forEach(function(el) {
+		document.querySelectorAll('.' + config.selectors.dataTable + ' td.' + config.inner.selectors.dataCell).forEach(function(el) {
 			el.addEventListener('click', instances.onClickCellEventHandler);
 		});
 	}
@@ -200,14 +187,10 @@ function addEvents(config) {
 			el.addEventListener('click', instances.onClickFilterHeader);
 		});
 	}
-
-	if (config.autoResize) {
-		window.addEventListener('resize', instances.onWindowResize);
-	}
 }
 
-function removeEvents(config) {
-	container = document.querySelector('.' + config.selectors.virtualContainer);
+function remove(config) {
+	container = document.querySelector('.' + config.selectors.dataContainer);
 
 	if (container !== null) {
 		container.removeEventListener('wheel', instances.onWheelEventHandler);
@@ -226,7 +209,7 @@ function removeEvents(config) {
 	}
 
 	if (config.edit.enabled) {
-		document.querySelectorAll('.' + config.selectors.virtualTable + ' td.' + config.inner.selectors.dataCell).forEach(function(el) {
+		document.querySelectorAll('.' + config.selectors.dataTable + ' td.' + config.inner.selectors.dataCell).forEach(function(el) {
 			el.removeEventListener('click', instances.onClickCellEventHandler);
 		});
 	}
@@ -242,13 +225,9 @@ function removeEvents(config) {
 			el.removeEventListener('click', instances.onClickFilterHeader);
 		});
 	}
-
-	if (config.autoResize) {
-		window.removeEventListener('resize', instances.onWindowResize);
-	}
 }
 
 module.exports = {
-	addEvents: addEvents,
-	removeEvents: removeEvents
+	init: init,
+	remove: remove
 };

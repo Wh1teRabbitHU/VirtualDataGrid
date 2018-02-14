@@ -14,8 +14,8 @@
 	<body>
 		<h1>Virtual Data Grid</h1>
 
-		<div class="main-container">
-			<div class="data-container">
+		<div class="root-container">
+			<div class="main-container">
 				<h1 class="space-filler">Fill the options and click on the 'Generate table' button!</h1>
 			</div>
 			<div class="generator-container">
@@ -84,12 +84,12 @@
 						<input class="input" type="text" name="selectors-fixedTable">
 					</div>
 					<div class="form-group">
-						<label class="label">Virtual container</label>
-						<input class="input" type="text" name="selectors-virtualContainer">
+						<label class="label">Data container</label>
+						<input class="input" type="text" name="selectors-dataContainer">
 					</div>
 					<div class="form-group">
-						<label class="label">Virtual table</label>
-						<input class="input" type="text" name="selectors-virtualTable">
+						<label class="label">Data table</label>
+						<input class="input" type="text" name="selectors-dataTable">
 					</div>
 					<div class="form-group">
 						<label class="label">Editing cell</label>
@@ -149,6 +149,15 @@
 							<label class="radio-label" for="edit-mode-batch">Batch</label>
 							<input class="radio-input" type="radio" name="edit-mode" value="row" id="edit-mode-row">
 							<label class="radio-label" for="edit-mode-row">Row</label>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="label">Validate</label>
+						<div class="radio-options">
+							<input class="radio-input" type="radio" name="edit-validate" value="true" id="edit-validate-true">
+							<label class="radio-label" for="edit-validate-true">True</label>
+							<input class="radio-input" type="radio" name="edit-validate" value="false" id="edit-validate-false">
+							<label class="radio-label" for="edit-validate-false">False</label>
 						</div>
 					</div>
 

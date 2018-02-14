@@ -5,11 +5,13 @@ function CellObject(p) {
 
 	initAttr('key');
 	initAttr('value');
-	initAttr('dataType');
 	initAttr('editedValue');
+	initAttr('dataType');
 	initAttr('class');
 	initAttr('rowNumber');
 	initAttr('columnNumber');
+	initAttr('validatorObject');
+	initAttr('customValidator');
 
 	function initAttr(name) {
 		self[name] = typeof p == 'undefined' || typeof p[name] == 'undefined' ? null : p[name];

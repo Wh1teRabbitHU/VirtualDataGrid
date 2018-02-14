@@ -1,6 +1,6 @@
 {
   "name": "virtual-data-grid",
-  "version": "0.3.2",
+  "version": "0.4.0",
   "description": "Virtual data grid written in javascript. Can be used to display and manipulate extensive amount of data.",
   "main": "index.js",
   "scripts": {
@@ -38,8 +38,10 @@
     "require-globify": "^1.4.1",
     "selenium-standalone": "^6.8.0",
     "stylint": "^1.5.9",
+    "through2": "^2.0.3",
     "vinyl-buffer": "^1.0.0",
-    "vinyl-source-stream": "^1.1.0",
+    "vinyl-source-stream": "^2.0.0",
+    "watchify": "^3.9.0",
     "webdriverio": "^4.8.0"
   },
   "dependencies": {

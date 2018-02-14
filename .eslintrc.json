@@ -100,7 +100,7 @@
     "id-match": [ 2, "^(\\$)?([_a-zA-Z]{1}[_a-zA-Z0-9]*)?$", { "properties": true } ], // default: 0
     "indent": [ 2, "tab", { "VariableDeclarator": 1, "SwitchCase": 1 } ], // default: 0
     "key-spacing": [ 2, { "mode": "minimum" } ], // default 0
-    "linebreak-style": [ 2, "unix" ], // default: [ 0, "unix" ]
+    "linebreak-style": [ 0, "unix" ], // default: [ 0, "unix" ]
     "lines-around-comment": [ 2, { "beforeBlockComment": true, "afterBlockComment": false, "beforeLineComment": false, "afterLineComment": false, "allowBlockStart": true, "allowBlockEnd": true, "allowObjectStart": true, "allowObjectEnd": true, "allowArrayStart": true, "allowArrayEnd": true }], // default: 0
     "new-cap": [ 2, { "newIsCap": true, "capIsNew": true, "capIsNewExceptions": [ "Router", "Schema" ] } ], // default: 0
     "new-parens": 2, // default: 0

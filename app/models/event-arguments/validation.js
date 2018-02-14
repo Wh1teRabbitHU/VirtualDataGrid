@@ -3,8 +3,10 @@
 var BaseClass = require('../base');
 
 var ATTRIBUTES = [
-	'cellElement',
+	'cellNode',
 	'cellData',
+	'isDataValid',
+	'validationResult',
 	'cancelEvent'
 ];
 

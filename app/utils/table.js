@@ -1,6 +1,6 @@
 'use strict';
 
-var Cell       = require('../models/table/cell'),
+var Cell       = require('../models/data/cell'),
 	configUtil = require('../utils/configuration');
 
 function getCellData(config, rowNumber, columnNumber) {
@@ -22,7 +22,9 @@ function getCellData(config, rowNumber, columnNumber) {
 			value: config.dataSource[rowNumber][headerObj.key],
 			dataType: headerObj.dataType,
 			rowNumber: rowNumber,
-			columnNumber: columnNumber
+			columnNumber: columnNumber,
+			validatorObject: headerObj.validatorObject,
+			customValidator: headerObj.customValidator
 		});
 
 		if (typeof config.inner.editedValues[uniqueRowKey] != 'undefined' &&
@@ -53,7 +55,9 @@ function getFixedCellData(config, rowNumber, columnNumber) {
 			value: config.dataSource[rowNumber][headerObj.key],
 			dataType: headerObj.dataType,
 			rowNumber: rowNumber,
-			columnNumber: columnNumber
+			columnNumber: columnNumber,
+			validatorObject: headerObj.validatorObject,
+			customValidator: headerObj.customValidator
 		});
 	}
 

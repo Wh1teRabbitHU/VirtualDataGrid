@@ -10,6 +10,8 @@ var gulp       = require('gulp'),
 	rename     = require('gulp-rename'),
 	del        = require('del'),
 	browserify = require('browserify'),
+	watchify   = require('watchify'),
+	through    = require('through2'),
 	source     = require('vinyl-source-stream'),
 	buffer     = require('vinyl-buffer'),
 	bsync      = require('browser-sync'),
@@ -63,7 +65,7 @@ gulp.task('example-fonts-vendor', () => {
 
 gulp.task('example-css', () => {
 	return gulp.src('./app/example/style/main.styl')
-		.pipe(sourcemaps.init())
+		.pipe(sourcemaps.init({ loadMaps: true }))
 		.pipe(stylus())
 		.pipe(concatCss('example.min.css'))
 		.pipe(cleanCss())
@@ -73,7 +75,7 @@ gulp.task('example-css', () => {
 
 gulp.task('example-css-vendor', () => {
 	return gulp.src('./app/example/vendor/css/*.css')
-		.pipe(sourcemaps.init())
+		.pipe(sourcemaps.init({ loadMaps: true }))
 		.pipe(concatCss('example-vendor.min.css'))
 		.pipe(cleanCss())
 		.pipe(sourcemaps.write())
@@ -82,17 +84,18 @@ gulp.task('example-css-vendor', () => {
 
 gulp.task('project-css', () => {
 	return gulp.src('./app/style/main.styl')
-		.pipe(gulpif(isDevelopment(), sourcemaps.init()))
+		.pipe(gulpif(isDevelopment(), sourcemaps.init({ loadMaps: true })))
 		.pipe(stylus())
 		.pipe(concatCss(CSS_FILENAME))
 		.pipe(cleanCss())
 		.pipe(gulpif(isDevelopment(), sourcemaps.write()))
-		.pipe(gulp.dest(TARGET_FOLDER));
+		.pipe(gulp.dest(TARGET_FOLDER))
+		.pipe(bsync.stream());
 });
 
 gulp.task('example-js', () => {
 	return gulp.src('./app/example/script/main.js')
-		.pipe(sourcemaps.init())
+		.pipe(sourcemaps.init({ loadMaps: true }))
 		.pipe(uglify())
 		.pipe(sourcemaps.write())
 		.pipe(rename('example.min.js'))
@@ -101,7 +104,7 @@ gulp.task('example-js', () => {
 
 gulp.task('example-js-vendor', () => {
 	return gulp.src('./app/example/vendor/js/*.js')
-		.pipe(sourcemaps.init())
+		.pipe(sourcemaps.init({ loadMaps: true }))
 		.pipe(uglify())
 		.pipe(sourcemaps.write())
 		.pipe(rename('example-vendor.min.js'))
@@ -109,15 +112,22 @@ gulp.task('example-js-vendor', () => {
 });
 
 gulp.task('project-js', () => {
-	return browserify('app/browser.js')
-		.transform(globify)
+	let bundle = browserify('app/browser.js', { debug: isDevelopment() })
+		.transform(globify);
+
+	if (isDevelopment()) {
+		bundle.plugin(watchify); // enable watchify
+	}
+
+	return bundle
 		.bundle()
 		.pipe(source(JS_FILENAME))
 		.pipe(buffer())
-		.pipe(gulpif(isDevelopment(), sourcemaps.init()))
-		.pipe(uglify())
+		.pipe(gulpif(isDevelopment(), sourcemaps.init({ loadMaps: true })))
+		.pipe(gulpif(!isDevelopment(), uglify()))
 		.pipe(gulpif(isDevelopment(), sourcemaps.write()))
-		.pipe(gulp.dest(TARGET_FOLDER));
+		.pipe(gulp.dest(TARGET_FOLDER))
+		.pipe(bsync === null ? through.obj() : bsync.stream({ once: true }));
 });
 
 gulp.task('start-server', (done) => {
@@ -141,7 +151,7 @@ gulp.task('css', gulp.parallel('example-css', 'example-css-vendor', 'project-css
 
 gulp.task('watch', (done) => {
 	gulp.watch([ './index.js', './app/**/*.js' ], gulp.series('js', 'reload-resources'));
-	gulp.watch([ './app/style/**/*', './app/example/style/**/*' ], gulp.series('css', 'reload-resources'));
+	gulp.watch([ './app/style/**/*', './app/example/style/**/*' ], gulp.series('css'));
 	gulp.watch([ './app/example/index.html' ], gulp.series('example-static', 'reload-resources'));
 
 	done();
