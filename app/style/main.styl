@@ -71,13 +71,13 @@ $dContainerBorderRadius = 5px
 .data-header-container,
 .fixed-container,
 .fixed-header-container
-	transform translate3d(0, 0, 0) // Force chrome to optimize the table
 	overflow-anchor none
 
 	.data-table,
 	.data-header-table,
 	.fixed-table,
 	.fixed-header-table
+		transform translate3d(0, 0, 0) // Force chrome to optimize the table
 		border-collapse collapse
 
 	.fixed-table tr:last-child td
