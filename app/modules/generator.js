@@ -58,18 +58,11 @@ function initContainers(config) {
 	mainContainer.appendChild(dataContainer);
 	dataContainer.appendChild(dataTable);
 
-	dataHeaderContainer.style.overflow = 'hidden';
-
 	dataContainer.style.maxHeight = config.dimensions.containerHeight + 'px';
 	dataContainer.style.height = config.dimensions.containerHeight + 'px';
-	dataContainer.style.overflow = 'scroll';
 
 	fixedContainer.style.maxHeight = config.dimensions.containerHeight + 'px';
 	fixedContainer.style.height = config.dimensions.containerHeight + 'px';
-	fixedContainer.style.overflow = 'hidden';
-	fixedContainer.style.float = 'left';
-
-	fixedHeaderContainer.style.float = 'left';
 }
 
 function initTable(config) {

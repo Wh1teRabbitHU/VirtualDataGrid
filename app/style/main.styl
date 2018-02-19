@@ -54,18 +54,25 @@ $dContainerBorderRadius = 5px
 	font-size 0.9em
 
 .data-container
+	overflow scroll
 	border-bottom-left-radius $dContainerBorderRadius
 	border-bottom-right-radius $dContainerBorderRadius
 
 .data-header-container
+	overflow hidden
 	border-top-left-radius $dContainerBorderRadius
 	border-top-right-radius $dContainerBorderRadius
 
 .fixed-container
+	overflow hidden
 	border-bottom-left-radius $dContainerBorderRadius
 
 .fixed-header-container
 	border-top-left-radius $dContainerBorderRadius
+
+.fixed-container,
+.fixed-header-container
+	float left
 
 .data-container,
 .data-header-container,
