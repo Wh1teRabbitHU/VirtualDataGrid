@@ -54,30 +54,38 @@ $dContainerBorderRadius = 5px
 	font-size 0.9em
 
 .data-container
+	overflow scroll
 	border-bottom-left-radius $dContainerBorderRadius
 	border-bottom-right-radius $dContainerBorderRadius
 
 .data-header-container
+	overflow hidden
 	border-top-left-radius $dContainerBorderRadius
 	border-top-right-radius $dContainerBorderRadius
 
 .fixed-container
+	overflow hidden
 	border-bottom-left-radius $dContainerBorderRadius
 
 .fixed-header-container
 	border-top-left-radius $dContainerBorderRadius
+
+.fixed-container,
+.fixed-header-container
+	float left
 
 .data-container,
 .data-header-container,
 .fixed-container,
 .fixed-header-container
 	overflow-anchor none
+	transform translate3d(0, 0, 0) // Force chrome to optimize the table
 
 	.data-table,
 	.data-header-table,
 	.fixed-table,
 	.fixed-header-table
-		transform translate3d(0, 0, 0) // Force chrome to optimize the table
+		will-change transform
 		border-collapse collapse
 
 	.fixed-table tr:last-child td
@@ -105,7 +113,6 @@ $dContainerBorderRadius = 5px
 	.header-cell,
 	.filter-cell,
 	.data-cell
-		position relative
 		border-right 1px solid $cTableRowBorder
 		border-bottom 1px solid $cTableRowBorder
 		padding 0
