@@ -1,7 +1,5 @@
 'use strict';
 
-var domUtil = require('../utils/dom');
-
 function show(config, options) {
 	switch (options.type) {
 		case 'info':
@@ -42,10 +40,7 @@ function showError(config, options) {
 function onMouseEnterCellWithTitle(config, element) {
 	var cellDataContainer = element === null ? null : element.querySelector('.' + config.inner.selectors.cellDataContainer);
 
-	if (cellDataContainer === null ||
-		!domUtil.isEllipsisActive(cellDataContainer) &&
-		!domUtil.isOverflown(cellDataContainer)) {
-
+	if (cellDataContainer === null || !element.classList.contains(config.inner.selectors.overflowedCell)) {
 		return;
 	}
 

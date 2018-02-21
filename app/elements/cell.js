@@ -1,5 +1,7 @@
 'use strict';
 
+var domUtils = require('../utils/dom');
+
 function createDataContainer(config, cellNode, data) {
 	var dataContainer = document.createElement('div'),
 		maxHeight = config.dimensions.cellHeight - config.dimensions.cellBorderWidth - config.dimensions.cellPaddingVertical * 2;
@@ -72,12 +74,15 @@ function updateDataContainer(config, cellNode, data) {
 		dataContainer.innerHTML = data;
 		cellNode.title = dataContainer.textContent;
 	}
+
+	cellNode.classList.toggle(config.inner.selectors.overflowedCell, domUtils.isOverflown(cellNode));
 }
 
 function updateCell(config, cellNode, cellData) {
 	updateDataContainer(config, cellNode, cellData.getValue());
 
 	cellNode.className = config.inner.selectors.dataCell + ' ' + (cellData.class || '');
+	cellNode.classList.toggle(config.inner.selectors.overflowedCell, domUtils.isOverflown(cellNode));
 }
 
 module.exports = {
