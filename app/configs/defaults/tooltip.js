@@ -8,6 +8,14 @@ function invokeFn(name, param1, param2) {
 	window.tlite[name](param1, param2);
 }
 
+function getOrientationByPosition(element) {
+	var windowHeight = window.innerHeight,
+		centerHeight = windowHeight / 2,
+		position = element.getBoundingClientRect();
+
+	return centerHeight < position.top ? 's' : 'n';
+}
+
 function show(options) {
 	switch (options.type) {
 		case 'info':
@@ -36,13 +44,7 @@ function hideAll() {
 }
 
 function showInfo(options) {
-	var orientation = 's';
-
-	if (options.element.matches('.header-cell')) {
-		orientation = 'n';
-	}
-
-	invokeFn('show', options.element, { grav: orientation });
+	invokeFn('show', options.element, { grav: getOrientationByPosition(options.element) });
 }
 
 function showWarn(options) {

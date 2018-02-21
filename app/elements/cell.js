@@ -2,14 +2,19 @@
 
 var domUtils = require('../utils/dom');
 
-function createDataContainer(config, cellNode, data) {
+function createDataContainer(config, cellNode, data, setMaxHeight) {
 	var dataContainer = document.createElement('div'),
 		maxHeight = config.dimensions.cellHeight - config.dimensions.cellBorderWidth - config.dimensions.cellPaddingVertical * 2;
 
+	setMaxHeight = setMaxHeight !== false;
+
 	dataContainer.classList.add(config.inner.selectors.cellDataContainer);
 	dataContainer.style.minWidth = config.dimensions.cellWidth + 'px';
-	dataContainer.style.maxHeight = maxHeight + 'px';
 	dataContainer.style.padding = config.dimensions.cellPaddingVertical + 'px ' + config.dimensions.cellPaddingHorizontal + 'px';
+
+	if (setMaxHeight) {
+		dataContainer.style.maxHeight = maxHeight + 'px';
+	}
 
 	cellNode.appendChild(dataContainer);
 
