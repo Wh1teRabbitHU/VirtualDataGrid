@@ -113,17 +113,16 @@ function onClickFilterHeader(event, config) {
 		filterContainerSelector = filterCellSelector + ' .' + config.inner.selectors.cellDataContainer,
 		filterDisabledSelector = '.' + config.inner.selectors.filterDisabled,
 		filterSearchIconSelector = filterCellSelector + ' .' + config.inner.selectors.filterSearchIcon,
-		filterClearIconSelector = filterCellSelector + ' .' + config.inner.selectors.filterClearIcon;
+		filterClearIconSelector = filterCellSelector + ' .' + config.inner.selectors.filterClearIcon,
+		cellNode = domUtil.findParentNode(event.target, filterCellSelector);
 
 	if (!event.target.matches(filterContainerSelector) &&
 		!event.target.matches(filterSearchIconSelector) &&
 		!event.target.matches(filterClearIconSelector) ||
-		event.target.matches(filterDisabledSelector)) {
+		cellNode.matches(filterDisabledSelector)) {
 
 		return;
 	}
-
-	var cellNode = domUtil.findParentNode(event.target, filterCellSelector);
 
 	if (event.target.matches(filterClearIconSelector)) {
 		filterModule.clearFilter(config, cellNode);
