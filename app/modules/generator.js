@@ -86,7 +86,7 @@ function initTable(config) {
 			tdElement = document.createElement('td');
 			tdElement.classList.add(config.inner.selectors.headerCell);
 
-			cellElement.createDataContainer(config, tdElement, cellElement.createHeaderData(config, tdElement, headerRow[j], isLastRow));
+			cellElement.createDataContainer(config, tdElement, cellElement.createHeaderData(config, tdElement, headerRow[j], isLastRow), false);
 
 			if (isLastRow) {
 				tdElement.classList.add(config.inner.selectors.sortCell);

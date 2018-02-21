@@ -15,7 +15,7 @@
   box-shadow: 0 0.5rem 1rem -0.5rem black;
   z-index: 1000;
   -webkit-backface-visibility: hidden;
-  width: calc(100% - 67px); /* Full size - (paddings + margins + positions) */
+  width: calc(160px); /* Full size - (paddings + margins + positions) */
   word-wrap: break-word;
 }
 

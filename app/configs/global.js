@@ -104,7 +104,8 @@ var STATIC_INNER_ATTRS = {
 		filteredOutRow: 'filtered-out',
 		dataRow: 'data-row',
 		dataCell: 'data-cell',
-		cellDataContainer: 'cell-data-container'
+		cellDataContainer: 'cell-data-container',
+		overflowedCell: 'overflowed-cell'
 	},
 	dimensions: {},
 	icons: {
