@@ -87,8 +87,6 @@ function updateData(config) {
 	var dataRowList = document.querySelectorAll('.' + config.selectors.dataTable + ' tr.' + config.inner.selectors.dataRow),
 		fixedRowList = document.querySelectorAll('.' + config.selectors.fixedTable + ' tr.' + config.inner.selectors.dataRow);
 
-	window.console.log('Starting update');
-
 	// Cell data row update
 	dataRowList.forEach(function(row, rowNumber) {
 		row.querySelectorAll('td.' + config.inner.selectors.dataCell).forEach(function(cell, cellNumber) {
@@ -108,8 +106,6 @@ function updateData(config) {
 
 		updateFixedHeight(config, dataRowList, row, rowNumber);
 	});
-
-	window.console.log('Ending update');
 }
 
 function updateFixedHeight(config, dataRowList, fixedRow, rowNumber) {
