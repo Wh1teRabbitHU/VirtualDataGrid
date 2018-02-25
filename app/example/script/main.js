@@ -25,6 +25,27 @@ function generateHeaders(headerSize, headersRowSize) {
 	return headers;
 }
 
+function generateFixedHeaders(headerSize, headersRowSize) {
+	var headers = [];
+
+	for (var i = 0; i < headersRowSize; i++) {
+		headers.push([]);
+
+		var colspanNumber = colspans[headersRowSize - i - 1];
+
+		for (var j = 1; j <= headerSize / colspanNumber; j++) {
+			headers[i].push({
+				key: 'fixed_column_' + j,
+				text: j + '. fixed column',
+				dataType: 'text',
+				colspan: colspanNumber
+			});
+		}
+	}
+
+	return headers;
+}
+
 function generateData(headers, fixedHeaders, datasourceSize) {
 	var ds = [],
 		headersRowSize = headers.length,
@@ -267,7 +288,7 @@ window.addEventListener('load', function() {
 				headersRowSizeValue = parseInt(headersRowSize.value, 10),
 				dataSizeValue = parseInt(dataSize.value, 10),
 				headers = generateHeaders(headerSizeValue, headersRowSizeValue),
-				fixedHeaders = generateHeaders(fixedHeaderSizeValue, headersRowSizeValue),
+				fixedHeaders = generateFixedHeaders(fixedHeaderSizeValue, headersRowSizeValue),
 				data = generateData(headers, fixedHeaders, dataSizeValue);
 
 			headersInput.value = JSON.stringify(headers, null, 2);

@@ -100,8 +100,36 @@ function updateData(config) {
 			var fixedCellData = tableUtil.getFixedCellData(config, rowNumber, cellNumber);
 
 			cellElement.updateCell(config, cell, fixedCellData);
+
+			updateFixedHeight(config, row, rowNumber);
 		});
 	});
+}
+
+function updateFixedHeight(config, fixedRow, rowNumber) {
+	if (config.fixedHeaders.length === 0 || config.dimensions.lockCellHeight) {
+		return;
+	}
+
+	var dataRowList = document.querySelectorAll('.' + config.selectors.dataTable + ' tr.' + config.inner.selectors.dataRow),
+		dataRow = dataRowList.length < rowNumber ? null : dataRowList[rowNumber];
+
+	if (dataRow === null) {
+		return; // It shouldn't be
+	}
+
+	var dataHeight = dataRow.clientHeight,
+		fixedHeight = fixedRow.clientHeight;
+
+	if (dataHeight === fixedHeight) {
+		return; // No need for adjustment
+	}
+
+	if (dataHeight > fixedHeight) {
+		fixedRow.style.height = dataHeight + 'px';
+	} else {
+		dataRow.style.height = fixedHeight + 'px';
+	}
 }
 
 function scrollTables(config) {
