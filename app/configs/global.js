@@ -29,7 +29,7 @@ var DEFAULTS = {
 		cellPaddingHorizontal: 8,
 		cellBorderWidth: 1,
 		containerHeight: configUtil.getDefaultContainerHeight,
-		lockCellHeight: false
+		lockCellHeight: true
 	},
 	edit: {
 		enabled: false,
