@@ -84,9 +84,13 @@ function updateHeader(config) {
 }
 
 function updateData(config) {
+	var dataRowList = document.querySelectorAll('.' + config.selectors.dataTable + ' tr.' + config.inner.selectors.dataRow),
+		fixedRowList = document.querySelectorAll('.' + config.selectors.fixedTable + ' tr.' + config.inner.selectors.dataRow);
+
+	window.console.log('Starting update');
 
 	// Cell data row update
-	document.querySelectorAll('.' + config.selectors.dataTable + ' tr.' + config.inner.selectors.dataRow).forEach(function(row, rowNumber) {
+	dataRowList.forEach(function(row, rowNumber) {
 		row.querySelectorAll('td.' + config.inner.selectors.dataCell).forEach(function(cell, cellNumber) {
 			var cellData = tableUtil.getCellData(config, rowNumber, cellNumber);
 
@@ -95,24 +99,25 @@ function updateData(config) {
 	});
 
 	// Fixed cell data row update
-	document.querySelectorAll('.' + config.selectors.fixedTable + ' tr.' + config.inner.selectors.dataRow).forEach(function(row, rowNumber) {
+	fixedRowList.forEach(function(row, rowNumber) {
 		row.querySelectorAll('td.' + config.inner.selectors.dataCell).forEach(function(cell, cellNumber) {
 			var fixedCellData = tableUtil.getFixedCellData(config, rowNumber, cellNumber);
 
 			cellElement.updateCell(config, cell, fixedCellData);
-
-			updateFixedHeight(config, row, rowNumber);
 		});
+
+		updateFixedHeight(config, dataRowList, row, rowNumber);
 	});
+
+	window.console.log('Ending update');
 }
 
-function updateFixedHeight(config, fixedRow, rowNumber) {
+function updateFixedHeight(config, dataRowList, fixedRow, rowNumber) {
 	if (config.fixedHeaders.length === 0 || config.dimensions.lockCellHeight) {
 		return;
 	}
 
-	var dataRowList = document.querySelectorAll('.' + config.selectors.dataTable + ' tr.' + config.inner.selectors.dataRow),
-		dataRow = dataRowList.length < rowNumber ? null : dataRowList[rowNumber];
+	var dataRow = dataRowList.length < rowNumber ? null : dataRowList[rowNumber];
 
 	if (dataRow === null) {
 		return; // It shouldn't be
