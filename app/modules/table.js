@@ -10,10 +10,12 @@ function updateTable(config) {
 }
 
 function updateHeader(config) {
-	var colspan = 1;
+	var colspan = 1,
+		dataHeaderRowList = document.querySelectorAll('.' + config.selectors.dataHeaderTable + ' tr.' + config.inner.selectors.headerRow),
+		fixedHeaderRowList = document.querySelectorAll('.' + config.selectors.fixedHeaderTable + ' tr.' + config.inner.selectors.headerRow);
 
 	// Header cell update
-	document.querySelectorAll('.' + config.selectors.dataHeaderTable + ' tr.' + config.inner.selectors.headerRow).forEach(function(row, rowCount) {
+	dataHeaderRowList.forEach(function(row, rowCount) {
 		row.querySelectorAll('td.' + config.inner.selectors.headerCell).forEach(function(cell, cellCount) {
 			var cellObj = config.headers[rowCount][cellCount],
 				isLastRow = config.inner.indexOfCellKeyHeader === rowCount;
@@ -40,13 +42,15 @@ function updateHeader(config) {
 	});
 
 	// Fixed header cell update
-	document.querySelectorAll('.' + config.selectors.fixedHeaderTable + ' tr.' + config.inner.selectors.headerRow).forEach(function(row, rowCount) {
+	fixedHeaderRowList.forEach(function(row, rowCount) {
 		row.querySelectorAll('td.' + config.inner.selectors.headerCell).forEach(function(cell, cellCount) {
 			var cellObj = config.fixedHeaders[rowCount][cellCount],
 				isLastRow = config.inner.indexOfCellKeyHeader === rowCount;
 
 			cellElement.updateDataContainer(config, cell, cellElement.createHeaderData(config, cell, cellObj, isLastRow));
 		});
+
+		updateFixedHeight(config, dataHeaderRowList, row, rowCount);
 	});
 
 	// Filter row update
