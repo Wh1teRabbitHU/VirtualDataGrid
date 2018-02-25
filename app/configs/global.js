@@ -28,7 +28,8 @@ var DEFAULTS = {
 		cellPaddingVertical: 4,
 		cellPaddingHorizontal: 8,
 		cellBorderWidth: 1,
-		containerHeight: configUtil.getDefaultContainerHeight
+		containerHeight: configUtil.getDefaultContainerHeight,
+		lockCellHeight: false
 	},
 	edit: {
 		enabled: false,
@@ -164,6 +165,7 @@ function init(config, options) {
 	updateValue(config, options, 'dimensions.cellPaddingHorizontal');
 	updateValue(config, options, 'dimensions.cellBorderWidth');
 	updateValue(config, options, 'dimensions.containerHeight');
+	updateValue(config, options, 'dimensions.lockCellHeight');
 
 	updateValue(config, options, 'eventHandlers.onBeforeEdit');
 	updateValue(config, options, 'eventHandlers.onValidation');
@@ -240,6 +242,10 @@ function initHeaderData(config) {
 				headerCell.customValidator = HEADER_DEFAULTS.customValidator;
 			}
 
+			if (typeof headerCell.width == 'undefined') {
+				headerCell.width = config.dimensions.cellWidth;
+			}
+
 			hRow.push(headerCell);
 
 			if (typeof headerCell.colspan != 'undefined') {
@@ -270,6 +276,10 @@ function initHeaderData(config) {
 
 			if (typeof headerCell.sortDisabled == 'undefined') {
 				headerCell.sortDisabled = HEADER_DEFAULTS.sortDisabled;
+			}
+
+			if (typeof headerCell.width == 'undefined') {
+				headerCell.width = config.dimensions.cellWidth;
 			}
 
 			hRow.push(headerCell);

@@ -10,10 +10,12 @@ function updateTable(config) {
 }
 
 function updateHeader(config) {
-	var colspan = 1;
+	var colspan = 1,
+		dataHeaderRowList = document.querySelectorAll('.' + config.selectors.dataHeaderTable + ' tr.' + config.inner.selectors.headerRow),
+		fixedHeaderRowList = document.querySelectorAll('.' + config.selectors.fixedHeaderTable + ' tr.' + config.inner.selectors.headerRow);
 
 	// Header cell update
-	document.querySelectorAll('.' + config.selectors.dataHeaderTable + ' tr.' + config.inner.selectors.headerRow).forEach(function(row, rowCount) {
+	dataHeaderRowList.forEach(function(row, rowCount) {
 		row.querySelectorAll('td.' + config.inner.selectors.headerCell).forEach(function(cell, cellCount) {
 			var cellObj = config.headers[rowCount][cellCount],
 				isLastRow = config.inner.indexOfCellKeyHeader === rowCount;
@@ -40,13 +42,15 @@ function updateHeader(config) {
 	});
 
 	// Fixed header cell update
-	document.querySelectorAll('.' + config.selectors.fixedHeaderTable + ' tr.' + config.inner.selectors.headerRow).forEach(function(row, rowCount) {
+	fixedHeaderRowList.forEach(function(row, rowCount) {
 		row.querySelectorAll('td.' + config.inner.selectors.headerCell).forEach(function(cell, cellCount) {
 			var cellObj = config.fixedHeaders[rowCount][cellCount],
 				isLastRow = config.inner.indexOfCellKeyHeader === rowCount;
 
 			cellElement.updateDataContainer(config, cell, cellElement.createHeaderData(config, cell, cellObj, isLastRow));
 		});
+
+		updateFixedHeight(config, dataHeaderRowList, row, rowCount);
 	});
 
 	// Filter row update
@@ -84,9 +88,11 @@ function updateHeader(config) {
 }
 
 function updateData(config) {
+	var dataRowList = document.querySelectorAll('.' + config.selectors.dataTable + ' tr.' + config.inner.selectors.dataRow),
+		fixedRowList = document.querySelectorAll('.' + config.selectors.fixedTable + ' tr.' + config.inner.selectors.dataRow);
 
 	// Cell data row update
-	document.querySelectorAll('.' + config.selectors.dataTable + ' tr.' + config.inner.selectors.dataRow).forEach(function(row, rowNumber) {
+	dataRowList.forEach(function(row, rowNumber) {
 		row.querySelectorAll('td.' + config.inner.selectors.dataCell).forEach(function(cell, cellNumber) {
 			var cellData = tableUtil.getCellData(config, rowNumber, cellNumber);
 
@@ -95,13 +101,50 @@ function updateData(config) {
 	});
 
 	// Fixed cell data row update
-	document.querySelectorAll('.' + config.selectors.fixedTable + ' tr.' + config.inner.selectors.dataRow).forEach(function(row, rowNumber) {
+	fixedRowList.forEach(function(row, rowNumber) {
 		row.querySelectorAll('td.' + config.inner.selectors.dataCell).forEach(function(cell, cellNumber) {
 			var fixedCellData = tableUtil.getFixedCellData(config, rowNumber, cellNumber);
 
 			cellElement.updateCell(config, cell, fixedCellData);
 		});
+
+		updateFixedHeight(config, dataRowList, row, rowNumber);
 	});
+}
+
+function updateFixedHeight(config, dataRowList, fixedRow, rowNumber) {
+	if (config.fixedHeaders.length === 0 || config.dimensions.lockCellHeight) {
+		return;
+	}
+
+	var dataRow = dataRowList.length < rowNumber ? null : dataRowList[rowNumber];
+
+	if (dataRow === null) {
+		return; // It shouldn't be
+	}
+
+	var originalHeight = config.dimensions.cellHeight + 'px';
+
+	if (dataRow.style.height !== originalHeight) {
+		dataRow.style.height = originalHeight;
+	}
+
+	if (fixedRow.style.height !== originalHeight) {
+		fixedRow.style.height = originalHeight;
+	}
+
+	var dataHeight = dataRow.clientHeight,
+		fixedHeight = fixedRow.clientHeight;
+
+	if (dataHeight === fixedHeight) {
+		return; // No need for adjustment
+	}
+
+	if (dataHeight > fixedHeight) {
+		fixedRow.style.height = dataHeight + 'px';
+	} else {
+		dataRow.style.height = fixedHeight + 'px';
+	}
 }
 
 function scrollTables(config) {

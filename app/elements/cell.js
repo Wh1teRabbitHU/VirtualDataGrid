@@ -1,18 +1,16 @@
 'use strict';
 
-var domUtils = require('../utils/dom');
-
-function createDataContainer(config, cellNode, data, setMaxHeight) {
-	var dataContainer = document.createElement('div'),
-		maxHeight = config.dimensions.cellHeight - config.dimensions.cellBorderWidth - config.dimensions.cellPaddingVertical * 2;
-
-	setMaxHeight = setMaxHeight !== false;
+function createDataContainer(config, cellNode, cellObj, data) {
+	var dataContainer = document.createElement('div');
 
 	dataContainer.classList.add(config.inner.selectors.cellDataContainer);
-	dataContainer.style.minWidth = config.dimensions.cellWidth + 'px';
+	dataContainer.style.minWidth = cellObj.width + 'px';
+	dataContainer.style.width = cellObj.width + 'px';
 	dataContainer.style.padding = config.dimensions.cellPaddingVertical + 'px ' + config.dimensions.cellPaddingHorizontal + 'px';
 
-	if (setMaxHeight) {
+	if (config.dimensions.lockCellHeight) {
+		var maxHeight = config.dimensions.cellHeight - config.dimensions.cellBorderWidth - config.dimensions.cellPaddingVertical * 2;
+
 		dataContainer.style.maxHeight = maxHeight + 'px';
 	}
 
@@ -79,15 +77,12 @@ function updateDataContainer(config, cellNode, data) {
 		dataContainer.innerHTML = data;
 		cellNode.title = dataContainer.textContent;
 	}
-
-	cellNode.classList.toggle(config.inner.selectors.overflowedCell, domUtils.isOverflown(cellNode));
 }
 
 function updateCell(config, cellNode, cellData) {
 	updateDataContainer(config, cellNode, cellData.getValue());
 
 	cellNode.className = config.inner.selectors.dataCell + ' ' + (cellData.class || '');
-	cellNode.classList.toggle(config.inner.selectors.overflowedCell, domUtils.isOverflown(cellNode));
 }
 
 module.exports = {

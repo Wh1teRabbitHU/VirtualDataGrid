@@ -72,7 +72,7 @@ function initTable(config) {
 		columnsNumber = configUtil.getKeyHeader(config).length,
 		rowsNumber = config.dataSource.length;
 
-	var i, j, trHead, trBody, tdElement, cellObj;
+	var i, j, trHead, trBody, tdElement, cellObj, cellData;
 
 	// Generate virtual header
 	config.headers.forEach(function(headerRow, rowCount) {
@@ -83,10 +83,13 @@ function initTable(config) {
 		trHead.style.height = config.dimensions.cellHeight + 'px';
 
 		for (j = 0; j < columnsNumber; j++) {
+			cellObj = headerRow[j];
+			cellData = cellElement.createHeaderData(config, tdElement, cellObj, isLastRow);
+
 			tdElement = document.createElement('td');
 			tdElement.classList.add(config.inner.selectors.headerCell);
 
-			cellElement.createDataContainer(config, tdElement, cellElement.createHeaderData(config, tdElement, headerRow[j], isLastRow), false);
+			cellElement.createDataContainer(config, tdElement, cellObj, cellData);
 
 			if (isLastRow) {
 				tdElement.classList.add(config.inner.selectors.sortCell);
@@ -116,11 +119,12 @@ function initTable(config) {
 
 		for (j = 0; j < columnsNumber; j++) {
 			cellObj = configUtil.getKeyHeader(config)[j];
+			cellData = cellElement.createHeaderData(config, tdElement, cellObj, {});
 
 			tdElement = document.createElement('td');
 			tdElement.classList.add(config.inner.selectors.filterCell);
 
-			cellElement.createDataContainer(config, tdElement, cellElement.createFilterData(config, tdElement, cellObj, {}));
+			cellElement.createDataContainer(config, tdElement, cellObj, cellData);
 
 			if (cellObj.filterDisabled) {
 				tdElement.classList.add(config.inner.selectors.filterDisabled);
@@ -145,10 +149,12 @@ function initTable(config) {
 		trBody.style.height = config.dimensions.cellHeight + 'px';
 
 		for (j = 0; j < columnsNumber; j++) {
+			cellObj = configUtil.getKeyHeader(config)[j];
+
 			tdElement = document.createElement('td');
 			tdElement.classList.add(config.inner.selectors.dataCell);
 
-			cellElement.createDataContainer(config, tdElement);
+			cellElement.createDataContainer(config, tdElement, cellObj);
 
 			trBody.appendChild(tdElement);
 		}
@@ -183,10 +189,13 @@ function initTable(config) {
 		for (j = 0; j < config.fixedHeaders[i].length; j++) {
 			var isLastRow = j === config.fixedHeaders[i].length - 1;
 
+			cellObj = config.fixedHeaders[i][j];
+			cellData = cellElement.createHeaderData(config, tdElement, cellObj, isLastRow);
+
 			tdElement = document.createElement('td');
 			tdElement.classList.add(config.inner.selectors.headerCell);
 
-			cellElement.createDataContainer(config, tdElement, cellElement.createHeaderData(config, tdElement, config.fixedHeaders[i][j], isLastRow));
+			cellElement.createDataContainer(config, tdElement, cellObj, cellData);
 
 			if (isLastRow) {
 				tdElement.classList.add(config.inner.selectors.sortCell);
@@ -214,12 +223,13 @@ function initTable(config) {
 
 		for (j = 0; j < config.fixedHeaders[config.inner.indexOfCellKeyHeader].length; j++) {
 			cellObj = configUtil.getFixedKeyHeader(config)[j];
+			cellData = cellElement.createFilterData(config, tdElement, cellObj, {});
 
 			tdElement = document.createElement('td');
 			tdElement.classList.add(config.inner.selectors.filterCell);
 			tdElement.style.minWidth = config.dimensions.cellWidth + 'px';
 
-			cellElement.createDataContainer(config, tdElement, cellElement.createFilterData(config, tdElement, cellObj, {}));
+			cellElement.createDataContainer(config, tdElement, cellObj, cellData);
 
 			if (cellObj.filterDisabled) {
 				tdElement.classList.add(config.inner.selectors.filterDisabled);
@@ -239,10 +249,12 @@ function initTable(config) {
 		trBody.style.height = config.dimensions.cellHeight + 'px';
 
 		for (j = 0; j < config.fixedHeaders[config.inner.indexOfCellKeyHeader].length; j++) {
+			cellObj = configUtil.getFixedKeyHeader(config)[j];
+
 			tdElement = document.createElement('td');
 			tdElement.classList.add(config.inner.selectors.dataCell);
 
-			cellElement.createDataContainer(config, tdElement);
+			cellElement.createDataContainer(config, tdElement, cellObj);
 
 			trBody.appendChild(tdElement);
 		}
