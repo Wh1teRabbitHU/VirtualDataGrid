@@ -123,6 +123,16 @@ function updateFixedHeight(config, dataRowList, fixedRow, rowNumber) {
 		return; // It shouldn't be
 	}
 
+	var originalHeight = config.dimensions.cellHeight + 'px';
+
+	if (dataRow.style.height !== originalHeight) {
+		dataRow.style.height = originalHeight;
+	}
+
+	if (fixedRow.style.height !== originalHeight) {
+		fixedRow.style.height = originalHeight;
+	}
+
 	var dataHeight = dataRow.clientHeight,
 		fixedHeight = fixedRow.clientHeight;
 

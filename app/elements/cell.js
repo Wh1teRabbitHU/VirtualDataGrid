@@ -1,7 +1,5 @@
 'use strict';
 
-var domUtils = require('../utils/dom');
-
 function createDataContainer(config, cellNode, cellObj, data) {
 	var dataContainer = document.createElement('div');
 
