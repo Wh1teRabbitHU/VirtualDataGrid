@@ -2,7 +2,7 @@
 
 function getDefaultContainerHeight(config) {
 	return window.innerHeight - document.querySelector(config.selectors.mainContainer).getBoundingClientRect().top -
-			(config.headers.length + (config.filter.enabled ? 1 : 0)) * config.dimensions.cellHeight - 52;
+			(config.headers.length + (config.filter.enabled ? 1 : 0)) * config.dimensions.cellHeight - config.dimensions.containerPaddingBottom;
 }
 
 function getIndexOfCellKeyHeader(config) {

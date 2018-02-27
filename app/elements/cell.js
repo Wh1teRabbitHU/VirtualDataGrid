@@ -5,7 +5,6 @@ function createDataContainer(config, cellNode, cellObj, data) {
 
 	dataContainer.classList.add(config.inner.selectors.cellDataContainer);
 	dataContainer.style.minWidth = cellObj.width + 'px';
-	dataContainer.style.width = cellObj.width + 'px';
 	dataContainer.style.padding = config.dimensions.cellPaddingVertical + 'px ' + config.dimensions.cellPaddingHorizontal + 'px';
 
 	if (config.dimensions.lockCellHeight) {

@@ -41,6 +41,10 @@ function generateFixedHeaders(headerSize, headersRowSize) {
 				colspan: colspanNumber
 			});
 		}
+
+		if (headers[i].length === 0 && headerSize !== 0) {
+			headers[i].push({});
+		}
 	}
 
 	return headers;
@@ -82,7 +86,7 @@ function generateDataGrid() {
 }
 
 function setupOptionContainer() {
-	var generatorContainerHeight = window.innerHeight - document.querySelector('.root-container').getBoundingClientRect().top - 20;
+	var generatorContainerHeight = window.innerHeight - document.querySelector('.root-container').getBoundingClientRect().top - 18;
 
 	document.querySelector('.generator-container').style.maxHeight = generatorContainerHeight + 'px';
 	document.querySelector('.generator-container').style.height = generatorContainerHeight + 'px';
