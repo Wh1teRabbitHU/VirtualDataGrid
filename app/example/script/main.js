@@ -41,6 +41,10 @@ function generateFixedHeaders(headerSize, headersRowSize) {
 				colspan: colspanNumber
 			});
 		}
+
+		if (headers[i].length === 0) {
+			headers[i].push({});
+		}
 	}
 
 	return headers;

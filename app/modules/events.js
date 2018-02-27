@@ -2,6 +2,7 @@
 
 var domUtil       = require('../utils/dom'),
 	keyboardUtil  = require('../utils/keyboard'),
+	configUtil    = require('../utils/configuration'),
 	sortModule    = require('../modules/sort'),
 	editModule    = require('../modules/edit'),
 	tableModule   = require('../modules/table'),
@@ -11,6 +12,7 @@ var domUtil       = require('../utils/dom'),
 var container;
 
 var instances = {
+	onResizeEventHandler: function() {},
 	onScrollEventHandler: function() {},
 	onWheelEventHandler: function() {},
 	onInputBlurEventHandler: function() {},
@@ -21,6 +23,24 @@ var instances = {
 	onMouseEnterCellWithTitle: function() {},
 	onMouseLeaveCellWithTitle: function() {},
 };
+
+function onResizeEventHandler(event, config) {
+	if (document.querySelector('#' + config.inner.selectors.uniqueId) === null) {
+		return;
+	}
+
+	var dataContainer = document.querySelector('.' + config.selectors.dataContainer),
+		fixedContainer = document.querySelector('.' + config.selectors.fixedContainer),
+		containerHeight = configUtil.getDefaultContainerHeight(config);
+
+	config.dimensions.containerHeight = containerHeight;
+
+	dataContainer.style.maxHeight = containerHeight + 'px';
+	dataContainer.style.height = containerHeight + 'px';
+
+	fixedContainer.style.maxHeight = containerHeight + 'px';
+	fixedContainer.style.height = containerHeight + 'px';
+}
 
 function onWheelEventHandler(event, config) {
 	event.preventDefault();
@@ -144,6 +164,7 @@ function onMouseLeaveCellWithTitle(event, config) {
 function init(config) {
 	container = document.querySelector('.' + config.selectors.dataContainer);
 
+	instances.onResizeEventHandler = function(event) { onResizeEventHandler(event, config); };
 	instances.onScrollEventHandler = function(event) { onScrollEventHandler(event, config); };
 	instances.onWheelEventHandler = function(event) { onWheelEventHandler(event, config); };
 	instances.onClickCellEventHandler = function(event) { onClickCellEventHandler(event, config); };
@@ -152,6 +173,10 @@ function init(config) {
 	instances.onClickFilterHeader = function(event) { onClickFilterHeader(event, config); };
 	instances.onMouseEnterCellWithTitle = function(event) { onMouseEnterCellWithTitle(event, config); };
 	instances.onMouseLeaveCellWithTitle = function(event) { onMouseLeaveCellWithTitle(event, config); };
+
+	if (config.autoResize) {
+		window.addEventListener('resize', instances.onResizeEventHandler);
+	}
 
 	if (container !== null) {
 		container.addEventListener('wheel', instances.onWheelEventHandler, { passive: false, capture: true });
@@ -190,6 +215,10 @@ function init(config) {
 
 function remove(config) {
 	container = document.querySelector('.' + config.selectors.dataContainer);
+
+	if (config.autoResize) {
+		window.removeEventListener('resize', instances.onResizeEventHandler);
+	}
 
 	if (container !== null) {
 		container.removeEventListener('wheel', instances.onWheelEventHandler);
