@@ -14,6 +14,7 @@ function generateTable(config, options) {
 	initTable(config);
 
 	tableModule.updateTable(config);
+	tableModule.updateContainerHeight(config);
 
 	events.init(config);
 }

@@ -2,7 +2,6 @@
 
 var domUtil       = require('../utils/dom'),
 	keyboardUtil  = require('../utils/keyboard'),
-	configUtil    = require('../utils/configuration'),
 	sortModule    = require('../modules/sort'),
 	editModule    = require('../modules/edit'),
 	tableModule   = require('../modules/table'),
@@ -29,17 +28,7 @@ function onResizeEventHandler(event, config) {
 		return;
 	}
 
-	var dataContainer = document.querySelector('.' + config.selectors.dataContainer),
-		fixedContainer = document.querySelector('.' + config.selectors.fixedContainer),
-		containerHeight = configUtil.getDefaultContainerHeight(config);
-
-	config.dimensions.containerHeight = containerHeight;
-
-	dataContainer.style.maxHeight = containerHeight + 'px';
-	dataContainer.style.height = containerHeight + 'px';
-
-	fixedContainer.style.maxHeight = containerHeight + 'px';
-	fixedContainer.style.height = containerHeight + 'px';
+	tableModule.updateContainerHeight(config);
 }
 
 function onWheelEventHandler(event, config) {

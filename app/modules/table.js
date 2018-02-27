@@ -147,6 +147,28 @@ function updateFixedHeight(config, dataRowList, fixedRow, rowNumber) {
 	}
 }
 
+function updateContainerHeight(config) {
+	var mainContainer = document.querySelector(config.selectors.mainContainer),
+		headerContainer = document.querySelector('.' + config.selectors.dataHeaderContainer),
+		dataContainer = document.querySelector('.' + config.selectors.dataContainer),
+		fixedContainer = document.querySelector('.' + config.selectors.fixedContainer),
+		windowHeight = window.innerHeight,
+		containerTopPosition = mainContainer.getBoundingClientRect().top,
+		headerRowsHeight = headerContainer.getBoundingClientRect().height,
+		containerPaddingBottom = config.dimensions.containerPaddingBottom,
+		containerHeight = windowHeight - containerTopPosition - headerRowsHeight - containerPaddingBottom;
+
+	config.dimensions.containerHeight = containerHeight;
+
+	dataContainer.style.maxHeight = containerHeight + 'px';
+	dataContainer.style.height = containerHeight + 'px';
+
+	if (fixedContainer !== null) {
+		fixedContainer.style.maxHeight = containerHeight + 'px';
+		fixedContainer.style.height = containerHeight + 'px';
+	}
+}
+
 function scrollTables(config) {
 	var dataContainer = document.querySelector('.' + config.selectors.dataContainer),
 		fixedContainer = document.querySelector('.' + config.selectors.fixedContainer),
@@ -192,6 +214,7 @@ module.exports = {
 	updateTable: updateTable,
 	updateHeader: updateHeader,
 	updateData: updateData,
+	updateContainerHeight: updateContainerHeight,
 	scrollTables: scrollTables,
 	resetEditingCell: resetEditingCell,
 	resetEditedCells: resetEditedCells,

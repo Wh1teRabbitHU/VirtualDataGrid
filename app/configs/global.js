@@ -28,6 +28,7 @@ var DEFAULTS = {
 		cellPaddingVertical: 4,
 		cellPaddingHorizontal: 8,
 		cellBorderWidth: 1,
+		containerPaddingBottom: 54,
 		containerHeight: configUtil.getDefaultContainerHeight,
 		lockCellHeight: false
 	},
@@ -164,6 +165,7 @@ function init(config, options) {
 	updateValue(config, options, 'dimensions.cellPaddingVertical');
 	updateValue(config, options, 'dimensions.cellPaddingHorizontal');
 	updateValue(config, options, 'dimensions.cellBorderWidth');
+	updateValue(config, options, 'dimensions.containerPaddingBottom');
 	updateValue(config, options, 'dimensions.containerHeight');
 	updateValue(config, options, 'dimensions.lockCellHeight');
 
