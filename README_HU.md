@@ -139,8 +139,6 @@ Az alábbiak a későbbiekben még bekerülhetnek az alkalmazásba, azonban jele
 
 ## <a id="licence"></a> Licensz
 
-#### Creative Commons - Attribution-NonCommercial-ShareAlike 4.0 International
+#### GNU GENERAL PUBLIC LICENSE - GPL 3.0
 
-[Hivatkozás](https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode) a licensz teljes tartalmára. Ezen felül az alábbi kiegészítések érvényesek a termékre:
-
-A nem kereskedelmi célú használat egyéni elbírálás alapján módosulhat! Az ezen termékben használt eljárások a környezetükből kiemelve nem felhasználhatóak! Önmagában ez a termék más által nem kerülhet kereskedelmi forgalomba, pénz vagy bármilyen más ellenszolgáltatás nem kérhető érte. Azonban más termékek (szoftverek) részeként szabadon használható, ha a többi, a licenszben leírt kritériumoknak megfelel a használat! (Attribution-ShareAlike)
+[Hivatkozás](https://www.gnu.org/licenses/gpl-3.0.txt) a licensz teljes tartalmára.
