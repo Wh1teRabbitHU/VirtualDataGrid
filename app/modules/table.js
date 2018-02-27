@@ -85,6 +85,8 @@ function updateHeader(config) {
 			cellElement.updateDataContainer(config, cell, cellElement.createFilterData(config, cell, cellObj, filterObj));
 		});
 	}
+
+	updateContainerHeight(config);
 }
 
 function updateData(config) {
@@ -157,6 +159,10 @@ function updateContainerHeight(config) {
 		headerRowsHeight = headerContainer.getBoundingClientRect().height,
 		containerPaddingBottom = config.dimensions.containerPaddingBottom,
 		containerHeight = windowHeight - containerTopPosition - headerRowsHeight - containerPaddingBottom;
+
+	if (config.dimensions.containerHeight === containerHeight) {
+		return;
+	}
 
 	config.dimensions.containerHeight = containerHeight;
 
