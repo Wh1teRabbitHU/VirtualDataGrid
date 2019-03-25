@@ -10,10 +10,16 @@ var globalConfig = require('../configs/global'),
 function generateTable(config, options) {
 	globalConfig.init(config, options);
 
-	initContainers(config);
-	initTable(config);
+	var elementHolder = {};
 
-	tableModule.updateTable(config);
+	initContainers(config, elementHolder);
+	initTable(config, elementHolder);
+
+	tableModule.initTable(config, elementHolder);
+
+	appendTableToDOM(config, elementHolder);
+
+	tableModule.updateContainerHeight(config);
 
 	events.init(config);
 }
@@ -24,9 +30,8 @@ function destroyTable(config) {
 	tableModule.destroyTable(config);
 }
 
-function initContainers(config) {
-	var mainContainer = document.querySelector(config.selectors.mainContainer),
-		dataContainer = document.createElement('div'),
+function initContainers(config, elementHolder) {
+	var dataContainer = document.createElement('div'),
 		dataHeaderContainer = document.createElement('div'),
 		dataTable = document.createElement('table'),
 		dataHeaderTable = document.createElement('table'),
@@ -34,8 +39,6 @@ function initContainers(config) {
 		fixedHeaderContainer = document.createElement('div'),
 		fixedTable = document.createElement('table'),
 		fixedHeaderTable = document.createElement('table');
-
-	mainContainer.setAttribute('id', config.inner.selectors.uniqueId);
 
 	dataContainer.classList.add(config.selectors.dataContainer);
 	dataHeaderContainer.classList.add(config.selectors.dataHeaderContainer);
@@ -46,26 +49,30 @@ function initContainers(config) {
 	fixedTable.classList.add(config.selectors.fixedTable);
 	fixedHeaderTable.classList.add(config.selectors.fixedHeaderTable);
 
-	mainContainer.appendChild(fixedHeaderContainer);
 	fixedHeaderContainer.appendChild(fixedHeaderTable);
-
-	mainContainer.appendChild(dataHeaderContainer);
 	dataHeaderContainer.appendChild(dataHeaderTable);
-
-	mainContainer.appendChild(fixedContainer);
-	fixedContainer.appendChild(fixedTable);
-
-	mainContainer.appendChild(dataContainer);
 	dataContainer.appendChild(dataTable);
+	fixedContainer.appendChild(fixedTable);
 
 	dataContainer.style.maxHeight = config.dimensions.containerHeight + 'px';
 	dataContainer.style.height = config.dimensions.containerHeight + 'px';
 
 	fixedContainer.style.maxHeight = config.dimensions.containerHeight + 'px';
 	fixedContainer.style.height = config.dimensions.containerHeight + 'px';
+
+	elementHolder.fixedHeaderContainer = fixedHeaderContainer;
+	elementHolder.dataHeaderContainer = dataHeaderContainer;
+	elementHolder.dataContainer = dataContainer;
+	elementHolder.fixedContainer = fixedContainer;
+	elementHolder.dataHeaderTable = dataHeaderTable;
+	elementHolder.dataTable = dataTable;
+	elementHolder.fixedHeaderTable = fixedHeaderTable;
+	elementHolder.fixedHeaderContainer = fixedHeaderContainer;
+	elementHolder.fixedTable = fixedTable;
+	elementHolder.fixedContainer = fixedContainer;
 }
 
-function initTable(config) {
+function initTable(config, elementHolder) {
 	// Generate virtual table
 	var virtualThead = document.createElement('thead'),
 		virtualTbody = document.createElement('tbody'),
@@ -162,16 +169,16 @@ function initTable(config) {
 		virtualTbody.appendChild(trBody);
 	}
 
-	document.querySelector('.' + config.selectors.dataHeaderTable).appendChild(virtualThead);
-	document.querySelector('.' + config.selectors.dataTable).appendChild(virtualTbody);
+	elementHolder.dataHeaderTable.appendChild(virtualThead);
+	elementHolder.dataTable.appendChild(virtualTbody);
 
 	// Generate fixed table
 
 	if (config.fixedHeaders.length === 0 || config.fixedHeaders[0].length === 0) {
-		document.querySelector('.' + config.selectors.fixedHeaderTable).remove();
-		document.querySelector('.' + config.selectors.fixedHeaderContainer).remove();
-		document.querySelector('.' + config.selectors.fixedTable).remove();
-		document.querySelector('.' + config.selectors.fixedContainer).remove();
+		elementHolder.fixedHeaderTable.remove();
+		elementHolder.fixedHeaderContainer.remove();
+		elementHolder.fixedTable.remove();
+		elementHolder.fixedContainer.remove();
 
 		return;
 	}
@@ -262,8 +269,19 @@ function initTable(config) {
 		fixedTbody.appendChild(trBody);
 	}
 
-	document.querySelector('.' + config.selectors.fixedHeaderTable).appendChild(fixedThead);
-	document.querySelector('.' + config.selectors.fixedTable).appendChild(fixedTbody);
+	elementHolder.fixedHeaderTable.appendChild(fixedThead);
+	elementHolder.fixedTable.appendChild(fixedTbody);
+}
+
+function appendTableToDOM(config, elementHolder) {
+	var mainContainer = document.querySelector(config.selectors.mainContainer);
+
+	mainContainer.setAttribute('id', config.inner.selectors.uniqueId);
+
+	mainContainer.appendChild(elementHolder.fixedHeaderContainer);
+	mainContainer.appendChild(elementHolder.dataHeaderContainer);
+	mainContainer.appendChild(elementHolder.fixedContainer);
+	mainContainer.appendChild(elementHolder.dataContainer);
 }
 
 function getDefaultOptions() {

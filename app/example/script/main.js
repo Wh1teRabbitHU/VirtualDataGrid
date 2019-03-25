@@ -4,6 +4,10 @@ var virtualDG;
 
 var colspans = [ 1, 2, 4, 8, 16 ];
 
+function getDiffBetweenTwoTimes(first, second) {
+	return (second - first) / 1000;
+}
+
 function generateHeaders(headerSize, headersRowSize) {
 	var headers = [];
 
@@ -81,8 +85,14 @@ function generateData(headers, fixedHeaders, datasourceSize) {
 }
 
 function generateDataGrid() {
+	var options = getOptionsFromInputs();
+
 	virtualDG = new window.VirtualDataGrid();
-	virtualDG.generateTable(getOptionsFromInputs());
+
+	var startingDate = new Date();
+
+	virtualDG.generateTable(options);
+	console.log('Generation successfully finished! Elapsed time: ' + getDiffBetweenTwoTimes(startingDate, new Date()) + 's');
 }
 
 function setupOptionContainer() {
