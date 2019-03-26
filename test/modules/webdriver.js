@@ -8,7 +8,7 @@ var webdriverOptions = {
 		browserName: 'chrome'
 	},
 	baseUrl: 'https://wh1terabbithu.github.io',
-	logLevel: 'debug',
+	logLevel: 'warn',
 	sync: true,
 	coloredLogs: true,
 	screenshotPath: './test/errorShots/',
