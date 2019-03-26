@@ -4,15 +4,33 @@ var tableUtil   = require('../utils/table'),
 	configUtil  = require('../utils/configuration'),
 	cellElement = require('../elements/cell');
 
-function updateTable(config) {
-	updateHeader(config);
-	updateData(config);
+function initTable(config, elementHolder) {
+	updateHeader(config, elementHolder);
+	updateData(config, elementHolder);
 }
 
-function updateHeader(config) {
+function updateTable(config) {
+	var elementHolder = {
+		mainContainer: document.querySelector(config.selectors.mainContainer),
+		headerContainer: document.querySelector('.' + config.selectors.dataHeaderContainer),
+		dataContainer: document.querySelector('.' + config.selectors.dataContainer),
+		fixedContainer: document.querySelector('.' + config.selectors.fixedContainer),
+		dataHeaderContainer: document.querySelector('.' + config.selectors.dataHeaderContainer),
+
+		dataHeaderTable: document.querySelector('.' + config.selectors.dataHeaderTable),
+		fixedHeaderTable: document.querySelector('.' + config.selectors.fixedHeaderTable),
+		dataTable: document.querySelector('.' + config.selectors.dataTable),
+		fixedTable: document.querySelector('.' + config.selectors.fixedTable)
+	};
+
+	updateHeader(config, elementHolder);
+	updateData(config, elementHolder);
+}
+
+function updateHeader(config, elementHolder) {
 	var colspan = 1,
-		dataHeaderRowList = document.querySelectorAll('.' + config.selectors.dataHeaderTable + ' tr.' + config.inner.selectors.headerRow),
-		fixedHeaderRowList = document.querySelectorAll('.' + config.selectors.fixedHeaderTable + ' tr.' + config.inner.selectors.headerRow);
+		dataHeaderRowList = elementHolder.dataHeaderTable.querySelectorAll('tr.' + config.inner.selectors.headerRow),
+		fixedHeaderRowList = elementHolder.fixedHeaderTable.querySelectorAll('tr.' + config.inner.selectors.headerRow);
 
 	// Header cell update
 	dataHeaderRowList.forEach(function(row, rowCount) {
@@ -55,7 +73,7 @@ function updateHeader(config) {
 
 	// Filter row update
 	if (config.filter.enabled) {
-		document.querySelectorAll('.' + config.selectors.dataHeaderTable + ' td.' + config.inner.selectors.filterCell).forEach(function(cell, cellCount) {
+		elementHolder.dataHeaderTable.querySelectorAll('td.' + config.inner.selectors.filterCell).forEach(function(cell, cellCount) {
 			var cellObj = configUtil.getKeyHeader(config)[cellCount],
 				filterObj = config.inner.filters[cellObj.key] || {},
 				currentFilterAttr = cell.getAttribute('data-attribute');
@@ -70,7 +88,7 @@ function updateHeader(config) {
 			cellElement.updateDataContainer(config, cell, cellElement.createFilterData(config, cell, cellObj, filterObj));
 		});
 
-		document.querySelectorAll('.' + config.selectors.fixedHeaderTable + ' td.' + config.inner.selectors.filterCell).forEach(function(cell, cellCount) {
+		elementHolder.dataHeaderTable.querySelectorAll('td.' + config.inner.selectors.filterCell).forEach(function(cell, cellCount) {
 			var cellObj = config.fixedHeaders[config.inner.indexOfCellKeyHeader][cellCount],
 				filterObj = config.inner.filters[cellObj.key] || {},
 				currentFilterAttr = cell.getAttribute('data-attribute');
@@ -85,13 +103,11 @@ function updateHeader(config) {
 			cellElement.updateDataContainer(config, cell, cellElement.createFilterData(config, cell, cellObj, filterObj));
 		});
 	}
-
-	updateContainerHeight(config);
 }
 
-function updateData(config) {
-	var dataRowList = document.querySelectorAll('.' + config.selectors.dataTable + ' tr.' + config.inner.selectors.dataRow),
-		fixedRowList = document.querySelectorAll('.' + config.selectors.fixedTable + ' tr.' + config.inner.selectors.dataRow);
+function updateData(config, elementHolder) {
+	var dataRowList = elementHolder.dataTable.querySelectorAll('tr.' + config.inner.selectors.dataRow),
+		fixedRowList = elementHolder.fixedTable.querySelectorAll('tr.' + config.inner.selectors.dataRow);
 
 	// Cell data row update
 	dataRowList.forEach(function(row, rowNumber) {
@@ -217,6 +233,7 @@ function destroyTable(config) {
 }
 
 module.exports = {
+	initTable: initTable,
 	updateTable: updateTable,
 	updateHeader: updateHeader,
 	updateData: updateData,
