@@ -1,35 +1,33 @@
 'use strict';
 
-var webdriver = require('../modules/webdriver'),
-	selenium  = require('../modules/selenium'),
-	assert    = require('assert'),
-	mocha     = require('mocha');
+const selenium  = require('../modules/selenium');
+const webdriver = require('../modules/webdriver');
+const assert    = require('assert');
+const mocha     = require('mocha');
 
-var describe = mocha.describe,
-	it       = mocha.it,
-	before   = mocha.before,
-	after    = mocha.after;
+const describe  = mocha.describe;
+const it        = mocha.it;
+const before    = mocha.before;
+const after     = mocha.after;
 
-var client = webdriver.getClientInstance();
+let browser;
 
-describe('DOM checks', function() {
-	before(function(done) {
-		selenium.startSelenium(done);
-		client.init();
+describe('Check the example page', function() {
+	before(async() => {
+		await selenium.startSelenium();
+		browser = await webdriver();
 	});
 
-	it('The title is correctly displayed in the browser', function(done) {
-		client
-			.url('/')
-			.getTitle()
-			.then(function(title) {
-				assert.ok(title === 'Virtual Data Grid');
-			})
-			.call(done);
+	it('The title is correctly displayed in the browser', async() => {
+		await browser.url('/VirtualDataGrid/example');
+
+		let title = await browser.getTitle();
+
+		assert.equal(title, 'Virtual Data Grid', 'Wrong title: "' + title + '"');
 	});
 
-	after(function(done) {
-		client.end();
-		selenium.stopSelenium(done);
+	after(async() => {
+		await browser.deleteSession();
+		await selenium.stopSelenium();
 	});
 });

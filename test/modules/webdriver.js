@@ -3,26 +3,20 @@
 var webdriver = require('webdriverio');
 
 var webdriverOptions = {
-	desiredCapabilities: {
-		maxInstances: 5,
+	maxInstances: 5,
+	capabilities: {
 		browserName: 'chrome'
 	},
-	baseUrl: 'http://localhost:3000',
+	baseUrl: 'https://wh1terabbithu.github.io',
+	logLevel: 'debug',
 	sync: true,
 	coloredLogs: true,
-	screenshotPath: './test/errorShots/'
+	screenshotPath: './test/errorShots/',
+	framework: 'mocha',
+	mochaOpts: {
+		ui: 'bdd',
+		timeout: 90000
+	}
 };
 
-function getClientInstance() {
-	var client = webdriver.remote(webdriverOptions);
-
-	client.on('error', function(err) {
-		console.error(err);
-	});
-
-	return client;
-}
-
-module.exports = {
-	getClientInstance: getClientInstance
-};
+module.exports = async() => await webdriver.remote(webdriverOptions);

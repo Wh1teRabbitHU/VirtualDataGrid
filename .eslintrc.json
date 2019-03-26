@@ -7,6 +7,7 @@
     "browser": true,
     "es6": true
   },
+  "parserOptions": { "ecmaVersion": 8 },
   "rules": {
     // Possible Errors
 

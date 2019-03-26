@@ -29,43 +29,39 @@ var seleniumOptions = {
 
 var seleniumProcess = null;
 
-function startSelenium(done, options) {
-	if (typeof done == 'undefined') {
-		done = function() {};
-	}
+function startSelenium(options) {
+	return new Promise((resolve) => {
+		if (typeof options == 'undefined') {
+			options = {
+				hasLogger: true
+			};
+		}
 
-	if (typeof options == 'undefined') {
-		options = {
-			hasLogger: true
-		};
-	}
+		if (seleniumProcess === null) {
+			initializeAndRun(function(process) {
+				seleniumProcess = process;
 
-	if (seleniumProcess === null) {
-		initializeAndRun(function(process) {
-			seleniumProcess = process;
-
-			done();
-		}, options);
-	} else {
-		done();
-	}
+				resolve();
+			}, options);
+		} else {
+			resolve();
+		}
+	});
 }
 
-function stopSelenium(done) {
-	if (typeof done == 'undefined') {
-		done = function() {};
-	}
+function stopSelenium() {
+	return new Promise((resolve) => {
+		if (seleniumProcess === null) {
+			resolve();
+		} else {
+			setTimeout(function() { // It needs some delay to close the webdriver window
+				seleniumProcess.kill();
+				seleniumProcess = null;
 
-	if (seleniumProcess === null) {
-		done();
-	} else {
-		setTimeout(function() { // It needs some delay to close the webdriver window
-			seleniumProcess.kill();
-			seleniumProcess = null;
-
-			done();
-		}, 100);
-	}
+				resolve();
+			}, 100);
+		}
+	});
 }
 
 function initializeAndRun(webdriverCallbackFn, options) {
