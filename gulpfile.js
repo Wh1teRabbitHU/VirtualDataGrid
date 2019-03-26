@@ -1,22 +1,21 @@
 'use strict';
 
-var gulp       = require('gulp'),
-	gulpif     = require('gulp-if'),
-	sourcemaps = require('gulp-sourcemaps'),
-	stylus     = require('gulp-stylus'),
-	concatCss  = require('gulp-concat-css'),
-	cleanCss   = require('gulp-clean-css'),
-	uglify     = require('gulp-uglify'),
-	rename     = require('gulp-rename'),
-	del        = require('del'),
-	browserify = require('browserify'),
-	watchify   = require('watchify'),
-	through    = require('through2'),
-	source     = require('vinyl-source-stream'),
-	buffer     = require('vinyl-buffer'),
-	bsync      = require('browser-sync'),
-	globify    = require('require-globify'),
-	pconfig    = require('./package.json');
+const gulp       = require('gulp');
+const sourcemaps = require('gulp-sourcemaps');
+const stylus     = require('gulp-stylus');
+const concatCss  = require('gulp-concat-css');
+const cleanCss   = require('gulp-clean-css');
+const uglify     = require('gulp-uglify');
+const rename     = require('gulp-rename');
+const del        = require('del');
+const browserify = require('browserify');
+const watchify   = require('watchify');
+const through2   = require('through2');
+const source     = require('vinyl-source-stream');
+const buffer     = require('vinyl-buffer');
+const bsync      = require('browser-sync');
+const globify    = require('require-globify');
+const pconfig    = require('./package.json');
 
 const APP_NAME = pconfig.name;
 
@@ -28,6 +27,14 @@ var CSS_FILENAME = APP_NAME + '.min.css',
 
 function isDevelopment() {
 	return SRV_ENV === 'development';
+}
+
+function isProduction() {
+	return SRV_ENV === 'development';
+}
+
+function gulpif(condition, task, ...params) {
+	return condition ? task(...params) : through2.obj();
 }
 
 gulp.task('set-dev-enviroment', (done) => {
@@ -70,7 +77,8 @@ gulp.task('example-css', () => {
 		.pipe(concatCss('example.min.css'))
 		.pipe(cleanCss())
 		.pipe(sourcemaps.write())
-		.pipe(gulp.dest(TARGET_FOLDER));
+		.pipe(gulp.dest(TARGET_FOLDER))
+		.pipe(gulpif(bsync !== null, bsync.stream, { once: true }));
 });
 
 gulp.task('example-css-vendor', () => {
@@ -79,18 +87,19 @@ gulp.task('example-css-vendor', () => {
 		.pipe(concatCss('example-vendor.min.css'))
 		.pipe(cleanCss())
 		.pipe(sourcemaps.write())
-		.pipe(gulp.dest(TARGET_FOLDER));
+		.pipe(gulp.dest(TARGET_FOLDER))
+		.pipe(gulpif(bsync !== null, bsync.stream, { once: true }));
 });
 
 gulp.task('project-css', () => {
 	return gulp.src('./app/style/main.styl')
-		.pipe(gulpif(isDevelopment(), sourcemaps.init({ loadMaps: true })))
+		.pipe(gulpif(isDevelopment(), sourcemaps.init, { loadMaps: true }))
 		.pipe(stylus())
 		.pipe(concatCss(CSS_FILENAME))
 		.pipe(cleanCss())
-		.pipe(gulpif(isDevelopment(), sourcemaps.write()))
+		.pipe(gulpif(isDevelopment(), sourcemaps.write))
 		.pipe(gulp.dest(TARGET_FOLDER))
-		.pipe(bsync.stream());
+		.pipe(gulpif(bsync !== null, bsync.stream, { once: true }));
 });
 
 gulp.task('example-js', () => {
@@ -99,7 +108,8 @@ gulp.task('example-js', () => {
 		.pipe(uglify())
 		.pipe(sourcemaps.write())
 		.pipe(rename('example.min.js'))
-		.pipe(gulp.dest(TARGET_FOLDER));
+		.pipe(gulp.dest(TARGET_FOLDER))
+		.pipe(gulpif(bsync !== null, bsync.stream, { once: true }));
 });
 
 gulp.task('example-js-vendor', () => {
@@ -108,26 +118,41 @@ gulp.task('example-js-vendor', () => {
 		.pipe(uglify())
 		.pipe(sourcemaps.write())
 		.pipe(rename('example-vendor.min.js'))
-		.pipe(gulp.dest(TARGET_FOLDER));
+		.pipe(gulp.dest(TARGET_FOLDER))
+		.pipe(gulpif(bsync !== null, bsync.stream, { once: true }));
 });
 
 gulp.task('project-js', () => {
-	let bundle = browserify('app/browser.js', { debug: isDevelopment() })
-		.transform(globify);
+	let bundle = browserify('app/browser.js', {
+		debug: isDevelopment(),
+		cache: {},
+		packageCache: {}
+	}).transform(globify);
 
-	if (isDevelopment()) {
+	if (isDevelopment() && bsync !== null) {
 		bundle.plugin(watchify); // enable watchify
 	}
 
+	let errorCached = false;
+
 	return bundle
 		.bundle()
+		.on('error', (err) => {
+			if (!errorCached) {
+				console.error('Unexpected error occured while building the project!');
+				console.error('Message:\n', err.message);
+				console.error('Stacktrace:\n', err.stack);
+
+				errorCached = true;
+			}
+		})
 		.pipe(source(JS_FILENAME))
 		.pipe(buffer())
-		.pipe(gulpif(isDevelopment(), sourcemaps.init({ loadMaps: true })))
-		.pipe(gulpif(!isDevelopment(), uglify()))
-		.pipe(gulpif(isDevelopment(), sourcemaps.write()))
+		.pipe(gulpif(isDevelopment(), sourcemaps.init, { loadMaps: true }))
+		.pipe(gulpif(isProduction(), uglify))
+		.pipe(gulpif(isDevelopment(), sourcemaps.write))
 		.pipe(gulp.dest(TARGET_FOLDER))
-		.pipe(bsync === null ? through.obj() : bsync.stream({ once: true }));
+		.pipe(gulpif(bsync !== null, bsync.stream, { once: true }));
 });
 
 gulp.task('start-server', (done) => {
