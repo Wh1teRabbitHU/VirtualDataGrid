@@ -1,6 +1,6 @@
 'use strict';
 
-const { beforeAll } = require('../modules/initializer');
+const { beforeAll } = require('../modules/webdriver');
 const mocha         = require('mocha');
 
 const it            = mocha.it;

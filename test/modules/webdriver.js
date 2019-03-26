@@ -1,8 +1,9 @@
 'use strict';
 
-var webdriver = require('webdriverio');
+const webdriver = require('webdriverio');
+const selenium  = require('./selenium');
 
-var webdriverOptions = {
+const webdriverOptions = {
 	maxInstances: 5,
 	capabilities: {
 		browserName: 'chrome'
@@ -19,4 +20,19 @@ var webdriverOptions = {
 	}
 };
 
-module.exports = async() => await webdriver.remote(webdriverOptions);
+const exportObject = {
+	browser: null
+};
+
+exportObject.beforeAll = async() => {
+	await selenium.startSelenium({ hasLogger: false });
+	exportObject.browser = await webdriver.remote(webdriverOptions);
+	await exportObject.browser.url('/VirtualDataGrid/example');
+};
+
+exportObject.afterAll = async() => {
+	await exportObject.browser.deleteSession();
+	await selenium.stopSelenium();
+};
+
+module.exports = exportObject;
